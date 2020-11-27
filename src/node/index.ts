@@ -7,7 +7,6 @@ import prefix from 'loglevel-plugin-prefix'
 import chalk, { Chalk } from 'chalk'
 const { version } = require('../../package.json')
 import { command as buildCommand } from './build/command'
-import { exit } from 'process'
 
 type LogKinds = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR'
 
