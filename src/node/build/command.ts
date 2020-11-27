@@ -5,9 +5,9 @@ import { generateConfig } from '../config'
 
 export async function command() {
   // log.trace('msg')
-  // log.debug('debug')
+  log.debug('debug')
   log.info('info121')
-  // log.warn('warn')
-  // log.error('error')
+  log.warn('warn')
+  log.error('error')
   await generateConfig()
 }

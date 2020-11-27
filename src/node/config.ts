@@ -1,6 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
+import chalk from 'chalk'
 // import os from 'os'
 
 export interface UserConfig {
@@ -18,16 +19,18 @@ export async function generateConfig() {
       if (fs.pathExistsSync(profile)) {
         switch (ext) {
           case '.json':
+          case '.js':
             userConfig = await import(profile)
-            console.log(userConfig)
+            console.log(userConfig, 'a')
             break
+                case '.ts':
         }
         break
       }
     }
   } catch (e) {
     log.error(e)
-    log.warn('Because the configuration file is not available, the default configuration is used.')
+    log.warn(chalk.yellow('Because the configuration file is not available, the default configuration is used.'))
   }
 
   const defaultconfig: UserConfig = {
