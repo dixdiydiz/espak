@@ -1,0 +1,28 @@
+{
+  "name": "app-template-react-typescript",
+  "version": "1.13.0",
+  "license": "MIT",
+  "keywords": [
+    "csa-template"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "espak serve",
+    "build": "espak build",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.4",
+    "prettier": "^2.0.5",
+    "typescript": "^4.0.0"
+  },
+  "gitHead": "a01616bb0787d56cd782f94cecf2daa12c7594e4"
+}

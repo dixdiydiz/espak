@@ -4,15 +4,24 @@
   "description": "a web build tool",
   "repository": "git@github.com:dixdiydiz/espak.git",
   "author": "dry",
-  "bin": {
-    "espak": "src/bin/espak.js"
+  "scripts": {
+    "dev": "tsc -w --incremental -p src/node/"
   },
-  "main": "src/node/lib/index.js",
+  "bin": {
+    "espak": "./bin/espak.js"
+  },
+  "main": "./dist/node/index.js",
   "dependencies": {
+    "@types/fs-extra": "^9.0.4",
+    "chalk": "^4.1.0",
     "commander": "^6.2.0",
-    "esbuild": "^0.8.12"
+    "esbuild": "^0.8.12",
+    "fs-extra": "^9.0.1",
+    "loglevel": "^1.7.1",
+    "loglevel-plugin-prefix": "^0.8.4"
   },
   "devDependencies": {
+    "@tsconfig/node12": "^1.0.7",
     "@types/node": "^14.14.9",
     "prettier": "^2.2.0",
     "typescript": "^4.1.2"
