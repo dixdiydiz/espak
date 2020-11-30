@@ -36,10 +36,6 @@ export let espakTemp: string = ''
     process.exit(1)
   }
 })()
-;(function () {
-  const bb = require('module.exports = {a: 1}')
-  console.log('bb:', bb)
-})()
 
 const program = new Command()
 program.version(version, '-v, -V, --version', 'output the current version')

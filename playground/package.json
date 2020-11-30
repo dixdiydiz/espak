@@ -16,6 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "esbuild": "^0.8.17",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },

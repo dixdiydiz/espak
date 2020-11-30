@@ -1,8 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import chalk from 'chalk'
-// import os from 'os'
+import { buildProfile } from './transform/index'
 
 export interface UserConfig {
   public?: string
@@ -21,22 +20,24 @@ export async function generateConfig() {
           case '.json':
           case '.js':
             userConfig = await import(profile)
-            console.log(userConfig, 'a')
             break
-                case '.ts':
+          case '.ts':
+            userConfig = await buildProfile(profile)
+            console.log('from config.ts',userConfig)
+            break
         }
         break
       }
     }
   } catch (e) {
     log.error(e)
-    log.warn(chalk.yellow('Because the configuration file is not available, the default configuration is used.'))
+    log.warn('Because the configuration file is not available, the default configuration is used.')
   }
 
-  const defaultconfig: UserConfig = {
-    public: './',
-    entry: './src/',
-  }
+  // const defaultconfig: UserConfig = {
+  //   public: './',
+  //   entry: './src/',
+  // }
 }
 
-async function getUserconfig() {}
+// async function getUserconfig() {}
