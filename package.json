@@ -1,0 +1,37 @@
+{
+  "name": "espak",
+  "version": "0.1.0",
+  "description": "a web build tool",
+  "repository": "git@github.com:dixdiydiz/espak.git",
+  "author": "dry",
+  "scripts": {
+    "dev": "tsc -w --incremental -p src/node/"
+  },
+  "bin": {
+    "espak": "./bin/espak.js"
+  },
+  "main": "./dist/node/index.js",
+  "dependencies": {
+    "@types/fs-extra": "^9.0.4",
+    "chalk": "^4.1.0",
+    "commander": "^6.2.0",
+    "esbuild": "^0.8.12",
+    "fs-extra": "^9.0.1",
+    "loglevel": "^1.7.1",
+    "loglevel-plugin-prefix": "^0.8.4"
+  },
+  "devDependencies": {
+    "@tsconfig/node12": "^1.0.7",
+    "@types/node": "^14.14.9",
+    "prettier": "^2.2.0",
+    "typescript": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=14.15.0"
+  },
+  "keywords": [
+    "buid",
+    "es module"
+  ],
+  "license": "MIT"
+}

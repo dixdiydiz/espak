@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["**/*"],
+  "exclude": ["lib/**/*"],
+  "compilerOptions": {
+    "outDir": "../../dist/node",
+    "sourceMap": true
+  }
+}
