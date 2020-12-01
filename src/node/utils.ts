@@ -1,6 +1,4 @@
 
-type IsType<T> = (arg: unknown ) => arg is T
-
 // type assertion
 export const isString = (val:unknown):val is string => typeof val === 'string';
 export const isSymbol = (val:unknown):val is symbol => typeof val === 'symbol';

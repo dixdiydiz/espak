@@ -1,20 +1,18 @@
 import { build } from 'esbuild'
-import log from 'loglevel'
+import fs from 'fs-extra'
+import path from 'path'
+import {espakTemp} from '../index'
 
-export async function buildProfile(entry: string): Promise<string> {
-  let result = await build({
-    entryPoints: [entry],
+
+export async function buildConfig (profile: string, prefix: string): Promise<object> {
+  const tmpPath = path.join(espakTemp, `${prefix}.js`)
+  await build({
+    entryPoints: [profile],
     platform: 'node',
-    target: ['es6'],
-    write: false,
-    outdir: 'out',
+    format: 'cjs',
+    outdir: espakTemp,
   })
-  if (result?.outputFiles?.length) {
-    const { contents } = result.outputFiles[0]
-    // const aa = await import(path)
-    const buf = Buffer.from(contents)
-    log.info(Buffer.isBuffer(buf), buf.toString())
-    return buf
-  }
-  return Promise.resolve('')
+  const config = await import(tmpPath)
+  fs.removeSync(tmpPath)
+  return config.default || config
 }

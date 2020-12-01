@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import { buildProfile } from './transform/index'
+import {buildConfig} from './transform/index'
 
 export interface UserConfig {
   public?: string
@@ -10,11 +10,12 @@ export interface UserConfig {
 }
 
 export async function generateConfig() {
+  const prefix = 'espak.config'
   const supportedConfigExt: string[] = ['.json', '.js', '.ts']
-  let userConfig = null
+  let userConfig = Object.create(null)
   try {
     for (let ext of supportedConfigExt) {
-      const profile = path.resolve(`espak.config${ext}`)
+      const profile = path.resolve(`${prefix}${ext}`)
       if (fs.pathExistsSync(profile)) {
         switch (ext) {
           case '.json':
@@ -22,22 +23,22 @@ export async function generateConfig() {
             userConfig = await import(profile)
             break
           case '.ts':
-            userConfig = await buildProfile(profile)
-            console.log('from config.ts',userConfig)
-            break
+            userConfig =  await buildConfig(profile, prefix)
+            console.log('userConfig:---', userConfig)
         }
         break
       }
     }
   } catch (e) {
     log.error(e)
-    log.warn('Because the configuration file is not available, the default configuration is used.')
+    log.warn('configuration file is not available, exit.')
+    process.exit(1)
   }
 
-  // const defaultconfig: UserConfig = {
-  //   public: './',
-  //   entry: './src/',
-  // }
+  const defaultconfig: UserConfig = {
+    public: './',
+    entry: './src/',
+  }
 }
 
 // async function getUserconfig() {}

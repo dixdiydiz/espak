@@ -62,11 +62,8 @@ function exitHandler(
   }
 ): void {
   const { exitCode } = option
-  fs.rmdir(espakTemp, (err) => {
-    if (err) {
-      log.error(chalk.red(err))
-    }
-  })
+  console.log('espakTemp',espakTemp)
+  fs.removeSync(espakTemp)
   log.info(chalk.magenta(`exitCode:--${exitCode}`))
   process.exit(exitCode)
 }
