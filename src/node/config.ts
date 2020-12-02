@@ -9,8 +9,8 @@ export interface UserConfig {
   output?: string
 }
 
-export async function generateConfig() {
-  const prefix = 'espak.config'
+export async function generateConfig(): Promise<UserConfig> {
+  const prefix: string = 'espak.config'
   const supportedConfigExt: string[] = ['.json', '.js', '.ts']
   let userConfig = Object.create(null)
   try {
@@ -24,7 +24,6 @@ export async function generateConfig() {
             break
           case '.ts':
             userConfig =  await buildConfig(profile, prefix)
-            console.log('userConfig:---', userConfig)
         }
         break
       }
@@ -34,11 +33,13 @@ export async function generateConfig() {
     log.warn('configuration file is not available, exit.')
     process.exit(1)
   }
-
   const defaultconfig: UserConfig = {
     public: './',
-    entry: './src/',
+    entry: './src',
+    output: './dist'
+  }
+  return {
+    ...defaultconfig,
+    ...userConfig
   }
 }
-
-// async function getUserconfig() {}

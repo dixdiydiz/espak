@@ -1,13 +1,8 @@
 // import log from 'loglevel'
-import { generateConfig } from '../config'
+import { generateConfig, UserConfig } from '../config'
 
 // export const loggerName: symbol = Symbol('buildModule')
 
-export async function command() {
-  // log.trace('msg')
-  // log.debug('debug')
-  // log.info('info121')
-  // log.warn('warn')
-  // log.error('error')
-  await generateConfig()
+export async function command(): Promise<void> {
+  const config: UserConfig = await generateConfig()
 }
