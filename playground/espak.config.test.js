@@ -8,8 +8,8 @@ module.exports = {
     open: 'chrome',
   },
   plugins: [
-    '@snowpack/plugin-react-refresh',
-    '@snowpack/plugin-dotenv',
-    "@snowpack/plugin-typescript"
+    '@espak/plugin-react-refresh',
+    '@espak/plugin-dotenv',
+    "@espak/plugin-typescript"
   ],
 };

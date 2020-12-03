@@ -7,5 +7,5 @@
     "port": 9999,
     "open": "chrome"
   },
-  "plugins": ["@snowpack/plugin-react-refresh", "@snowpack/plugin-dotenv", "@snowpack/plugin-typescript"]
+  "plugins": ["@eapsk/plugin-react-refresh", "@eapsk/plugin-dotenv", "@eapsk/plugin-typescript"]
 }

@@ -4,15 +4,15 @@ import log from 'loglevel'
 import {buildConfig} from './transform/index'
 
 export interface UserConfig {
-  public?: string
-  entry?: string | Record<string, string>
-  output?: string
+  public: string
+  entry: string | Record<string,string>| string[]
+  output: string
 }
 
 export async function generateConfig(): Promise<UserConfig> {
   const prefix: string = 'espak.config'
   const supportedConfigExt: string[] = ['.json', '.js', '.ts']
-  let userConfig = Object.create(null)
+  let userConfig: Partial<UserConfig> = Object.create(null)
   try {
     for (let ext of supportedConfigExt) {
       const profile = path.resolve(`${prefix}${ext}`)
@@ -34,9 +34,9 @@ export async function generateConfig(): Promise<UserConfig> {
     process.exit(1)
   }
   const defaultconfig: UserConfig = {
-    public: './',
-    entry: './src',
-    output: './dist'
+    public: '',
+    entry: 'src/index.js',
+    output: 'dist'
   }
   return {
     ...defaultconfig,

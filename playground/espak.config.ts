@@ -1,11 +1,8 @@
 export default {
-  mount: {
-    public: '/',
-    src: '/_dist_',
-  },
+  entry: {a: 'src/index.tsx'},
   devOptions: {
     port: 9999,
     open: 'chrome',
   },
-  plugins: ['@snowpack/plugin-react-refresh', '@snowpack/plugin-dotenv', '@snowpack/plugin-typescript'],
+  plugins: ['@espak/plugin-react-refresh', '@espak/plugin-dotenv', '@espak/plugin-typescript'],
 }
