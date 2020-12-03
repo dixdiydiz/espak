@@ -13,12 +13,14 @@
   "main": "./dist/node/index.js",
   "dependencies": {
     "@types/fs-extra": "^9.0.4",
+    "@types/resolve": "^1.17.1",
     "chalk": "^4.1.0",
     "commander": "^6.2.0",
-    "esbuild": "^0.8.12",
+    "esbuild": "^0.8.17",
     "fs-extra": "^9.0.1",
     "loglevel": "^1.7.1",
-    "loglevel-plugin-prefix": "^0.8.4"
+    "loglevel-plugin-prefix": "^0.8.4",
+    "resolve": "^1.19.0"
   },
   "devDependencies": {
     "@tsconfig/node12": "^1.0.7",

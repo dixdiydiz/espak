@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import {buildConfig} from './transform/index'
+import {buildConfig} from './transform/index';
 
 export interface UserConfig {
   public: string

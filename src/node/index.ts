@@ -28,9 +28,13 @@ prefix.apply(log, {
 })
 
 export let espakTemp: string = ''
+export let espakTempSrc: string = ''
+export let espakTempModule: string = ''
 ;(function () {
   try {
     espakTemp = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
+    espakTempSrc = path.join(espakTemp, 'src')
+    espakTempModule = path.join(espakTemp, 'module')
     log.info('espakTemp', espakTemp)
   } catch (e) {
     log.error(chalk.red(e))
