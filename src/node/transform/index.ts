@@ -1,12 +1,12 @@
-import { build, BuildOptions, startService, Plugin } from 'esbuild'
+import { build, BuildOptions, startService } from 'esbuild'
 import log from 'loglevel'
 import fs from 'fs-extra'
 import path from 'path'
 import { espakTemp } from '../index'
-import globalCssPlugin from './globalCssPlugin'
-import reactPlugin from './reactPlugin'
+// import globalCssPlugin from './globalCssPlugin'
+// import reactPlugin from './reactPlugin'
 
-export const commonPlugins: Plugin[] = [globalCssPlugin, reactPlugin]
+// export const commonPlugins: Plugin[] = [globalCssPlugin, reactPlugin]
 
 export async function buildConfig(profile: string, prefix: string): Promise<object> {
   const tmpPath: string = path.join(espakTemp, `${prefix}.js`)
@@ -26,13 +26,8 @@ export async function startBuildServe(options: BuildOptions[]) {
   try {
     const promises = []
     for (let o of options) {
-      const plugins: Plugin[] = o.plugins ? [...commonPlugins, ...o.plugins] : commonPlugins
-      promises.push(
-        service.build({
-          ...o,
-          plugins,
-        })
-      )
+      // const plugins: Plugin[] = o.plugins ? [...commonPlugins, ...o.plugins] : commonPlugins
+      promises.push(service.build(o))
     }
     return await Promise.all(promises)
   } catch (e) {
