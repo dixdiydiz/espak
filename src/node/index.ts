@@ -67,7 +67,7 @@ function exitHandler(
   }
 ): void {
   const { exitCode } = option
-  // fs.removeSync(espakTemp)
+  fs.removeSync(espakTemp)
   log.info(chalk.magenta(`exitCode:--${exitCode}`))
   process.exit(exitCode)
 }

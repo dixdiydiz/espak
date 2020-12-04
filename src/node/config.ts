@@ -1,11 +1,11 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import {buildConfig} from './transform/index';
+import { buildConfig } from './transform/wrapEsBuild'
 
 export interface UserConfig {
   public: string
-  entry: string | Record<string,string>| string[]
+  entry: string | Record<string, string> | string[]
   output: string
 }
 
@@ -23,7 +23,7 @@ export async function generateConfig(): Promise<UserConfig> {
             userConfig = await import(profile)
             break
           case '.ts':
-            userConfig =  await buildConfig(profile, prefix)
+            userConfig = await buildConfig(profile, prefix)
         }
         break
       }
@@ -36,10 +36,10 @@ export async function generateConfig(): Promise<UserConfig> {
   const defaultconfig: UserConfig = {
     public: '',
     entry: 'src/index.js',
-    output: 'dist'
+    output: 'dist',
   }
   return {
     ...defaultconfig,
-    ...userConfig
+    ...userConfig,
   }
 }

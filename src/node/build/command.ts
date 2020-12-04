@@ -1,44 +1,42 @@
 import log from 'loglevel'
 import resolve from 'resolve'
 import path from 'path'
-// import fs from 'fs-extra'
-import { BuildOptions } from 'esbuild'
-import { espakTempSrc } from '../index'
 import { generateConfig, UserConfig } from '../config'
-import { startBuildServe } from '../transform'
-interface OutInfo {
-  label?: string
-  dir?: string
-  fileName?: string
-  outdir?: string
-}
+import { singleBuild } from '../transform/wrapEsBuild'
+import { handleImportation } from '../transform/fabrication'
+
 export async function command(): Promise<void> {
   const config: UserConfig = await generateConfig()
-  const dispenser: Record<string, OutInfo> = {}
-  const buildOptions: BuildOptions[] = []
   const { entry: entrySnippet } = config
   for (let [key, val] of Object.entries(entrySnippet)) {
     const entry: string = resolve.sync(path.resolve('./', val), {
       basedir: process.cwd(),
     })
-    const { dir, name, ext } = path.parse(entry)
+    const { base, ext } = path.parse(entry)
     if (['.tsx', '.ts', '.jsx', '.js'].includes(ext)) {
-      buildOptions.push({
+      const result = await singleBuild({
         entryPoints: [entry],
-        bundle: true,
-        external: ['react', 'react-dom'],
-        minify: false, // Usually you minify code in production but not in development.
+        bundle: false,
+        minify: true,
         format: 'esm',
-        outfile: path.join(espakTempSrc, `${name}-${key}.js`),
+        write: false,
       })
-      dispenser[entry] = {
-        label: key,
-        dir,
-        fileName: name,
-      }
+      const promises: Promise<unknown>[] = []
+      result &&
+        (function () {
+          for (let o of result.outputFiles!) {
+            promises.push(
+              handleImportation({
+                in: entry,
+                label: key,
+                text: o.text,
+              })
+            )
+          }
+        })()
+      await Promise.all(promises)
     } else {
-      log.error(`entry file ext do not support ${ext}`)
+      log.error(`entry file ext do not support ${ext}: ${base}`)
     }
   }
-  await startBuildServe(buildOptions)
 }
