@@ -12,7 +12,7 @@ export async function command(): Promise<void> {
     const entry: string = resolve.sync(path.resolve('./', val), {
       basedir: process.cwd(),
     })
-    const { base, ext } = path.parse(entry)
+    const { dir, base, ext } = path.parse(entry)
     if (['.tsx', '.ts', '.jsx', '.js'].includes(ext)) {
       const result = await singleBuild({
         entryPoints: [entry],
@@ -27,7 +27,8 @@ export async function command(): Promise<void> {
           for (let o of result.outputFiles!) {
             promises.push(
               handleImportation({
-                in: entry,
+                infile: entry,
+                dir,
                 label: key,
                 text: o.text,
               })
