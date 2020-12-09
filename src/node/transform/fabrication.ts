@@ -1,52 +1,95 @@
 import { builtinModules } from 'module'
-const { dependencies } = require('../../../package.json')
+const { dependencies: originalDependencies } = require('../../../package.json')
 import resolve from 'resolve'
 import log from 'loglevel'
+import path from 'path'
 
-interface RawInModule {
-  infile: string
-  outfile?: string
-  dir?: string
-  label?: string
-  text: string
+export interface ResolveOptions {
+  pathSource: string
+  basedir?: string
+  extensions?: string[]
+  includeCoreModules?: boolean
 }
-interface EegaModule extends RawInModule {}
 
-type ModuleType = 'builtin' | 'third' | 'custom'
+export interface RawInModule {
+  infile: string
+  dir: string
+  ext: string
+  label?: string
+  pathSource: string
+  moduleFlag: string
+}
+export interface MedInModule {
+  text: string
+  outfile: string
+  //依赖
+  dependencies?: WeakSet<RipeInModule>
+  beDependencies?: WeakSet<RipeInModule>
+}
+
+type RipeInModule = RawInModule & MedInModule
+
+enum ModuleFlag {
+  BUILTIN = 'BUILTIN',
+  THIRD = 'THIRD',
+  CUSTOM = 'CUSTOM',
+}
 
 export const srcToBuild = Object.create(null)
+const dependencies: string[] = Object.keys(originalDependencies)
 
 const importedReg = /(?:import\((?:(?:'(\S+)')|(?:"(\S+)"))\))|(?:import\s*(?:(?:'(\S+)')|(?:"(\S+)"));)|(?:import\s+[^;\"\']+from\s*(?:(?:'([^\s\']+)')|(?:"([^\s\"]+)"));)/g
 
-export async function handleImportation(input: RawInModule): Promise<any> {
-  const { infile, dir, text } = input
-  srcToBuild[infile] = {
-    ...input,
+export function resolveModule(options: ResolveOptions): RawInModule {
+  const { pathSource } = options
+  const infile = resolve.sync(pathSource, options)
+  const { dir, ext } = path.parse(infile)
+  const moduleFlag = obtainModuleFlag(pathSource)
+  switch (moduleFlag) {
+    case ModuleFlag.BUILTIN:
   }
+  return (srcToBuild[infile] = {
+    infile,
+    dir,
+    ext,
+    pathSource,
+    moduleFlag: obtainModuleFlag(pathSource),
+  })
+}
+function obtainModuleFlag(pathSource: string): keyof typeof ModuleFlag {
+  if (builtinModules.includes(pathSource)) {
+    return ModuleFlag.BUILTIN
+  } else if (dependencies.includes(pathSource)) {
+    return ModuleFlag.THIRD
+  }
+  return ModuleFlag.CUSTOM
+}
+
+export async function handleImportation(input: RipeInModule): Promise<any> {
+  const { infile, dir, text } = input
   const matchs = text.matchAll(importedReg)
   for (let m of matchs) {
-    // const match = {
-    //   match: m[0],
-    //   start: m.index,
-    //   end: m.index! + m[0].length,
-    // }
-    // console.log(match)
-    searchAbsolutePath(m.slice(1, 7), { basedir: dir })
+    const match = {
+      match: m[0],
+      start: m.index,
+      end: m.index! + m[0].length,
+    }
+    const moduleInfo = distinguishMdoule(m.slice(1, 7), { basedir: dir })
+    if (moduleInfo.moduleFlag === ModuleFlag.THIRD) {
+    }
   }
-  function searchAbsolutePath(match: string[], options: any) {
-    const relativePath: string | undefined = match.find((e: string | undefined) => e !== undefined)
+  // TODO: 补充 resolve 模块的类型检查
+  function distinguishMdoule(match: string[], options: any): RawInModule {
+    const relativePath: string = match.find((e: string | undefined) => e !== void 0) || ''
     try {
-      if (typeof relativePath === 'string') {
-        const absolutePath = resolve.sync(relativePath, {
-          extensions: ['.tsx', '.ts', '.jsx', '.js'],
-          ...options,
-        })
-        console.log(absolutePath)
-        return {
-          infile: absolutePath,
-          fromPath: relativePath,
-          moduleType: obtainModuleType(relativePath),
-        }
+      const absolutePath = resolve.sync(relativePath, {
+        extensions: ['.tsx', '.ts', '.jsx', '.js'],
+        ...options,
+      })
+      return {
+        infile: absolutePath,
+        fromPath: relativePath,
+        moduleFlag: obtainModuleFlag(relativePath),
       }
     } catch (e) {
       log.warn(e)
@@ -56,12 +99,5 @@ export async function handleImportation(input: RawInModule): Promise<any> {
       }
     }
   }
-  function obtainModuleType(fromPath: string): ModuleType {
-    if (builtinModules.includes(fromPath)) {
-      return 'builtin'
-    } else if (Object.keys(dependencies).includes(fromPath)) {
-      return 'third'
-    }
-    return 'custom'
-  }
 }
+// export async earlierCustomModuleHandler ({resolveOptions, esbuildOptions}) {}
