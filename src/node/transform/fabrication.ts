@@ -64,7 +64,9 @@ function obtainModuleFlag(pathSource: string): keyof typeof ModuleFlag {
   }
   return ModuleFlag.CUSTOM
 }
-
+// TODO:  export ... from module waiting handle
+// 改成：用户模块在handleImportation 函数中缓存srcToBuild[infile]，
+// 然后根据引入模块的类型不同调用不同的方法。
 export async function handleImportation(input: RipeInModule): Promise<any> {
   const { infile, dir, text } = input
   const matchs = text.matchAll(importedReg)
