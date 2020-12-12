@@ -20,7 +20,7 @@ export async function buildConfig(profile: string, prefix: string): Promise<obje
 export async function singleBuild(option: BuildOptions) {
   return await build(option).catch(log.error)
 }
-export async function startBuildServe(options: BuildOptions[]): Promise<BuildResult[] | undefined> {
+export async function startBuildServe(options: BuildOptions[]): Promise<BuildResult[]> {
   const service: Service = await startService()
   try {
     const promises = []
@@ -30,6 +30,7 @@ export async function startBuildServe(options: BuildOptions[]): Promise<BuildRes
     return await Promise.all(promises)
   } catch (e) {
     log.error(e)
+    return []
   } finally {
     service.stop()
   }
