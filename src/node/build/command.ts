@@ -7,6 +7,7 @@ import {
   RawInModule,
   MedInModule,
   earlierCustomModuleHandler,
+  handleImportation,
 } from '../transform/fabrication'
 
 export async function command(): Promise<void> {
@@ -31,5 +32,8 @@ export async function command(): Promise<void> {
       log.error(`entry file ext do not support ${entry.ext}: ${entry.pathSource}`)
     }
   }
-  await earlierCustomModuleHandler(entries)
+  const handleResult: (RawInModule & Partial<MedInModule>)[] = await earlierCustomModuleHandler(entries)
+  for (let r of handleResult) {
+    await handleImportation(r)
+  }
 }

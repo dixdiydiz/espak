@@ -22,13 +22,13 @@ export interface RawInModule {
 }
 export interface MedInModule {
   text: string
-  outfile: string
+  outfile?: string
   //依赖
   dependencies?: WeakSet<RipeInModule>
   beDependencies?: WeakSet<RipeInModule>
 }
 
-type RipeInModule = RawInModule & MedInModule
+export type RipeInModule = RawInModule & MedInModule
 
 export enum ModuleFlag {
   BUILTIN = 'BUILTIN',
@@ -60,8 +60,18 @@ function obtainModuleFlag(pathSource: string): keyof typeof ModuleFlag {
   return ModuleFlag.CUSTOM
 }
 // TODO:  export ... from module waiting handle
-export async function handleImportation(input: RipeInModule): Promise<any> {
-  // const { infile, dir, text } = input
+export async function handleImportation(input: RawInModule & Partial<MedInModule>): Promise<any> {
+  const { infile, dir, text } = input
+  if (text) {
+    const matchs = text.matchAll(importedReg)
+    for (let m of matchs) {
+      const match = {
+        match: m[0],
+        start: m.index,
+        end: m.index! + m[0].length,
+      }
+    }
+  }
   // const matchs = text.matchAll(importedReg)
   // for (let m of matchs) {
   //   const match = {
@@ -74,26 +84,32 @@ export async function handleImportation(input: RipeInModule): Promise<any> {
   //   }
   // }
   // TODO: 补充 resolve 模块的类型检查
-  // function distinguishMdoule(match: string[], options: any): RawInModule {
-  //   const relativePath: string = match.find((e: string | undefined) => e !== void 0) || ''
-  //   try {
-  //     const absolutePath = resolve.sync(relativePath, {
-  //       extensions: ['.tsx', '.ts', '.jsx', '.js'],
-  //       ...options,
-  //     })
-  //     return {
-  //       infile: absolutePath,
-  //       fromPath: relativePath,
-  //       moduleFlag: obtainModuleFlag(relativePath),
-  //     }
-  //   } catch (e) {
-  //     log.warn(e)
-  //     return {
-  //       infile: '',
-  //       fromPath: '',
-  //     }
-  //   }
-  // }
+  function distinguishMdoule(match: string[], options: ResolveOptions): RawInModule {
+    // TODO: expand extensions according to the configuration file
+    const extensions = ['.tsx', '.ts', '.jsx', '.js']
+    const relativePath: string = match.find((e: string | undefined) => e !== void 0) || ''
+    try {
+      const absolutePath = resolveModule(relativePath, {
+        basedir: process.cwd(),
+        extensions,
+      })
+      // const absolutePath = resolve.sync(relativePath, {
+      //   extensions: ['.tsx', '.ts', '.jsx', '.js'],
+      //   ...options,
+      // })
+      return {
+        infile: absolutePath,
+        fromPath: relativePath,
+        moduleFlag: obtainModuleFlag(relativePath),
+      }
+    } catch (e) {
+      log.warn(e)
+      return {
+        infile: '',
+        fromPath: '',
+      }
+    }
+  }
 }
 interface SrcAndBuildOption {
   src: RawInModule & Partial<MedInModule>
@@ -101,7 +117,9 @@ interface SrcAndBuildOption {
 }
 
 // TODO: loader
-export async function earlierCustomModuleHandler(srcAndBuild: SrcAndBuildOption[]) {
+export async function earlierCustomModuleHandler(
+  srcAndBuild: SrcAndBuildOption[]
+): Promise<(RawInModule & Partial<MedInModule>)[]> {
   const preBuildOption: BuildOptions = {
     bundle: false,
     minify: true,
@@ -109,27 +127,25 @@ export async function earlierCustomModuleHandler(srcAndBuild: SrcAndBuildOption[
     write: false,
   }
   const builder: BuildOptions[] = []
-  const infileInOrder: string[] = []
+  const result: (RawInModule & Partial<MedInModule>)[] = []
   for (let { src, build } of srcAndBuild) {
     const { infile } = src
-    srcToBuild[infile] = { ...src }
+    result.push((srcToBuild[infile] = { ...src }))
     builder.push(
       build || {
         ...preBuildOption,
         entryPoints: [infile],
       }
     )
-    infileInOrder.push(infile)
   }
-  const result: BuildResult[] = await startBuildServe(builder)
-  result.forEach((ele, i) => {
+  const buildResult: BuildResult[] = await startBuildServe(builder)
+  buildResult.forEach((ele, i) => {
     if (ele.warnings.length) {
       ele.warnings.forEach(log.warn)
     }
     if (ele.outputFiles?.length) {
-      const infile: any = infileInOrder[i]
-      srcToBuild[infile].text = ele.outputFiles[0]?.text
+      result[i].text = ele.outputFiles[0]?.text
     }
   })
-  console.log(srcToBuild)
+  return result
 }
