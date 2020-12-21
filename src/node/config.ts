@@ -3,12 +3,17 @@ import path from 'path'
 import log from 'loglevel'
 import { buildConfig } from './transform/wrapEsBuild'
 
+export interface Resolve {
+  extensions?: string[]
+}
 export interface UserConfig {
   public: string
   entry: string | Record<string, string> | string[]
   output: string
+  resolve: Resolve
 }
 
+export let finalConfig: UserConfig
 export async function generateConfig(): Promise<UserConfig> {
   const prefix: string = 'espak.config'
   const supportedConfigExt: string[] = ['.json', '.js', '.ts']
@@ -37,9 +42,17 @@ export async function generateConfig(): Promise<UserConfig> {
     public: '',
     entry: 'src/index.js',
     output: 'dist',
+    resolve: {
+      extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    },
   }
-  return {
+  finalConfig = {
     ...defaultconfig,
     ...userConfig,
+    resolve: {
+      ...defaultconfig.resolve,
+      ...userConfig.resolve,
+    },
   }
+  return finalConfig
 }

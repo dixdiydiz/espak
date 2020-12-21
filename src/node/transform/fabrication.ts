@@ -5,6 +5,7 @@ import log from 'loglevel'
 import path from 'path'
 import { startBuildServe } from './wrapEsBuild'
 import { BuildOptions, BuildResult } from 'esbuild'
+import { finalConfig } from '../config'
 
 export interface ResolveOptions {
   basedir?: string
@@ -24,8 +25,8 @@ export interface MedInModule {
   text: string
   outfile?: string
   //依赖
-  dependencies?: WeakSet<RipeInModule>
-  beDependencies?: WeakSet<RipeInModule>
+  has?: WeakSet<RipeInModule>
+  dependsOn?: WeakSet<RipeInModule>
 }
 
 export type RipeInModule = RawInModule & MedInModule
@@ -34,6 +35,11 @@ export enum ModuleFlag {
   BUILTIN = 'BUILTIN',
   THIRD = 'THIRD',
   CUSTOM = 'CUSTOM',
+}
+export enum ImportMode {
+  DYNAMIC,
+  SIDE_EFFECT,
+  FROM_MODULE,
 }
 
 export const srcToBuild = Object.create(null)
@@ -61,54 +67,25 @@ function obtainModuleFlag(pathSource: string): keyof typeof ModuleFlag {
 }
 // TODO:  export ... from module waiting handle
 export async function handleImportation(input: RawInModule & Partial<MedInModule>): Promise<any> {
+  console.log(input)
   const { infile, dir, text } = input
   if (text) {
     const matchs = text.matchAll(importedReg)
     for (let m of matchs) {
+      console.log(m)
       const match = {
         match: m[0],
         start: m.index,
         end: m.index! + m[0].length,
+        refer: input,
       }
     }
   }
-  // const matchs = text.matchAll(importedReg)
-  // for (let m of matchs) {
-  //   const match = {
-  //     match: m[0],
-  //     start: m.index,
-  //     end: m.index! + m[0].length,
-  //   }
-  //   const moduleInfo = distinguishMdoule(m.slice(1, 7), { basedir: dir })
-  //   if (moduleInfo.moduleFlag === ModuleFlag.THIRD) {
-  //   }
-  // }
-  // TODO: 补充 resolve 模块的类型检查
-  function distinguishMdoule(match: string[], options: ResolveOptions): RawInModule {
-    // TODO: expand extensions according to the configuration file
-    const extensions = ['.tsx', '.ts', '.jsx', '.js']
-    const relativePath: string = match.find((e: string | undefined) => e !== void 0) || ''
-    try {
-      const absolutePath = resolveModule(relativePath, {
-        basedir: process.cwd(),
-        extensions,
-      })
-      // const absolutePath = resolve.sync(relativePath, {
-      //   extensions: ['.tsx', '.ts', '.jsx', '.js'],
-      //   ...options,
-      // })
-      return {
-        infile: absolutePath,
-        fromPath: relativePath,
-        moduleFlag: obtainModuleFlag(relativePath),
-      }
-    } catch (e) {
-      log.warn(e)
-      return {
-        infile: '',
-        fromPath: '',
-      }
-    }
+  function distinguishMdoule(matchs: string[], options: ResolveOptions): RawInModule {
+    const extensions = finalConfig.resolve.extensions || ['.tsx', '.ts', '.jsx', '.js']
+    const index = matchs.findIndex((ele) => ele !== void 0)
+    conat match = matchs[index]
+      const moduleFlag = obtainModuleFlag()
   }
 }
 interface SrcAndBuildOption {
