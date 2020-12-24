@@ -5,7 +5,7 @@ import log from 'loglevel'
 import path from 'path'
 import { startBuildServe } from './wrapEsBuild'
 import { BuildOptions, BuildResult } from 'esbuild'
-import { finalConfig } from '../config'
+import { finalConfig, customBuildOption } from '../config'
 
 export interface ResolveOptions {
   basedir?: string
@@ -19,7 +19,8 @@ export interface RawInModule {
   ext: string
   label?: string
   pathSource: string
-  moduleFlag: string
+  moduleFlag: ModuleFlag
+  importMode?: ImportMode
 }
 export interface MedInModule {
   text: string
@@ -27,6 +28,13 @@ export interface MedInModule {
   //依赖
   has?: WeakSet<RipeInModule>
   dependsOn?: WeakSet<RipeInModule>
+}
+interface Dependency {
+  match: string
+  start?: number
+  end?: number
+  replace: string
+  refer: RipeInModule
 }
 
 export type RipeInModule = RawInModule & MedInModule
@@ -57,7 +65,7 @@ export function resolveModule(pathSource: string, options: ResolveOptions): Omit
     pathSource,
   }
 }
-function obtainModuleFlag(pathSource: string): keyof typeof ModuleFlag {
+function obtainModuleFlag(pathSource: string): ModuleFlag {
   if (builtinModules.includes(pathSource)) {
     return ModuleFlag.BUILTIN
   } else if (dependencies.includes(pathSource)) {
@@ -67,25 +75,49 @@ function obtainModuleFlag(pathSource: string): keyof typeof ModuleFlag {
 }
 // TODO:  export ... from module waiting handle
 export async function handleImportation(input: RawInModule & Partial<MedInModule>): Promise<any> {
-  console.log(input)
-  const { infile, dir, text } = input
+  const { text } = input
   if (text) {
     const matchs = text.matchAll(importedReg)
     for (let m of matchs) {
-      console.log(m)
       const match = {
         match: m[0],
         start: m.index,
         end: m.index! + m[0].length,
         refer: input,
       }
+      const merge = distinguishMdoule(m.slice(1))
+      if (merge) {
+        console.log({
+          ...match,
+          ...merge,
+        })
+        switch (merge.moduleFlag) {
+          case ModuleFlag.BUILTIN:
+          case ModuleFlag.THIRD:
+        }
+      }
     }
   }
-  function distinguishMdoule(matchs: string[], options: ResolveOptions): RawInModule {
-    const extensions = finalConfig.resolve.extensions || ['.tsx', '.ts', '.jsx', '.js']
-    const index = matchs.findIndex((ele) => ele !== void 0)
-    conat match = matchs[index]
-      const moduleFlag = obtainModuleFlag()
+  function distinguishMdoule(
+    matchs: string[]
+    // options: ResolveOptions
+  ): Pick<RawInModule, 'pathSource' | 'importMode' | 'moduleFlag'> | null {
+    let pathSource: string
+    let importMode: ImportMode
+    const canFind = matchs.some((ele, i) => {
+      pathSource = ele
+      importMode = Math.floor(i / 2)
+      return Boolean(ele)
+    })
+    if (canFind) {
+      const moduleFlag: ModuleFlag = obtainModuleFlag(pathSource!)
+      return {
+        pathSource: pathSource!,
+        importMode: importMode!,
+        moduleFlag,
+      }
+    }
+    return null
   }
 }
 interface SrcAndBuildOption {
@@ -125,4 +157,8 @@ export async function earlierCustomModuleHandler(
     }
   })
   return result
+}
+
+export async ThirdModuleHandler () {
+
 }

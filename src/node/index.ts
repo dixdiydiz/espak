@@ -54,6 +54,7 @@ async function serve(): Promise<void> {
 }
 
 async function build(): Promise<void> {
+  process.env.NODE_ENV = 'production' // developement
   await buildCommand()
   process.exit(0)
 }
