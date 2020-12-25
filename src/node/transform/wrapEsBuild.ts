@@ -17,8 +17,8 @@ export async function buildConfig(profile: string, prefix: string): Promise<obje
   return config.default || config
 }
 
-export async function singleBuild(option: BuildOptions) {
-  return await build(option).catch(log.error)
+export async function singleBuild(option: BuildOptions): Promise<BuildResult> {
+  return await build(option)
 }
 export async function startBuildServe(options: BuildOptions[]): Promise<BuildResult[]> {
   const service: Service = await startService()

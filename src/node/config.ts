@@ -74,7 +74,7 @@ function produceEsbuildOption(option: BuildOptions | ProduceOptionCb): Function 
       return (r: string, a: string): BuildOptions => {
         const primaryOpt = option(r, a)
         let define = primaryOpt?.define || {}
-        define['process.env.NODE_ENV'] = process.env.NODE_ENV || 'production'
+        define['process.env.NODE_ENV'] = `'"${process.env.NODE_ENV}"'` || '"production"'
         return {
           define,
         }
@@ -82,7 +82,7 @@ function produceEsbuildOption(option: BuildOptions | ProduceOptionCb): Function 
     } else {
       return () => {
         let define = option?.define || {}
-        define['process.env.NODE_ENV'] = process.env.NODE_ENV || 'production'
+        define['process.env.NODE_ENV'] = `'"${process.env.NODE_ENV}"'` || '"production"'
         return {
           define,
         }
@@ -92,11 +92,7 @@ function produceEsbuildOption(option: BuildOptions | ProduceOptionCb): Function 
     log.error(e)
     return () => ({
       define: {
-        process: {
-          env: {
-            NODE_ENV: 'production',
-          },
-        },
+        ['process.env.NODE_ENV']: '"production"',
       },
     })
   }
