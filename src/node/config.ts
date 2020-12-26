@@ -1,9 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import { BuildOptions } from 'esbuild'
 import { buildConfig } from './transform/wrapEsBuild'
-import { isFunction } from './utils'
 
 export interface Resolve {
   extensions?: string[]
@@ -13,7 +11,8 @@ export interface UserConfig {
   entry: string | Record<string, string> | string[]
   output: string
   resolve: Resolve
-  esbuildOption?: BuildOptions
+  external?: []
+  plugins?: []
 }
 
 export let finalConfig: UserConfig
@@ -56,7 +55,6 @@ export async function generateConfig(): Promise<UserConfig> {
     ...userConfig,
     resolve: handleResovle(defaultconfig.resolve, userConfig.resolve),
   }
-  customBuildOption = produceEsbuildOption(userConfig.esbuildOption || {})
   return finalConfig
 
   function handleResovle(defaultResolve: Resolve = {}, newResolve: Resolve = {}): Resolve {
@@ -64,36 +62,5 @@ export async function generateConfig(): Promise<UserConfig> {
     return {
       extensions,
     }
-  }
-}
-export type ProduceOptionCb = (relative: string, absolute: string) => BuildOptions
-
-function produceEsbuildOption(option: BuildOptions | ProduceOptionCb): Function {
-  try {
-    if (isFunction(option)) {
-      return (r: string, a: string): BuildOptions => {
-        const primaryOpt = option(r, a)
-        let define = primaryOpt?.define || {}
-        define['process.env.NODE_ENV'] = `'"${process.env.NODE_ENV}"'` || '"production"'
-        return {
-          define,
-        }
-      }
-    } else {
-      return () => {
-        let define = option?.define || {}
-        define['process.env.NODE_ENV'] = `'"${process.env.NODE_ENV}"'` || '"production"'
-        return {
-          define,
-        }
-      }
-    }
-  } catch (e) {
-    log.error(e)
-    return () => ({
-      define: {
-        ['process.env.NODE_ENV']: '"production"',
-      },
-    })
   }
 }

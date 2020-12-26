@@ -1,11 +1,7 @@
 {
-  "mount": {
-    "public": "/",
-    "src": "/_dist_"
-  },
   "devOptions": {
     "port": 9999,
     "open": "chrome"
   },
-  "plugins": ["@eapsk/plugin-react-refresh", "@eapsk/plugin-dotenv", "@eapsk/plugin-typescript"]
+  "plugins": []
 }

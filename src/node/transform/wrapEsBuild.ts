@@ -4,6 +4,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import { espakTemp } from '../index'
 
+// module from string ?
 export async function buildConfig(profile: string, prefix: string): Promise<object> {
   const tmpPath: string = path.join(espakTemp, `${prefix}.js`)
   await build({
