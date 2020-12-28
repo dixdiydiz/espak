@@ -1,20 +1,21 @@
 import { build, BuildOptions, BuildResult, Service, startService } from 'esbuild'
 import log from 'loglevel'
+import os from 'os'
 import fs from 'fs-extra'
 import path from 'path'
-import { espakTemp } from '../index'
 
 // module from string ?
 export async function buildConfig(profile: string, prefix: string): Promise<object> {
-  const tmpPath: string = path.join(espakTemp, `${prefix}.js`)
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
+  const tmpPath: string = path.join(tempDir, `${prefix}.js`)
   await build({
     entryPoints: [profile],
     platform: 'node',
     format: 'cjs',
-    outdir: espakTemp,
+    outfile: tmpPath,
   })
   const config: any = await import(tmpPath)
-  fs.removeSync(tmpPath)
+  fs.removeSync(tempDir)
   return config.default || config
 }
 

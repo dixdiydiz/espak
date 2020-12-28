@@ -1,11 +1,14 @@
 import log from 'loglevel'
 import path from 'path'
+import { TempDist } from '../index'
+import { isArray } from '../utils'
+import webModulePlugin from '../transform/webModulePlugin'
 import { generateConfig, UserConfig } from '../config'
-import { resolveModule, customModuleHandler, globalModulePlugins } from '../transform/fabrication'
+import { resolveModule, customModuleHandler, createPlugins } from '../transform/fabrication'
 
-export async function command(): Promise<void> {
+export async function command(dist: TempDist): Promise<void> {
   const config: UserConfig = await generateConfig()
-  const { entry: configEntry } = config
+  const { entry: configEntry, external, plugins: customPlugins } = config
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']
   const entries = []
   for (let [_, val] of Object.entries(configEntry)) {
@@ -22,5 +25,11 @@ export async function command(): Promise<void> {
       }
     }
   }
-  await customModuleHandler(entries)
+  const rawPlugin = await webModulePlugin(isArray(external) ? external : [])
+  const plugins = await createPlugins([rawPlugin, ...customPlugins])
+  await customModuleHandler(entries, {
+    outdir: dist.tempSrc,
+    outbase: 'src',
+    plugins,
+  })
 }

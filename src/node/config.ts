@@ -1,7 +1,9 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import { buildConfig } from './transform/wrapEsBuild'
+import { buildConfig } from './transform/wrapEsbuild'
+import { EspakPlugin } from './transform/fabrication'
+import { isArray } from './utils'
 
 export interface Resolve {
   extensions?: string[]
@@ -11,12 +13,9 @@ export interface UserConfig {
   entry: string | Record<string, string> | string[]
   output: string
   resolve: Resolve
-  external?: []
-  plugins?: []
+  external: string[] | undefined
+  plugins: EspakPlugin[]
 }
-
-export let finalConfig: UserConfig
-export let customBuildOption: Function
 
 export async function generateConfig(): Promise<UserConfig> {
   const prefix: string = 'espak.config'
@@ -42,23 +41,28 @@ export async function generateConfig(): Promise<UserConfig> {
     log.warn('configuration file is not available, exit.')
     process.exit(1)
   }
-  const defaultconfig: UserConfig = {
-    public: '',
-    entry: 'src/index.js',
-    output: 'dist',
-    resolve: {
-      extensions: ['.tsx', '.ts', '.jsx', '.js'],
-    },
+  const {
+    public: publicDir = './public',
+    entry = 'src/index.js',
+    output = 'dist',
+    external,
+    plugins,
+    resolve,
+  } = userConfig
+  const defaultResolve = {
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
   }
-  finalConfig = {
-    ...defaultconfig,
-    ...userConfig,
-    resolve: handleResovle(defaultconfig.resolve, userConfig.resolve),
+  return {
+    public: publicDir,
+    entry,
+    output,
+    resolve: handleResovle(resolve, defaultResolve),
+    external,
+    plugins: isArray(plugins) ? plugins : [],
   }
-  return finalConfig
 
-  function handleResovle(defaultResolve: Resolve = {}, newResolve: Resolve = {}): Resolve {
-    const extensions = [...new Set([...(defaultResolve.extensions || []), ...(newResolve.extensions || [])])]
+  function handleResovle(resolve: Resolve = {}, defaultResolve: Resolve = {}): Resolve {
+    const extensions = [...new Set([...(resolve.extensions || []), ...(defaultResolve.extensions || [])])]
     return {
       extensions,
     }
