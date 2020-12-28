@@ -1,5 +1,4 @@
-export default {
-  entry: { a: 'src/index.tsx' },
+module.exports = {
   devOptions: {
     port: 9999,
     open: 'chrome',

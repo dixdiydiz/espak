@@ -1,0 +1,13 @@
+export declare const isString: (val: unknown) => val is string;
+export declare const isSymbol: (val: unknown) => val is symbol;
+export declare const isNumber: (val: unknown) => val is number;
+export declare const isArray: <T>(arg: {} | T) => arg is T extends readonly any[] ? unknown extends T ? never : readonly any[] : any[];
+export declare const isFunction: (val: unknown) => val is Function;
+export declare const isObject: (val: unknown) => val is Record<any, any>;
+export declare const isPromise: <T = any>(val: unknown) => val is Promise<T>;
+export declare const objectToString: () => string;
+export declare const toTypeString: (val: unknown) => string;
+export declare const toRawType: (val: unknown) => string;
+export declare const isStringObject: (val: unknown) => val is String;
+export declare const isPlainObject: (val: unknown) => val is object;
+export declare const isPlainPromise: <T = any>(val: unknown) => val is Promise<T>;

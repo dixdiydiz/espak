@@ -1,9 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["**/*"],
-  "exclude": ["lib/**/*"],
+  "include": [
+    "**/*",
+  ],
+  "exclude": ["lib/**/*",],
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "../../dist/node",
-    "sourceMap": true
+    "sourceMap": true,
   }
 }

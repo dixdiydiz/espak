@@ -8,6 +8,8 @@ import chalk, { Chalk } from 'chalk'
 const { version } = require('../../package.json')
 import { command as buildCommand } from './build/command'
 
+export type { EspakPlugin } from './transform/fabrication'
+
 type LogKinds = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR'
 
 const colors: Record<LogKinds, Chalk> = {
@@ -27,15 +29,32 @@ prefix.apply(log, {
   },
 })
 
-export let espakTemp: string = ''
-;(function () {
+export interface TempDist {
+  temp: string
+  tempSrc: string
+  tempModule: string
+}
+let dist: TempDist
+export async function createTempDist(): Promise<TempDist> {
+  if (dist) {
+    return dist
+  }
   try {
-    espakTemp = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
+    const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
+    const tempSrc = path.join(temp, 'src')
+    const tempModule = path.join(temp, 'module')
+    log.info('temp', temp)
+    dist = Object.freeze({
+      temp,
+      tempSrc,
+      tempModule,
+    })
+    return dist
   } catch (e) {
     log.error(chalk.red(e))
     process.exit(1)
   }
-})()
+}
 
 const program = new Command()
 program.version(version, '-v, -V, --version', 'output the current version')
@@ -44,12 +63,13 @@ program.command('build').description('build project').action(build)
 program.parse(process.argv)
 
 async function serve(): Promise<void> {
-  await 1
   process.exit(0)
 }
 
 async function build(): Promise<void> {
-  await buildCommand()
+  process.env.NODE_ENV = 'production' // developement
+  const dist = await createTempDist()
+  await buildCommand(dist)
   process.exit(0)
 }
 
@@ -62,8 +82,9 @@ function exitHandler(
   }
 ): void {
   const { exitCode } = option
-  console.log('espakTemp',espakTemp)
-  fs.removeSync(espakTemp)
+  if (dist) {
+    fs.removeSync(dist.temp)
+  }
   log.info(chalk.magenta(`exitCode:--${exitCode}`))
   process.exit(exitCode)
 }

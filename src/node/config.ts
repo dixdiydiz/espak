@@ -1,18 +1,26 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import {buildConfig} from './transform/index'
+import { buildConfig } from './transform/wrapEsbuild'
+import { EspakPlugin } from './transform/fabrication'
+import { isArray } from './utils'
 
+export interface Resolve {
+  extensions?: string[]
+}
 export interface UserConfig {
-  public?: string
-  entry?: string | Record<string, string>
-  output?: string
+  public: string
+  entry: string | Record<string, string> | string[]
+  output: string
+  resolve: Resolve
+  external: string[] | undefined
+  plugins: EspakPlugin[]
 }
 
-export async function generateConfig() {
-  const prefix = 'espak.config'
+export async function generateConfig(): Promise<UserConfig> {
+  const prefix: string = 'espak.config'
   const supportedConfigExt: string[] = ['.json', '.js', '.ts']
-  let userConfig = Object.create(null)
+  let userConfig: Partial<UserConfig> = Object.create(null)
   try {
     for (let ext of supportedConfigExt) {
       const profile = path.resolve(`${prefix}${ext}`)
@@ -23,8 +31,7 @@ export async function generateConfig() {
             userConfig = await import(profile)
             break
           case '.ts':
-            userConfig =  await buildConfig(profile, prefix)
-            console.log('userConfig:---', userConfig)
+            userConfig = await buildConfig(profile, prefix)
         }
         break
       }
@@ -34,11 +41,30 @@ export async function generateConfig() {
     log.warn('configuration file is not available, exit.')
     process.exit(1)
   }
+  const {
+    public: publicDir = './public',
+    entry = 'src/index.js',
+    output = 'dist',
+    external,
+    plugins,
+    resolve,
+  } = userConfig
+  const defaultResolve = {
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
+  }
+  return {
+    public: publicDir,
+    entry,
+    output,
+    resolve: handleResovle(resolve, defaultResolve),
+    external,
+    plugins: isArray(plugins) ? plugins : [],
+  }
 
-  const defaultconfig: UserConfig = {
-    public: './',
-    entry: './src/',
+  function handleResovle(resolve: Resolve = {}, defaultResolve: Resolve = {}): Resolve {
+    const extensions = [...new Set([...(resolve.extensions || []), ...(defaultResolve.extensions || [])])]
+    return {
+      extensions,
+    }
   }
 }
-
-// async function getUserconfig() {}
