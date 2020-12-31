@@ -4,7 +4,7 @@ import os from 'os'
 import fs from 'fs-extra'
 import path from 'path'
 
-// module from string ?
+// TODO：需要模拟成一个模块，以可以处理引入的全局模块。(相对路径模块直接bundle)
 export async function buildConfig(profile: string, prefix: string): Promise<object> {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
   const tmpPath: string = path.join(tempDir, `${prefix}.js`)

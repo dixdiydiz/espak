@@ -3,6 +3,7 @@ import path from 'path'
 import { TempDist } from '../index'
 import { isArray } from '../utils'
 import webModulePlugin from '../transform/webModulePlugin'
+import plainPlugin from '../transform/plainPlugin'
 import { generateConfig, UserConfig } from '../config'
 import { resolveModule, customModuleHandler, createPlugins } from '../transform/fabrication'
 
@@ -25,11 +26,12 @@ export async function command(dist: TempDist): Promise<void> {
       }
     }
   }
-  const rawPlugin = await webModulePlugin(isArray(external) ? external : [])
-  const plugins = await createPlugins([rawPlugin, ...customPlugins])
+  const builtinPlugins = await Promise.all([webModulePlugin(isArray(external) ? external : [])])
+  const plugins = await createPlugins([...builtinPlugins, ...customPlugins], config)
+  const plainEsbuildPlugin = await createPlugins([plainPlugin], config, plugins)
   await customModuleHandler(entries, {
     outdir: dist.tempSrc,
     outbase: 'src',
-    plugins,
+    plugins: [...plainEsbuildPlugin, ...plugins],
   })
 }

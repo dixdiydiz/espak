@@ -422,7 +422,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/wrapesbuild.ts": {
-        "version": "13dbf7914faaf1b4117c58e571f1651e9ac88a94e55ed45cac03d80760544728",
+        "version": "f0543e7f7a47bcf1e85d4c32710dd074411f26c5ed6145cd9324861994145f09",
         "signature": "9fb9215139f20a234045bf7bc32136ded7f3773798ced4b0f3058101a770a7f7",
         "affectsGlobalScope": false
       },
@@ -447,43 +447,43 @@
         "affectsGlobalScope": false
       },
       "../../src/node/utils.ts": {
-        "version": "8ba922f1b4b28d5af56d8c99e5a4fd7b5b359ac9614a4c7936c812d3e24ddb8c",
-        "signature": "3c19b3feac186a3690e8bd7daf7acea690f3de183f0df8024ff61dee9b2c8fe6",
+        "version": "96b1e7625f86f270965f751b57a7d257c2c3d91b323a6b29ade0c27c61c0264a",
+        "signature": "787cbc2a5ed3614d1d64518a47cd570a86a8269980978dac40e547517a241b15",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/webmoduleplugin.ts": {
-        "version": "617d2949f830c1df20978b513b1d7414113c7f77f1742548e40a1f1a3b42ce97",
+        "version": "520004b28aaca3f156b8a575c43f43886d9e98187ea551190cb8a26e18b710a0",
         "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       },
+      "../../src/node/transform/plainplugin.ts": {
+        "version": "ef1845cc6b6a44061696bb0fc14861947b044f7a15ee528c4ab6b6e969f77934",
+        "signature": "dc3f73fda1860eb99877fccfb2eb7ac46f8defd2f732911592a5a21d5667feb9",
+        "affectsGlobalScope": false
+      },
       "../../src/node/build/command.ts": {
-        "version": "2d414f528597ac6376d88349b869c7756b792d86fb4565048d3905dbed9627b7",
+        "version": "44c1af2cc5da8032e29d9d5227727a6f3eb66763a4ab810218f1ee7544e31188",
         "signature": "affa568df599960361ee31af68759d895c98762294c9f1ce9d37a77d0d50999c",
         "affectsGlobalScope": false
       },
       "../../src/node/index.ts": {
-        "version": "be35750aa0e8a099afb761524fb166b1f8d0768f7ff1b905ff365e5a9accd564",
+        "version": "c10e829403030e0ca2ccad1fe063924493d7e212d0325228f23d08e1614a0f51",
         "signature": "148eb77e1ec29dd6a2c33b4856dc75b91c071e3dee72c29ceb8aafdd609e4527",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/fabrication.ts": {
-        "version": "aa385010e7984327eb3c8df9fda97af04168afbf35ae8f74562af21026fd8bf0",
-        "signature": "1bbeb3e14659f5f8a1556dc3efb58f26c38afe23535b49f395fe5e50b7c6affb",
+        "version": "0f9a542c29330cba2cc94de0db284d30600f1c384dab8f8cada8af47f00d28ed",
+        "signature": "223cb20fc317c18397f95e5bfc7690616f4d41a0735d412c7ce98f88bffe828b",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
-        "version": "533d58232de2da076b00eb4596f058c07cd7984080485e2ec33fab725f2596cb",
-        "signature": "925b821092b2b8629be5f7f884a022bdfa0a5548c0bcc96414e0d608e08d7d1a",
+        "version": "d49d43c1360de9b6da908e5d75a6771c302f7cf3c09c34e89b8aae9396cec8e6",
+        "signature": "db718bc52a8b237dc8de80e0e8eb879f9f337d9b2f221350d6f87a94f30e09f7",
         "affectsGlobalScope": false
       },
       "../../src/node/constant.ts": {
         "version": "d561ad69139080d713a1f811d507229e95fb7ef128c0bec936f07000e291e3f0",
         "signature": "5680d1e5dc238c70853b3312a96342a80bfbe5f5ed89f8b596e643bb71031269",
-        "affectsGlobalScope": false
-      },
-      "../../src/node/transform/reactplugin.ts": {
-        "version": "94103346eb90528cac2d38dc93cfd0ae672cfb588d6f08506ca007d7941fd7f1",
-        "signature": "0cad2453e119e01cc183c1280d50b816fcbf5ed8215392299e018692787b92cf",
         "affectsGlobalScope": false
       }
     },
@@ -697,6 +697,7 @@
         "../../src/node/config.ts",
         "../../src/node/index.ts",
         "../../src/node/transform/fabrication.ts",
+        "../../src/node/transform/plainplugin.ts",
         "../../src/node/transform/webmoduleplugin.ts",
         "../../src/node/utils.ts"
       ],
@@ -723,14 +724,19 @@
         "../../node_modules/@types/resolve/index.d.ts",
         "../../node_modules/esbuild/lib/main.d.ts",
         "../../node_modules/loglevel/index.d.ts",
+        "../../src/node/config.ts",
         "../../src/node/index.ts",
         "../../src/node/transform/wrapesbuild.ts"
       ],
-      "../../src/node/transform/reactplugin.ts": [
+      "../../src/node/transform/plainplugin.ts": [
         "../../node_modules/@types/node/path.d.ts",
-        "../../node_modules/esbuild/lib/main.d.ts"
+        "../../node_modules/@types/resolve/index.d.ts",
+        "../../node_modules/esbuild/lib/main.d.ts",
+        "../../src/node/transform/fabrication.ts",
+        "../../src/node/utils.ts"
       ],
       "../../src/node/transform/webmoduleplugin.ts": [
+        "../../node_modules/@types/node/path.d.ts",
         "../../node_modules/loglevel/index.d.ts",
         "../../src/node/index.ts",
         "../../src/node/transform/fabrication.ts",
@@ -933,11 +939,12 @@
       ],
       "../../src/node/transform/fabrication.ts": [
         "../../node_modules/esbuild/lib/main.d.ts",
+        "../../src/node/config.ts",
         "../../src/node/index.ts",
         "../../src/node/transform/wrapesbuild.ts"
       ],
-      "../../src/node/transform/reactplugin.ts": [
-        "../../node_modules/esbuild/lib/main.d.ts"
+      "../../src/node/transform/plainplugin.ts": [
+        "../../src/node/transform/fabrication.ts"
       ],
       "../../src/node/transform/webmoduleplugin.ts": [
         "../../src/node/index.ts"
@@ -1040,7 +1047,7 @@
       "../../src/node/constant.ts",
       "../../src/node/index.ts",
       "../../src/node/transform/fabrication.ts",
-      "../../src/node/transform/reactplugin.ts",
+      "../../src/node/transform/plainplugin.ts",
       "../../src/node/transform/webmoduleplugin.ts",
       "../../src/node/transform/wrapesbuild.ts",
       "../../src/node/utils.ts"

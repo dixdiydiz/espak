@@ -9,5 +9,4 @@ export declare const objectToString: () => string;
 export declare const toTypeString: (val: unknown) => string;
 export declare const toRawType: (val: unknown) => string;
 export declare const isStringObject: (val: unknown) => val is String;
-export declare const isPlainObject: (val: unknown) => val is object;
 export declare const isPlainPromise: <T = any>(val: unknown) => val is Promise<T>;

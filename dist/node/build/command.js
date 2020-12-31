@@ -8,6 +8,7 @@ const loglevel_1 = __importDefault(require("loglevel"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
 const webModulePlugin_1 = __importDefault(require("../transform/webModulePlugin"));
+const plainPlugin_1 = __importDefault(require("../transform/plainPlugin"));
 const config_1 = require("../config");
 const fabrication_1 = require("../transform/fabrication");
 async function command(dist) {
@@ -30,12 +31,13 @@ async function command(dist) {
             }
         }
     }
-    const rawPlugin = await webModulePlugin_1.default(utils_1.isArray(external) ? external : []);
-    const plugins = await fabrication_1.createPlugins([rawPlugin, ...customPlugins]);
+    const builtinPlugins = await Promise.all([webModulePlugin_1.default(utils_1.isArray(external) ? external : [])]);
+    const plugins = await fabrication_1.createPlugins([...builtinPlugins, ...customPlugins], config);
+    const plainEsbuildPlugin = await fabrication_1.createPlugins([plainPlugin_1.default], config, plugins);
     await fabrication_1.customModuleHandler(entries, {
         outdir: dist.tempSrc,
         outbase: 'src',
-        plugins,
+        plugins: [...plainEsbuildPlugin, ...plugins],
     });
 }
 exports.command = command;

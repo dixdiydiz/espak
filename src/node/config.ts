@@ -6,6 +6,7 @@ import { EspakPlugin } from './transform/fabrication'
 import { isArray } from './utils'
 
 export interface Resolve {
+  alias?: Record<string, string>
   extensions?: string[]
 }
 export interface UserConfig {
@@ -30,8 +31,9 @@ export async function generateConfig(): Promise<UserConfig> {
           case '.js':
             userConfig = await import(profile)
             break
-          case '.ts':
+          case '.ts': {
             userConfig = await buildConfig(profile, prefix)
+          }
         }
         break
       }
@@ -52,19 +54,23 @@ export async function generateConfig(): Promise<UserConfig> {
   const defaultResolve = {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   }
-  return {
+  return Object.freeze({
     public: publicDir,
     entry,
     output,
     resolve: handleResovle(resolve, defaultResolve),
     external,
     plugins: isArray(plugins) ? plugins : [],
-  }
+  })
 
   function handleResovle(resolve: Resolve = {}, defaultResolve: Resolve = {}): Resolve {
     const extensions = [...new Set([...(resolve.extensions || []), ...(defaultResolve.extensions || [])])]
-    return {
+    const result: Resolve = {
       extensions,
     }
+    if (resolve.alias) {
+      result.alias = resolve.alias
+    }
+    return result
   }
 }

@@ -24,12 +24,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fabrication_1 = require("./fabrication");
 const loglevel_1 = __importDefault(require("loglevel"));
+const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
 const webModulePlugin = async (external) => {
-    const path = await fabrication_1.resolveModule('./package.json', {
+    const pkgPath = fabrication_1.resolveModule('./package.json', {
         basedir: process.cwd(),
     });
-    const packageDependencies = await Promise.resolve().then(() => __importStar(require(path))).then((r) => {
+    const packageDependencies = await Promise.resolve().then(() => __importStar(require(pkgPath))).then((r) => {
         const { dependencies = {} } = r;
         return Object.keys(dependencies);
     })
@@ -40,21 +41,46 @@ const webModulePlugin = async (external) => {
     const onResolveItems = utils_1.isArray(external)
         ? packageDependencies.filter((ele) => !external.includes(ele))
         : packageDependencies;
-    return (dist, service) => {
-        onResolveItems.forEach((ele) => { });
-        console.log(onResolveItems, dist, service);
+    const mapPaths = Object.create(null);
+    onResolveItems.forEach((ele) => {
+        mapPaths[ele] = fabrication_1.resolveModule(ele, {
+            basedir: process.cwd(),
+        });
+    });
+    return async ({ dist, buildServe }) => {
+        const buildOptions = Object.entries(mapPaths).map(([key, val]) => ({
+            entryPoints: [val],
+            outfile: path_1.default.join(dist.tempModule, `${key}.js`),
+            bundle: true,
+            minify: true,
+            format: 'esm',
+            define: {
+                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+            },
+        }));
+        await buildServe(buildOptions);
         return {
             name: 'webModulePlugin',
             setup({ onResolve }) {
                 onResolveItems.forEach((ele) => {
                     onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
-                        console.log(args.path, args.importer, args.resolveDir);
+                        const to = path_1.default.join(process.cwd(), 'module/');
+                        const { dir } = path_1.default.parse(args.importer);
                         return {
-                            path: args.path,
+                            path: path_1.default.join(path_1.default.relative(dir, to), `${ele}.js`),
                             external: true,
                         };
                     });
                 });
+                if (utils_1.isArray(external)) {
+                    external.forEach((ele) => {
+                        onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
+                            return {
+                                namespace: ele,
+                            };
+                        });
+                    });
+                }
             },
         };
     };

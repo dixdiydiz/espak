@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.customModuleHandler = exports.createPlugins = exports.resolveModule = void 0;
-// import { builtinModules } from 'module'
 const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
 const wrapEsbuild_1 = require("./wrapEsbuild");
@@ -14,10 +13,13 @@ function resolveModule(pathSource, options) {
     return infile;
 }
 exports.resolveModule = resolveModule;
-async function createPlugins(plugins) {
-    console.log('plugins:---', plugins);
+async function createPlugins(plugins, config, ...args) {
     const dist = await index_1.createTempDist();
-    const esbuildPlugins = await Promise.all(plugins.map((fn) => exceptionHandle(fn, dist, wrapEsbuild_1.startBuildServe)));
+    const esbuildPlugins = await Promise.all(plugins.map((fn) => exceptionHandle(fn, {
+        dist,
+        buildServe: wrapEsbuild_1.startBuildServe,
+        config,
+    }, ...args)));
     return esbuildPlugins.filter((ele) => ele);
 }
 exports.createPlugins = createPlugins;

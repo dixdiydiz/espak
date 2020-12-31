@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isPlainPromise = exports.isPlainObject = exports.isStringObject = exports.toRawType = exports.toTypeString = exports.objectToString = exports.isPromise = exports.isObject = exports.isFunction = exports.isArray = exports.isNumber = exports.isSymbol = exports.isString = void 0;
+exports.isPlainPromise = exports.isStringObject = exports.toRawType = exports.toTypeString = exports.objectToString = exports.isPromise = exports.isObject = exports.isFunction = exports.isArray = exports.isNumber = exports.isSymbol = exports.isString = void 0;
 // type assertion
 const isString = (val) => typeof val === 'string';
 exports.isString = isString;
@@ -23,8 +23,6 @@ const toRawType = (val) => exports.toTypeString(val).slice(8, -1);
 exports.toRawType = toRawType;
 const isStringObject = (val) => !exports.isString(val) && exports.toTypeString(val) === '[object String]';
 exports.isStringObject = isStringObject;
-const isPlainObject = (val) => exports.toTypeString(val) === '[object Object]';
-exports.isPlainObject = isPlainObject;
 const isPlainPromise = (val) => exports.toTypeString(val) === '[object Promise]';
 exports.isPlainPromise = isPlainPromise;
 //# sourceMappingURL=utils.js.map

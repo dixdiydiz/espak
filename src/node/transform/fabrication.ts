@@ -1,6 +1,6 @@
-// import { builtinModules } from 'module'
 import resolve from 'resolve'
 import log from 'loglevel'
+import { UserConfig } from '../config'
 import { startBuildServe } from './wrapEsbuild'
 import { BuildOptions, Format, Plugin } from 'esbuild'
 import { createTempDist, TempDist } from '../index'
@@ -16,14 +16,32 @@ export function resolveModule(pathSource: string, options: ResolveOptions): stri
   return infile
 }
 
-export type EspakPlugin = (dist: TempDist, service: typeof startBuildServe) => Plugin | Promise<Plugin>
-export async function createPlugins(plugins: EspakPlugin[]): Promise<Plugin[]> {
-  console.log('plugins:---', plugins)
-  const dist = await createTempDist()
-  const esbuildPlugins = await Promise.all(plugins.map((fn) => exceptionHandle(fn, dist, startBuildServe)))
-  return esbuildPlugins.filter((ele) => ele)
+export interface BuildUtil {
+  buildServe: typeof startBuildServe
+  config: UserConfig
+  dist: TempDist
 }
-async function exceptionHandle(fn: Function, ...args: any[]) {
+export type EspakPlugin = (util: BuildUtil, arg?: unknown) => Plugin | Promise<Plugin>
+
+export async function createPlugins(plugins: EspakPlugin[], config: UserConfig, ...args: any[]): Promise<Plugin[]> {
+  const dist = await createTempDist()
+  const esbuildPlugins = await Promise.all(
+    plugins.map((fn) =>
+      exceptionHandle(
+        fn,
+        {
+          dist,
+          buildServe: startBuildServe,
+          config,
+        },
+        ...args
+      )
+    )
+  )
+  return esbuildPlugins.filter((ele) => ele) as Plugin[]
+}
+
+async function exceptionHandle(fn: Function, ...args: any[]): Promise<Plugin | null> {
   try {
     return await fn(...args)
   } catch (e) {

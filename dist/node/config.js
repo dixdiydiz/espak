@@ -41,8 +41,9 @@ async function generateConfig() {
                     case '.js':
                         userConfig = await Promise.resolve().then(() => __importStar(require(profile)));
                         break;
-                    case '.ts':
+                    case '.ts': {
                         userConfig = await wrapEsbuild_1.buildConfig(profile, prefix);
+                    }
                 }
                 break;
             }
@@ -57,19 +58,23 @@ async function generateConfig() {
     const defaultResolve = {
         extensions: ['.tsx', '.ts', '.jsx', '.js'],
     };
-    return {
+    return Object.freeze({
         public: publicDir,
         entry,
         output,
         resolve: handleResovle(resolve, defaultResolve),
         external,
         plugins: utils_1.isArray(plugins) ? plugins : [],
-    };
+    });
     function handleResovle(resolve = {}, defaultResolve = {}) {
         const extensions = [...new Set([...(resolve.extensions || []), ...(defaultResolve.extensions || [])])];
-        return {
+        const result = {
             extensions,
         };
+        if (resolve.alias) {
+            result.alias = resolve.alias;
+        }
+        return result;
     }
 }
 exports.generateConfig = generateConfig;

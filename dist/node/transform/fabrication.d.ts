@@ -1,3 +1,4 @@
+import { UserConfig } from '../config';
 import { startBuildServe } from './wrapEsbuild';
 import { BuildOptions, Plugin } from 'esbuild';
 import { TempDist } from '../index';
@@ -7,6 +8,11 @@ export interface ResolveOptions {
     includeCoreModules?: boolean;
 }
 export declare function resolveModule(pathSource: string, options: ResolveOptions): string;
-export declare type EspakPlugin = (dist: TempDist, service: typeof startBuildServe) => Plugin | Promise<Plugin>;
-export declare function createPlugins(plugins: EspakPlugin[]): Promise<Plugin[]>;
+export interface BuildUtil {
+    buildServe: typeof startBuildServe;
+    config: UserConfig;
+    dist: TempDist;
+}
+export declare type EspakPlugin = (util: BuildUtil, arg?: unknown) => Plugin | Promise<Plugin>;
+export declare function createPlugins(plugins: EspakPlugin[], config: UserConfig, ...args: any[]): Promise<Plugin[]>;
 export declare function customModuleHandler(src: string[], option: BuildOptions): Promise<void>;
