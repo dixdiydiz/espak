@@ -83,7 +83,7 @@ function exitHandler(
 ): void {
   const { exitCode } = option
   if (dist) {
-    // fs.removeSync(dist.temp)
+    fs.removeSync(dist.temp)
   }
   log.info(chalk.magenta(`exitCode:--${exitCode}`))
   process.exit(exitCode)

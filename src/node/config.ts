@@ -7,7 +7,7 @@ import { isArray } from './utils'
 
 export interface Resolve {
   alias?: Record<string, string>
-  extensions?: string[]
+  extensions: string[]
 }
 export interface UserConfig {
   public: string
@@ -51,7 +51,7 @@ export async function generateConfig(): Promise<UserConfig> {
     plugins,
     resolve,
   } = userConfig
-  const defaultResolve = {
+  const defaultResolve: Resolve = {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   }
   return Object.freeze({
@@ -63,7 +63,7 @@ export async function generateConfig(): Promise<UserConfig> {
     plugins: isArray(plugins) ? plugins : [],
   })
 
-  function handleResovle(resolve: Resolve = {}, defaultResolve: Resolve = {}): Resolve {
+  function handleResovle(resolve: Partial<Resolve> = {}, defaultResolve: Partial<Resolve> = {}): Resolve {
     const extensions = [...new Set([...(resolve.extensions || []), ...(defaultResolve.extensions || [])])]
     const result: Resolve = {
       extensions,

@@ -1,11 +1,12 @@
 import log from 'loglevel'
 import path from 'path'
+import resolve from 'resolve'
 import { TempDist } from '../index'
 import { isArray } from '../utils'
 import webModulePlugin from '../transform/webModulePlugin'
 import plainPlugin from '../transform/plainPlugin'
 import { generateConfig, UserConfig } from '../config'
-import { resolveModule, customModuleHandler, createPlugins } from '../transform/fabrication'
+import { customModuleHandler, createPlugins } from '../transform/fabrication'
 
 export async function command(dist: TempDist): Promise<void> {
   const config: UserConfig = await generateConfig()
@@ -13,7 +14,7 @@ export async function command(dist: TempDist): Promise<void> {
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']
   const entries = []
   for (let [_, val] of Object.entries(configEntry)) {
-    const infile = resolveModule(path.resolve('./', val), {
+    const infile = resolve.sync(path.resolve('./', val), {
       basedir: process.cwd(),
       extensions: supportedExtensions,
     })

@@ -1,11 +1,11 @@
 import { EspakPlugin } from '../index'
-import { resolveModule } from './fabrication'
+import resolve from 'resolve'
 import log from 'loglevel'
 import path from 'path'
 import { isArray } from '../utils'
 
 const webModulePlugin: (external: string[]) => Promise<EspakPlugin> = async (external) => {
-  const pkgPath = resolveModule('./package.json', {
+  const pkgPath = resolve.sync('./package.json', {
     basedir: process.cwd(),
   })
   const packageDependencies: string[] = await import(pkgPath)
@@ -22,7 +22,7 @@ const webModulePlugin: (external: string[]) => Promise<EspakPlugin> = async (ext
     : packageDependencies
   const mapPaths = Object.create(null)
   onResolveItems.forEach((ele) => {
-    mapPaths[ele] = resolveModule(ele, {
+    mapPaths[ele] = resolve.sync(ele, {
       basedir: process.cwd(),
     })
   })

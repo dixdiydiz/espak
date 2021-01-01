@@ -6,20 +6,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.customModuleHandler = exports.createPlugins = exports.resolveModule = void 0;
 const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
+const path_1 = __importDefault(require("path"));
 const wrapEsbuild_1 = require("./wrapEsbuild");
 const index_1 = require("../index");
-function resolveModule(pathSource, options) {
-    const infile = resolve_1.default.sync(pathSource, options);
-    return infile;
+const utils_1 = require("../utils");
+function resolveModule(extensions, alias, to, from) {
+    if (alias && utils_1.isObject(alias) && !/^(\.\/|\.\.\/)/.test(to)) {
+        for (let [key, val] of Object.entries(alias)) {
+            const reg = new RegExp(`^${key}`);
+            if (reg.test(to)) {
+                to = to.replace(reg, val);
+                break;
+            }
+        }
+    }
+    const { dir: basedir } = path_1.default.parse(from);
+    const res = resolve_1.default.sync(to, {
+        basedir,
+        extensions,
+    });
+    return res;
 }
 exports.resolveModule = resolveModule;
 async function createPlugins(plugins, config, ...args) {
     const dist = await index_1.createTempDist();
+    const { resolve: { extensions, alias }, } = config;
     const esbuildPlugins = await Promise.all(plugins.map((fn) => exceptionHandle(fn, {
         dist,
         buildServe: wrapEsbuild_1.startBuildServe,
         config,
-    }, ...args)));
+    }, resolveModule.bind(null, extensions, alias), ...args)));
     return esbuildPlugins.filter((ele) => ele);
 }
 exports.createPlugins = createPlugins;

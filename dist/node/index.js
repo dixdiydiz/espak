@@ -69,7 +69,7 @@ function exitHandler(option = {
 }) {
     const { exitCode } = option;
     if (dist) {
-        // fs.removeSync(dist.temp)
+        fs_extra_1.default.removeSync(dist.temp);
     }
     loglevel_1.default.info(chalk_1.default.magenta(`exitCode:--${exitCode}`));
     process.exit(exitCode);

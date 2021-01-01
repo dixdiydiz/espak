@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const loglevel_1 = __importDefault(require("loglevel"));
 const path_1 = __importDefault(require("path"));
+const resolve_1 = __importDefault(require("resolve"));
 const utils_1 = require("../utils");
 const webModulePlugin_1 = __importDefault(require("../transform/webModulePlugin"));
 const plainPlugin_1 = __importDefault(require("../transform/plainPlugin"));
@@ -17,7 +18,7 @@ async function command(dist) {
     const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js'];
     const entries = [];
     for (let [_, val] of Object.entries(configEntry)) {
-        const infile = fabrication_1.resolveModule(path_1.default.resolve('./', val), {
+        const infile = resolve_1.default.sync(path_1.default.resolve('./', val), {
             basedir: process.cwd(),
             extensions: supportedExtensions,
         });

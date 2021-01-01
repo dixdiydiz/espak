@@ -1,9 +1,11 @@
 import resolve from 'resolve'
 import log from 'loglevel'
+import path from 'path'
 import { UserConfig } from '../config'
 import { startBuildServe } from './wrapEsbuild'
 import { BuildOptions, Format, Plugin } from 'esbuild'
 import { createTempDist, TempDist } from '../index'
+import { isObject } from '../utils'
 
 export interface ResolveOptions {
   basedir?: string
@@ -11,9 +13,22 @@ export interface ResolveOptions {
   includeCoreModules?: boolean
 }
 
-export function resolveModule(pathSource: string, options: ResolveOptions): string {
-  const infile = resolve.sync(pathSource, options)
-  return infile
+export function resolveModule(extensions: string[], alias: unknown, to: string, from: string): string {
+  if (alias && isObject(alias) && !/^(\.\/|\.\.\/)/.test(to)) {
+    for (let [key, val] of Object.entries(alias)) {
+      const reg = new RegExp(`^${key}`)
+      if (reg.test(to)) {
+        to = to.replace(reg, val)
+        break
+      }
+    }
+  }
+  const { dir: basedir } = path.parse(from)
+  const res = resolve.sync(to, {
+    basedir,
+    extensions,
+  })
+  return res
 }
 
 export interface BuildUtil {
@@ -21,10 +36,17 @@ export interface BuildUtil {
   config: UserConfig
   dist: TempDist
 }
-export type EspakPlugin = (util: BuildUtil, arg?: unknown) => Plugin | Promise<Plugin>
+export type EspakPlugin = (
+  util: BuildUtil,
+  resolveModule: (to: string, from: string) => string,
+  arg?: unknown
+) => Plugin | Promise<Plugin>
 
 export async function createPlugins(plugins: EspakPlugin[], config: UserConfig, ...args: any[]): Promise<Plugin[]> {
   const dist = await createTempDist()
+  const {
+    resolve: { extensions, alias },
+  } = config
   const esbuildPlugins = await Promise.all(
     plugins.map((fn) =>
       exceptionHandle(
@@ -34,6 +56,7 @@ export async function createPlugins(plugins: EspakPlugin[], config: UserConfig, 
           buildServe: startBuildServe,
           config,
         },
+        resolveModule.bind(null, extensions, alias),
         ...args
       )
     )

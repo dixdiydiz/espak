@@ -22,12 +22,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fabrication_1 = require("./fabrication");
+const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
 const webModulePlugin = async (external) => {
-    const pkgPath = fabrication_1.resolveModule('./package.json', {
+    const pkgPath = resolve_1.default.sync('./package.json', {
         basedir: process.cwd(),
     });
     const packageDependencies = await Promise.resolve().then(() => __importStar(require(pkgPath))).then((r) => {
@@ -43,7 +43,7 @@ const webModulePlugin = async (external) => {
         : packageDependencies;
     const mapPaths = Object.create(null);
     onResolveItems.forEach((ele) => {
-        mapPaths[ele] = fabrication_1.resolveModule(ele, {
+        mapPaths[ele] = resolve_1.default.sync(ele, {
             basedir: process.cwd(),
         });
     });
