@@ -7,13 +7,16 @@ import { BuildOptions, Format, Plugin } from 'esbuild'
 import { createTempDist, TempDist } from '../index'
 import { isObject } from '../utils'
 
-export interface ResolveOptions {
-  basedir?: string
-  extensions?: string[]
-  includeCoreModules?: boolean
+interface ResolveModuleResult {
+  root: string
+  dir: string
+  base: string
+  ext: string
+  name: string
+  relativedir: string
+  relativepath: string
 }
-
-export function resolveModule(extensions: string[], alias: unknown, to: string, from: string): string {
+export function resolveModule(extensions: string[], alias: unknown, to: string, from: string): ResolveModuleResult {
   if (alias && isObject(alias) && !/^(\.\/|\.\.\/)/.test(to)) {
     for (let [key, val] of Object.entries(alias)) {
       const reg = new RegExp(`^${key}`)
@@ -23,12 +26,26 @@ export function resolveModule(extensions: string[], alias: unknown, to: string, 
       }
     }
   }
-  const { dir: basedir } = path.parse(from)
-  const res = resolve.sync(to, {
-    basedir,
+  const { dir: fromdir } = path.parse(from)
+  const file = resolve.sync(to, {
+    basedir: fromdir,
     extensions,
   })
-  return res
+  const { root, dir, base, ext, name } = path.parse(file)
+  let relativedir = path.relative(dir, fromdir)
+  if (!relativedir) {
+    relativedir = './'
+  }
+  const relativepath = path.resolve(relativedir, base)
+  return {
+    root,
+    dir,
+    base,
+    ext,
+    name,
+    relativedir,
+    relativepath,
+  }
 }
 
 export interface BuildUtil {

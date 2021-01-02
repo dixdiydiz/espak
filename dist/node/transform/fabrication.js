@@ -20,12 +20,26 @@ function resolveModule(extensions, alias, to, from) {
             }
         }
     }
-    const { dir: basedir } = path_1.default.parse(from);
-    const res = resolve_1.default.sync(to, {
-        basedir,
+    const { dir: fromdir } = path_1.default.parse(from);
+    const file = resolve_1.default.sync(to, {
+        basedir: fromdir,
         extensions,
     });
-    return res;
+    const { root, dir, base, ext, name } = path_1.default.parse(file);
+    let relativedir = path_1.default.relative(dir, fromdir);
+    if (!relativedir) {
+        relativedir = './';
+    }
+    const relativepath = path_1.default.resolve(relativedir, base);
+    return {
+        root,
+        dir,
+        base,
+        ext,
+        name,
+        relativedir,
+        relativepath,
+    };
 }
 exports.resolveModule = resolveModule;
 async function createPlugins(plugins, config, ...args) {

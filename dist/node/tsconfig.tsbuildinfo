@@ -457,7 +457,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/plainplugin.ts": {
-        "version": "682d50858e850fdb213d150cb9a857b58a6f793f6c8c2f17df6c03c0d40c0be0",
+        "version": "93f19992322f82a2357db8005fa3cd2f2c4df2ea22ce0c964c7ae440751eb842",
         "signature": "dc3f73fda1860eb99877fccfb2eb7ac46f8defd2f732911592a5a21d5667feb9",
         "affectsGlobalScope": false
       },
@@ -467,13 +467,13 @@
         "affectsGlobalScope": false
       },
       "../../src/node/index.ts": {
-        "version": "be35750aa0e8a099afb761524fb166b1f8d0768f7ff1b905ff365e5a9accd564",
+        "version": "c10e829403030e0ca2ccad1fe063924493d7e212d0325228f23d08e1614a0f51",
         "signature": "148eb77e1ec29dd6a2c33b4856dc75b91c071e3dee72c29ceb8aafdd609e4527",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/fabrication.ts": {
-        "version": "36fdfc4f279fd4da44abcfed6837b42630bf3bb238cd6139e9c230c328579da9",
-        "signature": "6cd84e59c4ce8fda402bd3405b10f975ebdf51306c88a77c8c80d0adbac930b7",
+        "version": "8bc3b0aaa3f34cc14386bbbc85251425ed5d492c5a5f4e54febc75ec5eb99ab3",
+        "signature": "0aae3897020e28e31740ae5f71a6c6a5b0377d5373c7f0a5280d288ed1ebc64e",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
@@ -1048,7 +1048,61 @@
       "../../src/node/constant.ts",
       "../../src/node/index.ts",
       "../../src/node/transform/fabrication.ts",
-      "../../src/node/transform/plainplugin.ts",
+      [
+        "../../src/node/transform/plainplugin.ts",
+        [
+          {
+            "file": "../../src/node/transform/plainplugin.ts",
+            "start": 77,
+            "length": 23,
+            "messageText": "'path' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/transform/plainplugin.ts",
+            "start": 475,
+            "length": 3,
+            "messageText": "Property 'ext' does not exist on type 'String'.",
+            "category": 1,
+            "code": 2339
+          },
+          {
+            "file": "../../src/node/transform/plainplugin.ts",
+            "start": 480,
+            "length": 12,
+            "messageText": "Property 'relativepath' does not exist on type 'String'.",
+            "category": 1,
+            "code": 2339
+          },
+          {
+            "file": "../../src/node/transform/plainplugin.ts",
+            "start": 480,
+            "length": 12,
+            "messageText": "'relativepath' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/transform/plainplugin.ts",
+            "start": 892,
+            "length": 3,
+            "messageText": "Property 'ext' does not exist on type 'String'.",
+            "category": 1,
+            "code": 2339
+          },
+          {
+            "file": "../../src/node/transform/plainplugin.ts",
+            "start": 897,
+            "length": 12,
+            "messageText": "Property 'relativepath' does not exist on type 'String'.",
+            "category": 1,
+            "code": 2339
+          }
+        ]
+      ],
       "../../src/node/transform/webmoduleplugin.ts",
       "../../src/node/transform/wrapesbuild.ts",
       "../../src/node/utils.ts"
