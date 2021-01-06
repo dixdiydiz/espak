@@ -1,8 +1,7 @@
 import { UserConfig } from '../config';
-import { startBuildServe } from './wrapEsbuild';
-import { BuildOptions, Plugin } from 'esbuild';
-import { TempDist } from '../index';
+import { BuildOptions, Plugin, OnResolveArgs } from 'esbuild';
 interface ResolveModuleResult {
+    resolvepath: string;
     root: string;
     dir: string;
     base: string;
@@ -12,12 +11,15 @@ interface ResolveModuleResult {
     relativepath: string;
 }
 export declare function resolveModule(extensions: string[], alias: unknown, to: string, from: string): ResolveModuleResult;
-export interface BuildUtil {
-    buildServe: typeof startBuildServe;
-    config: UserConfig;
-    dist: TempDist;
+export interface EspakPlugin extends Plugin {
+    namespace?: string;
 }
-export declare type EspakPlugin = (util: BuildUtil, resolveModule: (to: string, from: string) => string, arg?: unknown) => Plugin | Promise<Plugin>;
-export declare function createPlugins(plugins: EspakPlugin[], config: UserConfig, ...args: any[]): Promise<Plugin[]>;
+export interface EspakOnResolveArgs extends OnResolveArgs {
+}
+export interface BuildUtil {
+    namespaces?: string[];
+}
+export declare type SimplePlugin = (util: BuildUtil, onResolves: any, onLoads: any) => Promise<Plugin>;
+export declare function createPlugin(simplePlugin: SimplePlugin, plugins: EspakPlugin[], config: UserConfig): Promise<Plugin>;
 export declare function customModuleHandler(src: string[], option: BuildOptions): Promise<void>;
 export {};

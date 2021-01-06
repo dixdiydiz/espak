@@ -1,3 +1,3 @@
-import { EspakPlugin } from './fabrication';
-declare const plainPlugin: EspakPlugin;
+import { SimplePlugin } from './fabrication';
+declare const plainPlugin: SimplePlugin;
 export default plainPlugin;

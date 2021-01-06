@@ -451,29 +451,24 @@
         "signature": "b76a23b0ba46a4c1ad14d5d0e544d0485c08ee3dfa9e9d75a5747684f8a92b3a",
         "affectsGlobalScope": false
       },
-      "../../src/node/transform/webmoduleplugin.ts": {
-        "version": "2cf8570a4843783e58314f0de4ba1e1d4c329c1a4262a20ccdd2933cba5af44d",
-        "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
-        "affectsGlobalScope": false
-      },
       "../../src/node/transform/plainplugin.ts": {
-        "version": "93f19992322f82a2357db8005fa3cd2f2c4df2ea22ce0c964c7ae440751eb842",
-        "signature": "dc3f73fda1860eb99877fccfb2eb7ac46f8defd2f732911592a5a21d5667feb9",
+        "version": "bea6b91ac0e0de743fc70ec5e6fcf7187fc48daf5b09b4e4e6eeca66d7ab4437",
+        "signature": "66ab0e364687faef6478e6f122e6376bd9dc008bb78b0a2ae01a7f22dbe8a245",
         "affectsGlobalScope": false
       },
       "../../src/node/build/command.ts": {
-        "version": "48591417c33747f1943a82f0097ed3ccd9b0ef3de61281d6f918023baf0bebc9",
+        "version": "ae8c1e89218f199be506a7c75d48ae13398b0e708085bf32c29806f0febee5aa",
         "signature": "affa568df599960361ee31af68759d895c98762294c9f1ce9d37a77d0d50999c",
         "affectsGlobalScope": false
       },
       "../../src/node/index.ts": {
-        "version": "c10e829403030e0ca2ccad1fe063924493d7e212d0325228f23d08e1614a0f51",
+        "version": "be35750aa0e8a099afb761524fb166b1f8d0768f7ff1b905ff365e5a9accd564",
         "signature": "148eb77e1ec29dd6a2c33b4856dc75b91c071e3dee72c29ceb8aafdd609e4527",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/fabrication.ts": {
-        "version": "8bc3b0aaa3f34cc14386bbbc85251425ed5d492c5a5f4e54febc75ec5eb99ab3",
-        "signature": "0aae3897020e28e31740ae5f71a6c6a5b0377d5373c7f0a5280d288ed1ebc64e",
+        "version": "ae6cc18c1b4166d65f8b68ac7df9bdf30edb5e52865a44caf39ba2f12e2c2798",
+        "signature": "a96c79f2c339a0353ede574cc5d53fbdc5855f5f95c076de0fb26c0b62da3c70",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
@@ -484,6 +479,11 @@
       "../../src/node/constant.ts": {
         "version": "d561ad69139080d713a1f811d507229e95fb7ef128c0bec936f07000e291e3f0",
         "signature": "5680d1e5dc238c70853b3312a96342a80bfbe5f5ed89f8b596e643bb71031269",
+        "affectsGlobalScope": false
+      },
+      "../../src/node/transform/webmoduleplugin.ts": {
+        "version": "2cf8570a4843783e58314f0de4ba1e1d4c329c1a4262a20ccdd2933cba5af44d",
+        "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       }
     },
@@ -698,9 +698,7 @@
         "../../src/node/config.ts",
         "../../src/node/index.ts",
         "../../src/node/transform/fabrication.ts",
-        "../../src/node/transform/plainplugin.ts",
-        "../../src/node/transform/webmoduleplugin.ts",
-        "../../src/node/utils.ts"
+        "../../src/node/transform/plainplugin.ts"
       ],
       "../../src/node/config.ts": [
         "../../node_modules/@types/fs-extra/index.d.ts",
@@ -732,9 +730,9 @@
         "../../src/node/utils.ts"
       ],
       "../../src/node/transform/plainplugin.ts": [
-        "../../node_modules/@types/node/path.d.ts",
         "../../node_modules/esbuild/lib/main.d.ts",
-        "../../src/node/transform/fabrication.ts"
+        "../../src/node/transform/fabrication.ts",
+        "../../src/node/utils.ts"
       ],
       "../../src/node/transform/webmoduleplugin.ts": [
         "../../node_modules/@types/node/path.d.ts",
@@ -940,9 +938,7 @@
       ],
       "../../src/node/transform/fabrication.ts": [
         "../../node_modules/esbuild/lib/main.d.ts",
-        "../../src/node/config.ts",
-        "../../src/node/index.ts",
-        "../../src/node/transform/wrapesbuild.ts"
+        "../../src/node/config.ts"
       ],
       "../../src/node/transform/plainplugin.ts": [
         "../../src/node/transform/fabrication.ts"
@@ -1043,67 +1039,115 @@
       "../../node_modules/typescript/lib/lib.es2020.string.d.ts",
       "../../node_modules/typescript/lib/lib.es5.d.ts",
       "../../node_modules/typescript/lib/lib.esnext.intl.d.ts",
-      "../../src/node/build/command.ts",
-      "../../src/node/config.ts",
-      "../../src/node/constant.ts",
-      "../../src/node/index.ts",
-      "../../src/node/transform/fabrication.ts",
       [
-        "../../src/node/transform/plainplugin.ts",
+        "../../src/node/build/command.ts",
         [
           {
-            "file": "../../src/node/transform/plainplugin.ts",
-            "start": 77,
-            "length": 23,
-            "messageText": "'path' is declared but its value is never read.",
+            "file": "../../src/node/build/command.ts",
+            "start": 1088,
+            "length": 4,
+            "code": 2345,
             "category": 1,
-            "code": 6133,
-            "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/plainplugin.ts",
-            "start": 475,
-            "length": 3,
-            "messageText": "Property 'ext' does not exist on type 'String'.",
-            "category": 1,
-            "code": 2339
-          },
-          {
-            "file": "../../src/node/transform/plainplugin.ts",
-            "start": 480,
-            "length": 12,
-            "messageText": "Property 'relativepath' does not exist on type 'String'.",
-            "category": 1,
-            "code": 2339
-          },
-          {
-            "file": "../../src/node/transform/plainplugin.ts",
-            "start": 480,
-            "length": 12,
-            "messageText": "'relativepath' is declared but its value is never read.",
-            "category": 1,
-            "code": 6133,
-            "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/plainplugin.ts",
-            "start": 892,
-            "length": 3,
-            "messageText": "Property 'ext' does not exist on type 'String'.",
-            "category": 1,
-            "code": 2339
-          },
-          {
-            "file": "../../src/node/transform/plainplugin.ts",
-            "start": 897,
-            "length": 12,
-            "messageText": "Property 'relativepath' does not exist on type 'String'.",
-            "category": 1,
-            "code": 2339
+            "messageText": {
+              "messageText": "Argument of type '{ dist: TempDist; plugins: Plugin[]; }' is not assignable to parameter of type 'BuildOptions'.",
+              "category": 1,
+              "code": 2345,
+              "next": [
+                {
+                  "messageText": "Object literal may only specify known properties, and 'dist' does not exist in type 'BuildOptions'.",
+                  "category": 1,
+                  "code": 2353
+                }
+              ]
+            }
           }
         ]
       ],
-      "../../src/node/transform/webmoduleplugin.ts",
+      "../../src/node/config.ts",
+      "../../src/node/constant.ts",
+      "../../src/node/index.ts",
+      "../../src/node/transform/plainplugin.ts",
+      [
+        "../../src/node/transform/webmoduleplugin.ts",
+        [
+          {
+            "file": "../../src/node/transform/webmoduleplugin.ts",
+            "start": 162,
+            "length": 15,
+            "code": 2322,
+            "category": 1,
+            "messageText": {
+              "messageText": "Type '(external: string[]) => Promise<({ dist, buildServe }: { dist: any; buildServe: any; }) => Promise<{ name: string; setup({ onResolve }: { onResolve: any; }): void; }>>' is not assignable to type '(external: string[]) => Promise<EspakPlugin>'.",
+              "category": 1,
+              "code": 2322,
+              "next": [
+                {
+                  "messageText": "Type 'Promise<({ dist, buildServe }: { dist: any; buildServe: any; }) => Promise<{ name: string; setup({ onResolve }: { onResolve: any; }): void; }>>' is not assignable to type 'Promise<EspakPlugin>'.",
+                  "category": 1,
+                  "code": 2322,
+                  "next": [
+                    {
+                      "messageText": "Property 'setup' is missing in type '({ dist, buildServe }: { dist: any; buildServe: any; }) => Promise<{ name: string; setup({ onResolve }: { onResolve: any; }): void; }>' but required in type 'EspakPlugin'.",
+                      "category": 1,
+                      "code": 2741
+                    }
+                  ]
+                }
+              ]
+            },
+            "relatedInformation": [
+              {
+                "file": "../../node_modules/esbuild/lib/main.d.ts",
+                "start": 3458,
+                "length": 5,
+                "messageText": "'setup' is declared here.",
+                "category": 3,
+                "code": 2728
+              }
+            ]
+          },
+          {
+            "file": "../../src/node/transform/webmoduleplugin.ts",
+            "start": 880,
+            "length": 4,
+            "messageText": "Binding element 'dist' implicitly has an 'any' type.",
+            "category": 1,
+            "code": 7031
+          },
+          {
+            "file": "../../src/node/transform/webmoduleplugin.ts",
+            "start": 886,
+            "length": 10,
+            "messageText": "Binding element 'buildServe' implicitly has an 'any' type.",
+            "category": 1,
+            "code": 7031
+          },
+          {
+            "file": "../../src/node/transform/webmoduleplugin.ts",
+            "start": 1349,
+            "length": 9,
+            "messageText": "Binding element 'onResolve' implicitly has an 'any' type.",
+            "category": 1,
+            "code": 7031
+          },
+          {
+            "file": "../../src/node/transform/webmoduleplugin.ts",
+            "start": 1463,
+            "length": 4,
+            "messageText": "Parameter 'args' implicitly has an 'any' type.",
+            "category": 1,
+            "code": 7006
+          },
+          {
+            "file": "../../src/node/transform/webmoduleplugin.ts",
+            "start": 1874,
+            "length": 4,
+            "messageText": "Parameter 'args' implicitly has an 'any' type.",
+            "category": 1,
+            "code": 7006
+          }
+        ]
+      ],
       "../../src/node/transform/wrapesbuild.ts",
       "../../src/node/utils.ts"
     ]

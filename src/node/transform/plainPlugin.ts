@@ -1,48 +1,35 @@
-import { EspakPlugin } from './fabrication'
 import { Plugin } from 'esbuild'
-import path from 'path'
+import { SimplePlugin } from './fabrication'
+import { isArray } from '../utils'
 
-const plainPlugin: EspakPlugin = async ({ dist, buildServe, config }, resolveModule, plugins) => {
-  const alias = config?.resolve?.alias
+const plainPlugin: SimplePlugin = async ({ namespaces }, onResolves, onLoads) => {
   const selfPlugin = {
     name: 'plainPlugin',
     setup({ onResolve, onLoad }) {
-      if (alias) {
-        Object.keys(alias).forEach((ele) => {
-          onResolve({ filter: new RegExp(`^${ele}`) }, (args) => {
-            const { ext, relativepath } = resolveModule(args.path, args.importer)
-            let namespace: string
-            if (['.tsx', '.ts', '.jsx', '.js'].includes(ext)) {
-              namespace = '.js'
-            } else {
-              namespace = ext
-            }
-            return {
-              namespace,
-            }
+      onResolve({ filter: /.*/ }, async (args) => {
+        return await onResolves({
+          ...args,
+        })
+      })
+      onLoad({ filter: /.*/ }, async (args) => {
+        return await onLoads({
+          ...args,
+        })
+      })
+      if (isArray(namespaces)) {
+        namespaces.forEach((ns) => {
+          onResolve({ filter: /.*/, namespace: ns }, async (args) => {
+            return await onResolves({
+              ...args,
+            })
+          })
+          onLoad({ filter: /.*/, namespace: ns }, async (args) => {
+            return await onLoads({
+              ...args,
+            })
           })
         })
       }
-      onResolve({ filter: /^\.\.?\// }, (args) => {
-        const { ext, relativepath } = resolveModule(args.path, args.importer)
-        let namespace: string
-        if (['.tsx', '.ts', '.jsx', '.js'].includes(ext)) {
-          namespace = '.js'
-        } else {
-          namespace = ext
-        }
-        console.log(relativepath)
-        return {
-          path: relativepath,
-          namespace,
-        }
-      })
-      onLoad({ filter: /.*/, namespace: '.js' }, (args) => {
-        return {
-          // contents: `export * from ${JSON.stringify(args.path)}`,
-          contents: '',
-        }
-      })
     },
   } as Plugin
   return selfPlugin

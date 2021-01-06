@@ -3,10 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customModuleHandler = exports.createPlugins = exports.resolveModule = void 0;
+exports.customModuleHandler = exports.createPlugin = exports.resolveModule = void 0;
 const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
-const path_1 = __importDefault(require("path"));
 const wrapEsbuild_1 = require("./wrapEsbuild");
 const index_1 = require("../index");
 const utils_1 = require("../utils");
@@ -20,18 +19,19 @@ function resolveModule(extensions, alias, to, from) {
             }
         }
     }
-    const { dir: fromdir } = path_1.default.parse(from);
+    const { dir: fromdir } = path.parse(from);
     const file = resolve_1.default.sync(to, {
         basedir: fromdir,
         extensions,
     });
-    const { root, dir, base, ext, name } = path_1.default.parse(file);
-    let relativedir = path_1.default.relative(dir, fromdir);
+    const { root, dir, base, ext, name } = path.parse(file);
+    let relativedir = path.relative(dir, fromdir);
     if (!relativedir) {
         relativedir = './';
     }
-    const relativepath = path_1.default.resolve(relativedir, base);
+    const relativepath = path.resolve(relativedir, base);
     return {
+        resolvepath: to,
         root,
         dir,
         base,
@@ -42,26 +42,54 @@ function resolveModule(extensions, alias, to, from) {
     };
 }
 exports.resolveModule = resolveModule;
-async function createPlugins(plugins, config, ...args) {
+async function createPlugin(simplePlugin, plugins, config) {
     const dist = await index_1.createTempDist();
     const { resolve: { extensions, alias }, } = config;
-    const esbuildPlugins = await Promise.all(plugins.map((fn) => exceptionHandle(fn, {
-        dist,
-        buildServe: wrapEsbuild_1.startBuildServe,
-        config,
-    }, resolveModule.bind(null, extensions, alias), ...args)));
-    return esbuildPlugins.filter((ele) => ele);
+    const resolveModuleFn = resolveModule.bind(null, extensions, alias);
+    const { namespaces, resolveMap, loadMap } = mobilizePlugin(plugins);
+    return simplePlugin({ namespaces });
 }
-exports.createPlugins = createPlugins;
-async function exceptionHandle(fn, ...args) {
-    try {
-        return await fn(...args);
+exports.createPlugin = createPlugin;
+function mobilizePlugin(plugins) {
+    const resolveMap = new Map();
+    const loadMap = new Map();
+    const namespaces = [];
+    plugins.forEach((ele) => {
+        try {
+            const { namespace, setup } = ele;
+            if (namespace) {
+                namespaces.push(namespace);
+            }
+            setup({
+                onResolve,
+                onLoad,
+            });
+        }
+        catch (e) {
+            loglevel_1.default.error(e);
+        }
+    });
+    return {
+        resolveMap,
+        loadMap,
+        namespaces,
+    };
+    function onResolve(options, callback) {
+        resolveMap.set(options, callback);
     }
-    catch (e) {
-        loglevel_1.default.error(e);
-        return null;
+    function onLoad(options, callback) {
+        loadMap.set(options, callback);
     }
 }
+const { path, importer, resolveDir, namespace } = args;
+// async function exceptionHandle(fn: Function, ...args: any[]): Promise<Plugin | null> {
+//   try {
+//     return await fn(...args)
+//   } catch (e) {
+//     log.error(e)
+//     return null
+//   }
+// }
 async function customModuleHandler(src, option) {
     const builder = [
         {

@@ -2,15 +2,13 @@ import log from 'loglevel'
 import path from 'path'
 import resolve from 'resolve'
 import { TempDist } from '../index'
-import { isArray } from '../utils'
-import webModulePlugin from '../transform/webModulePlugin'
 import plainPlugin from '../transform/plainPlugin'
 import { generateConfig, UserConfig } from '../config'
-import { customModuleHandler, createPlugins } from '../transform/fabrication'
+import { customModuleHandler, createPlugin } from '../transform/fabrication'
 
 export async function command(dist: TempDist): Promise<void> {
   const config: UserConfig = await generateConfig()
-  const { entry: configEntry, external, plugins: customPlugins } = config
+  const { entry: configEntry, plugins } = config
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']
   const entries = []
   for (let [_, val] of Object.entries(configEntry)) {
@@ -27,12 +25,9 @@ export async function command(dist: TempDist): Promise<void> {
       }
     }
   }
-  const builtinPlugins = await Promise.all([webModulePlugin(isArray(external) ? external : [])])
-  const plugins = await createPlugins([...builtinPlugins, ...customPlugins], config)
-  const plainEsbuildPlugin = await createPlugins([plainPlugin], config, plugins)
+  const simplePlugin = await createPlugin(plainPlugin, plugins, config)
   await customModuleHandler(entries, {
-    outdir: dist.tempSrc,
-    outbase: 'src',
-    plugins: [...plainEsbuildPlugin, ...plugins],
+    dist,
+    plugins: [simplePlugin],
   })
 }
