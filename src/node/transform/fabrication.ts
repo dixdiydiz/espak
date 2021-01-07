@@ -4,7 +4,6 @@ import path from 'path'
 import { UserConfig } from '../config'
 import { startBuildServe } from './wrapEsbuild'
 import {
-  BuildOptions,
   Format,
   Plugin,
   OnResolveOptions,
@@ -13,6 +12,7 @@ import {
   OnLoadOptions,
   OnLoadArgs,
   OnLoadResult,
+  BuildOptions,
 } from 'esbuild'
 import { createTempDist, TempDist } from '../index'
 import { isObject } from '../utils'
@@ -60,43 +60,65 @@ export function resolveModule(extensions: string[], alias: unknown, to: string, 
   }
 }
 
-export interface EspakPlugin extends Plugin {
+/**
+ * rewrite esbuild plugin types
+ * start
+ */
+export interface EspakBuildOptions extends BuildOptions {
+  sourcefile?: string
+}
+export interface EspakOnResolveResult extends OnResolveResult {
+  buildOptions?: EspakBuildOptions
+}
+
+type OnResloveCallback = (
+  args: OnResolveArgs
+) => EspakOnResolveResult | null | undefined | Promise<EspakOnResolveResult | null | undefined>
+type OnLoadCallback = (args: OnLoadArgs) => OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>
+
+export interface PluginBuild {
+  onResolve(options: OnResolveOptions, callback: OnResloveCallback): void
+  onLoad(options: OnLoadOptions, callback: OnLoadCallback): void
+}
+export interface EspakPlugin {
+  name: string
+  setup: (build: PluginBuild) => void
   namespace?: string
 }
-export interface EspakOnResolveArgs extends OnResolveArgs {}
+
+type ResolveMap = Map<OnResolveOptions, OnResloveCallback>
+
+type LoadMap = Map<OnLoadOptions, OnLoadCallback>
+/**
+ * rewrite esbuild plugin types
+ * end
+ */
 
 export interface BuildUtil {
   namespaces?: string[]
 }
-export type SimplePlugin = (util: BuildUtil, onResolves: any, onLoads: any) => Promise<Plugin>
+export type ProxyPlugin = (
+  util: BuildUtil,
+  onResolves: (args: OnResolveArgs, plugin: Plugin) => Promise<any>,
+  onLoads: any
+) => Promise<Plugin>
 
 export async function createPlugin(
-  simplePlugin: SimplePlugin,
+  proxyPlugin: ProxyPlugin,
   plugins: EspakPlugin[],
   config: UserConfig
 ): Promise<Plugin> {
-  const dist: TempDist = await createTempDist()
   const {
     resolve: { extensions, alias },
   } = config
   const resolveModuleFn = resolveModule.bind(null, extensions, alias)
   const { namespaces, resolveMap, loadMap } = mobilizePlugin(plugins)
-
-  return simplePlugin(
-    {namespaces},
-
-    )
+  return proxyPlugin(
+    { namespaces },
+    onResolves.bind(null, resolveModuleFn, resolveMap),
+    onLoads.bind(null, resolveModuleFn, loadMap)
+  )
 }
-
-type OnResloveCallback = (
-  args: OnResolveArgs
-) => OnResolveResult | null | undefined | Promise<OnResolveResult | null | undefined>
-
-type OnLoadCallback = (args: OnLoadArgs) => OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>
-
-type ResolveMap = Map<OnResolveOptions, OnResloveCallback>
-
-type LoadMap = Map<OnLoadOptions, OnLoadCallback>
 
 function mobilizePlugin(plugins: EspakPlugin[]) {
   const resolveMap: ResolveMap = new Map()
@@ -104,7 +126,7 @@ function mobilizePlugin(plugins: EspakPlugin[]) {
   const namespaces: string[] = []
   plugins.forEach((ele) => {
     try {
-      const { namespace, setup } = ele
+      const { setup, namespace } = ele
       if (namespace) {
         namespaces.push(namespace)
       }
@@ -130,8 +152,40 @@ function mobilizePlugin(plugins: EspakPlugin[]) {
   }
 }
 
-async function onResolves(resolveMap: ResolveMap, args: OnResolveArgs): {
-  const { path, importer, resolveDir, namespace } = args
+async function onResolves(
+  resolveFn: (to: string, from: string) => ResolveModuleResult,
+  resolveMap: ResolveMap,
+  args: OnResolveArgs,
+  esbuildPlugin: Plugin
+): Promise<unknown> {
+  const { path, importer, resolveDir, namespace: importerNamespace } = args
+  const dist: TempDist = await createTempDist()
+  if (importer) {
+    for (let [key, cb] of resolveMap) {
+      const { filter, namespace } = key
+      if (filter.test(path) && namespace === importerNamespace) {
+        const resolveResult = await cb({ ...args })
+        if (resolveResult?.buildOptions) {
+        }
+      }
+    }
+  } else {
+    return null
+  }
+}
+
+async function onLoads(
+  resolveFn: (to: string, from: string) => ResolveModuleResult,
+  loadMap: LoadMap,
+  args: OnResolveArgs,
+  esbuildPlugin: Plugin
+): Promise<unknown> {
+  const { path, namespace: argsNamespace } = args
+  const dist: TempDist = await createTempDist()
+  // for (let [key, value] of resolveMap) {
+  //   const { filter, namespace } = key
+  // }
+  return null
 }
 
 // async function exceptionHandle(fn: Function, ...args: any[]): Promise<Plugin | null> {
@@ -142,16 +196,22 @@ async function onResolves(resolveMap: ResolveMap, args: OnResolveArgs): {
 //     return null
 //   }
 // }
-
-export async function customModuleHandler(src: string[], option: BuildOptions): Promise<void> {
-  const builder = [
-    {
-      entryPoints: src,
+interface CustomBuildOption {
+  dist: TempDist
+  plugins: EspakPlugin[]
+}
+export async function entryHandler(src: string[], option: CustomBuildOption): Promise<void> {
+  const { dist, plugins } = option
+  const builder = src.map((entry) => {
+    const { name } = path.parse(entry)
+    return {
+      entryPoints: [entry],
       bundle: true,
       minify: true,
       format: 'esm' as Format,
-      ...option,
-    },
-  ]
+      outfile: path.resolve(dist.tempSrc, name, '.js'),
+      plugins,
+    }
+  })
   await startBuildServe(builder)
 }

@@ -2,13 +2,15 @@ import log from 'loglevel'
 import path from 'path'
 import resolve from 'resolve'
 import { TempDist } from '../index'
-import plainPlugin from '../transform/plainPlugin'
+import proxyPlugin from '../transform/proxyPlugin'
 import { generateConfig, UserConfig } from '../config'
-import { customModuleHandler, createPlugin } from '../transform/fabrication'
+import { entryHandler, createPlugin } from '../transform/fabrication'
+import webModulePlugin from '../transform/webModulePlugin'
+import { isArray } from '../utils'
 
 export async function command(dist: TempDist): Promise<void> {
   const config: UserConfig = await generateConfig()
-  const { entry: configEntry, plugins } = config
+  const { entry: configEntry, external, plugins } = config
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']
   const entries = []
   for (let [_, val] of Object.entries(configEntry)) {
@@ -25,9 +27,11 @@ export async function command(dist: TempDist): Promise<void> {
       }
     }
   }
-  const simplePlugin = await createPlugin(plainPlugin, plugins, config)
-  await customModuleHandler(entries, {
+  const modulePlugin = await webModulePlugin(isArray(external) ? external : [])
+  const combinePlugins = [modulePlugin, ...plugins]
+  const plugin = await createPlugin(proxyPlugin, combinePlugins, config)
+  await entryHandler(entries, {
     dist,
-    plugins: [simplePlugin],
+    plugins: [plugin],
   })
 }

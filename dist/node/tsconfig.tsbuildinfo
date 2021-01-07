@@ -187,8 +187,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/child_process.d.ts": {
-        "version": "987249e7b75023387c5fd9dc2f959ee777cb8989b7900f5a9eb4a67d290f2cba",
-        "signature": "987249e7b75023387c5fd9dc2f959ee777cb8989b7900f5a9eb4a67d290f2cba",
+        "version": "a4b5411d87995b9fb847f491f4388b38f829d8ab39be3e2fd65a3e40709f29a8",
+        "signature": "a4b5411d87995b9fb847f491f4388b38f829d8ab39be3e2fd65a3e40709f29a8",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/cluster.d.ts": {
@@ -207,8 +207,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/crypto.d.ts": {
-        "version": "75d76be86ffc40ae985ebace0cbd2c79b1e10c224c925d91f4df5a2705cc3f76",
-        "signature": "75d76be86ffc40ae985ebace0cbd2c79b1e10c224c925d91f4df5a2705cc3f76",
+        "version": "3d9c3ccc05ebc6e288bef007bcc47a2fc0dce748ea634093ef0732b9be743805",
+        "signature": "3d9c3ccc05ebc6e288bef007bcc47a2fc0dce748ea634093ef0732b9be743805",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/dgram.d.ts": {
@@ -217,8 +217,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/dns.d.ts": {
-        "version": "7db7569fbb3e2b01ba8751c761cdd3f0debd104170d5665b7dc20a11630df3a9",
-        "signature": "7db7569fbb3e2b01ba8751c761cdd3f0debd104170d5665b7dc20a11630df3a9",
+        "version": "d6bc4b879a18de0a1ba065b9a1c6888c67d98f3fe4886584459cdaa9e211a5f7",
+        "signature": "d6bc4b879a18de0a1ba065b9a1c6888c67d98f3fe4886584459cdaa9e211a5f7",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/domain.d.ts": {
@@ -232,8 +232,8 @@
         "affectsGlobalScope": true
       },
       "../../node_modules/@types/node/fs.d.ts": {
-        "version": "f87f95c015900102a5c0edcdebb17596de1382510e6cc17ab79f375d3505bb12",
-        "signature": "f87f95c015900102a5c0edcdebb17596de1382510e6cc17ab79f375d3505bb12",
+        "version": "80b94a222a5e83289583833de76f8b3a5962ec4c3803690e20c875a2776ddfdc",
+        "signature": "80b94a222a5e83289583833de76f8b3a5962ec4c3803690e20c875a2776ddfdc",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/fs/promises.d.ts": {
@@ -242,8 +242,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/http.d.ts": {
-        "version": "35fe02b2c10616cc7ac3db9c15778df7ed9c99276889efdd9be31f342841cfcd",
-        "signature": "35fe02b2c10616cc7ac3db9c15778df7ed9c99276889efdd9be31f342841cfcd",
+        "version": "f2f8a385694fd71a421616cbaca477a539f30f4098f11261b1d188d72dc3478a",
+        "signature": "f2f8a385694fd71a421616cbaca477a539f30f4098f11261b1d188d72dc3478a",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/http2.d.ts": {
@@ -267,8 +267,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/net.d.ts": {
-        "version": "8de97668870cfb20fc9d355d2ef379e897bdd8a98c889c7d8a6de40ee408ad52",
-        "signature": "8de97668870cfb20fc9d355d2ef379e897bdd8a98c889c7d8a6de40ee408ad52",
+        "version": "5345d90ffb42ef6a15807f494b38b818f668f5fd6e5086586497ea0125334cd4",
+        "signature": "5345d90ffb42ef6a15807f494b38b818f668f5fd6e5086586497ea0125334cd4",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/os.d.ts": {
@@ -342,8 +342,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/url.d.ts": {
-        "version": "80ffc1786a5dab91b4aa59a72720f02f25df8b7c76b593e04d5e381aec284ccb",
-        "signature": "80ffc1786a5dab91b4aa59a72720f02f25df8b7c76b593e04d5e381aec284ccb",
+        "version": "4001971b90f18161f7bd46d68150d32a5da47e3f177956a267a2b29a2771896a",
+        "signature": "4001971b90f18161f7bd46d68150d32a5da47e3f177956a267a2b29a2771896a",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/util.d.ts": {
@@ -392,8 +392,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/assert.d.ts": {
-        "version": "6fbe72eed85e363ad83b763e03be824558c6ea7456c7259a48bcf0afdeb9d7e4",
-        "signature": "6fbe72eed85e363ad83b763e03be824558c6ea7456c7259a48bcf0afdeb9d7e4",
+        "version": "b3593bd345ebea5e4d0a894c03251a3774b34df3d6db57075c18e089a599ba76",
+        "signature": "b3593bd345ebea5e4d0a894c03251a3774b34df3d6db57075c18e089a599ba76",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/base.d.ts": {
@@ -402,8 +402,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/node/index.d.ts": {
-        "version": "5825520e2099309182c6e2a2b3061b060d42a098c58f67d1754880a7e2cce99a",
-        "signature": "5825520e2099309182c6e2a2b3061b060d42a098c58f67d1754880a7e2cce99a",
+        "version": "744e6430bafc6f39f66c4fc1e6a0d8c9551260ffd1782aa7e3f5166ac6aa1f86",
+        "signature": "744e6430bafc6f39f66c4fc1e6a0d8c9551260ffd1782aa7e3f5166ac6aa1f86",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/fs-extra/index.d.ts": {
@@ -417,8 +417,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/esbuild/lib/main.d.ts": {
-        "version": "ab36d454f060b4ebc6508ded642b785963237220b2ff71c53c94b6516c20f947",
-        "signature": "ab36d454f060b4ebc6508ded642b785963237220b2ff71c53c94b6516c20f947",
+        "version": "045ce4b67f8ac840d79c9915118222dd29efa357fb5fca74e18a8efa9f7d8eeb",
+        "signature": "045ce4b67f8ac840d79c9915118222dd29efa357fb5fca74e18a8efa9f7d8eeb",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/wrapesbuild.ts": {
@@ -451,13 +451,18 @@
         "signature": "b76a23b0ba46a4c1ad14d5d0e544d0485c08ee3dfa9e9d75a5747684f8a92b3a",
         "affectsGlobalScope": false
       },
-      "../../src/node/transform/plainplugin.ts": {
-        "version": "bea6b91ac0e0de743fc70ec5e6fcf7187fc48daf5b09b4e4e6eeca66d7ab4437",
-        "signature": "66ab0e364687faef6478e6f122e6376bd9dc008bb78b0a2ae01a7f22dbe8a245",
+      "../../src/node/transform/proxyplugin.ts": {
+        "version": "540a13ce6bc1343575f718eb93f48c8a3c3b5cd466f2753b0bbc4abd972a10dc",
+        "signature": "91d098b2b421128fdea3d46ef5542a34f1f9f53d9afb05cf50aca81d64545952",
+        "affectsGlobalScope": false
+      },
+      "../../src/node/transform/webmoduleplugin.ts": {
+        "version": "d89c756a98b6366d3433b6316c98fa5e52066069767125e1b00e4de11399aad9",
+        "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       },
       "../../src/node/build/command.ts": {
-        "version": "ae8c1e89218f199be506a7c75d48ae13398b0e708085bf32c29806f0febee5aa",
+        "version": "0618da5a2688def9a26de106bd42c2ab6c37a7e30504cab721dda1abd7310eb2",
         "signature": "affa568df599960361ee31af68759d895c98762294c9f1ce9d37a77d0d50999c",
         "affectsGlobalScope": false
       },
@@ -467,8 +472,8 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/fabrication.ts": {
-        "version": "ae6cc18c1b4166d65f8b68ac7df9bdf30edb5e52865a44caf39ba2f12e2c2798",
-        "signature": "a96c79f2c339a0353ede574cc5d53fbdc5855f5f95c076de0fb26c0b62da3c70",
+        "version": "ef34ed48b9a773a7e8f5e1770b53788391dd7e11d93fb8ec7f547f6b1447c68f",
+        "signature": "1e8c1bc4056b3fe21f77ab63db848cd27698918d9e95cc93cd67bd9195fbf066",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
@@ -479,11 +484,6 @@
       "../../src/node/constant.ts": {
         "version": "d561ad69139080d713a1f811d507229e95fb7ef128c0bec936f07000e291e3f0",
         "signature": "5680d1e5dc238c70853b3312a96342a80bfbe5f5ed89f8b596e643bb71031269",
-        "affectsGlobalScope": false
-      },
-      "../../src/node/transform/webmoduleplugin.ts": {
-        "version": "2cf8570a4843783e58314f0de4ba1e1d4c329c1a4262a20ccdd2933cba5af44d",
-        "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       }
     },
@@ -698,7 +698,9 @@
         "../../src/node/config.ts",
         "../../src/node/index.ts",
         "../../src/node/transform/fabrication.ts",
-        "../../src/node/transform/plainplugin.ts"
+        "../../src/node/transform/proxyplugin.ts",
+        "../../src/node/transform/webmoduleplugin.ts",
+        "../../src/node/utils.ts"
       ],
       "../../src/node/config.ts": [
         "../../node_modules/@types/fs-extra/index.d.ts",
@@ -729,7 +731,7 @@
         "../../src/node/transform/wrapesbuild.ts",
         "../../src/node/utils.ts"
       ],
-      "../../src/node/transform/plainplugin.ts": [
+      "../../src/node/transform/proxyplugin.ts": [
         "../../node_modules/esbuild/lib/main.d.ts",
         "../../src/node/transform/fabrication.ts",
         "../../src/node/utils.ts"
@@ -938,9 +940,10 @@
       ],
       "../../src/node/transform/fabrication.ts": [
         "../../node_modules/esbuild/lib/main.d.ts",
-        "../../src/node/config.ts"
+        "../../src/node/config.ts",
+        "../../src/node/index.ts"
       ],
-      "../../src/node/transform/plainplugin.ts": [
+      "../../src/node/transform/proxyplugin.ts": [
         "../../src/node/transform/fabrication.ts"
       ],
       "../../src/node/transform/webmoduleplugin.ts": [
@@ -1039,115 +1042,53 @@
       "../../node_modules/typescript/lib/lib.es2020.string.d.ts",
       "../../node_modules/typescript/lib/lib.es5.d.ts",
       "../../node_modules/typescript/lib/lib.esnext.intl.d.ts",
-      [
-        "../../src/node/build/command.ts",
-        [
-          {
-            "file": "../../src/node/build/command.ts",
-            "start": 1088,
-            "length": 4,
-            "code": 2345,
-            "category": 1,
-            "messageText": {
-              "messageText": "Argument of type '{ dist: TempDist; plugins: Plugin[]; }' is not assignable to parameter of type 'BuildOptions'.",
-              "category": 1,
-              "code": 2345,
-              "next": [
-                {
-                  "messageText": "Object literal may only specify known properties, and 'dist' does not exist in type 'BuildOptions'.",
-                  "category": 1,
-                  "code": 2353
-                }
-              ]
-            }
-          }
-        ]
-      ],
+      "../../src/node/build/command.ts",
       "../../src/node/config.ts",
       "../../src/node/constant.ts",
       "../../src/node/index.ts",
-      "../../src/node/transform/plainplugin.ts",
       [
-        "../../src/node/transform/webmoduleplugin.ts",
+        "../../src/node/transform/fabrication.ts",
         [
           {
-            "file": "../../src/node/transform/webmoduleplugin.ts",
-            "start": 162,
-            "length": 15,
-            "code": 2322,
-            "category": 1,
-            "messageText": {
-              "messageText": "Type '(external: string[]) => Promise<({ dist, buildServe }: { dist: any; buildServe: any; }) => Promise<{ name: string; setup({ onResolve }: { onResolve: any; }): void; }>>' is not assignable to type '(external: string[]) => Promise<EspakPlugin>'.",
-              "category": 1,
-              "code": 2322,
-              "next": [
-                {
-                  "messageText": "Type 'Promise<({ dist, buildServe }: { dist: any; buildServe: any; }) => Promise<{ name: string; setup({ onResolve }: { onResolve: any; }): void; }>>' is not assignable to type 'Promise<EspakPlugin>'.",
-                  "category": 1,
-                  "code": 2322,
-                  "next": [
-                    {
-                      "messageText": "Property 'setup' is missing in type '({ dist, buildServe }: { dist: any; buildServe: any; }) => Promise<{ name: string; setup({ onResolve }: { onResolve: any; }): void; }>' but required in type 'EspakPlugin'.",
-                      "category": 1,
-                      "code": 2741
-                    }
-                  ]
-                }
-              ]
-            },
-            "relatedInformation": [
-              {
-                "file": "../../node_modules/esbuild/lib/main.d.ts",
-                "start": 3458,
-                "length": 5,
-                "messageText": "'setup' is declared here.",
-                "category": 3,
-                "code": 2728
-              }
-            ]
-          },
-          {
-            "file": "../../src/node/transform/webmoduleplugin.ts",
-            "start": 880,
-            "length": 4,
-            "messageText": "Binding element 'dist' implicitly has an 'any' type.",
-            "category": 1,
-            "code": 7031
-          },
-          {
-            "file": "../../src/node/transform/webmoduleplugin.ts",
-            "start": 886,
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 3975,
             "length": 10,
-            "messageText": "Binding element 'buildServe' implicitly has an 'any' type.",
+            "messageText": "'resolveDir' is declared but its value is never read.",
             "category": 1,
-            "code": 7031
+            "code": 6133,
+            "reportsUnnecessary": true
           },
           {
-            "file": "../../src/node/transform/webmoduleplugin.ts",
-            "start": 1349,
-            "length": 9,
-            "messageText": "Binding element 'onResolve' implicitly has an 'any' type.",
-            "category": 1,
-            "code": 7031
-          },
-          {
-            "file": "../../src/node/transform/webmoduleplugin.ts",
-            "start": 1463,
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 4033,
             "length": 4,
-            "messageText": "Parameter 'args' implicitly has an 'any' type.",
+            "messageText": "'dist' is declared but its value is never read.",
             "category": 1,
-            "code": 7006
+            "code": 6133,
+            "reportsUnnecessary": true
           },
           {
-            "file": "../../src/node/transform/webmoduleplugin.ts",
-            "start": 1874,
-            "length": 4,
-            "messageText": "Parameter 'args' implicitly has an 'any' type.",
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 4575,
+            "length": 34,
+            "messageText": "All destructured elements are unused.",
             "category": 1,
-            "code": 7006
+            "code": 6198,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 4625,
+            "length": 4,
+            "messageText": "'dist' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
           }
         ]
       ],
+      "../../src/node/transform/proxyplugin.ts",
+      "../../src/node/transform/webmoduleplugin.ts",
       "../../src/node/transform/wrapesbuild.ts",
       "../../src/node/utils.ts"
     ]

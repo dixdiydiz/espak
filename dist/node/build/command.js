@@ -7,12 +7,14 @@ exports.command = void 0;
 const loglevel_1 = __importDefault(require("loglevel"));
 const path_1 = __importDefault(require("path"));
 const resolve_1 = __importDefault(require("resolve"));
-const plainPlugin_1 = __importDefault(require("../transform/plainPlugin"));
+const proxyPlugin_1 = __importDefault(require("../transform/proxyPlugin"));
 const config_1 = require("../config");
 const fabrication_1 = require("../transform/fabrication");
+const webModulePlugin_1 = __importDefault(require("../transform/webModulePlugin"));
+const utils_1 = require("../utils");
 async function command(dist) {
     const config = await config_1.generateConfig();
-    const { entry: configEntry, plugins } = config;
+    const { entry: configEntry, external, plugins } = config;
     const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js'];
     const entries = [];
     for (let [_, val] of Object.entries(configEntry)) {
@@ -30,10 +32,12 @@ async function command(dist) {
             }
         }
     }
-    const simplePlugin = await fabrication_1.createPlugin(plainPlugin_1.default, plugins, config);
-    await fabrication_1.customModuleHandler(entries, {
+    const modulePlugin = await webModulePlugin_1.default(utils_1.isArray(external) ? external : []);
+    const combinePlugins = [modulePlugin, ...plugins];
+    const plugin = await fabrication_1.createPlugin(proxyPlugin_1.default, combinePlugins, config);
+    await fabrication_1.entryHandler(entries, {
         dist,
-        plugins: [simplePlugin],
+        plugins: [plugin],
     });
 }
 exports.command = command;

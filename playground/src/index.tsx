@@ -1,12 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import test from './test'
-// import App from '@src/App'
+// import test from './test'
+import App from '@src/App'
 // import './index.css'
-console.log(test)
+// console.log(test)
 // ReactDOM.render(
 //   <React.StrictMode>
-//     <App />
+;<App />
 //   </React.StrictMode>,
 //   document.getElementById('root')
 // )

@@ -1,5 +1,6 @@
 import { UserConfig } from '../config';
-import { BuildOptions, Plugin, OnResolveArgs } from 'esbuild';
+import { Plugin, OnResolveOptions, OnResolveArgs, OnResolveResult, OnLoadOptions, OnLoadArgs, OnLoadResult, BuildOptions } from 'esbuild';
+import { TempDist } from '../index';
 interface ResolveModuleResult {
     resolvepath: string;
     root: string;
@@ -11,15 +12,39 @@ interface ResolveModuleResult {
     relativepath: string;
 }
 export declare function resolveModule(extensions: string[], alias: unknown, to: string, from: string): ResolveModuleResult;
-export interface EspakPlugin extends Plugin {
+/**
+ * rewrite esbuild plugin types
+ * start
+ */
+export interface EspakBuildOptions extends BuildOptions {
+    sourcefile?: string;
+}
+export interface EspakOnResolveResult extends OnResolveResult {
+    buildOptions?: EspakBuildOptions;
+}
+declare type OnResloveCallback = (args: OnResolveArgs) => EspakOnResolveResult | null | undefined | Promise<EspakOnResolveResult | null | undefined>;
+declare type OnLoadCallback = (args: OnLoadArgs) => OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>;
+export interface PluginBuild {
+    onResolve(options: OnResolveOptions, callback: OnResloveCallback): void;
+    onLoad(options: OnLoadOptions, callback: OnLoadCallback): void;
+}
+export interface EspakPlugin {
+    name: string;
+    setup: (build: PluginBuild) => void;
     namespace?: string;
 }
-export interface EspakOnResolveArgs extends OnResolveArgs {
-}
+/**
+ * rewrite esbuild plugin types
+ * end
+ */
 export interface BuildUtil {
     namespaces?: string[];
 }
-export declare type SimplePlugin = (util: BuildUtil, onResolves: any, onLoads: any) => Promise<Plugin>;
-export declare function createPlugin(simplePlugin: SimplePlugin, plugins: EspakPlugin[], config: UserConfig): Promise<Plugin>;
-export declare function customModuleHandler(src: string[], option: BuildOptions): Promise<void>;
+export declare type ProxyPlugin = (util: BuildUtil, onResolves: (args: OnResolveArgs, plugin: Plugin) => Promise<any>, onLoads: any) => Promise<Plugin>;
+export declare function createPlugin(proxyPlugin: ProxyPlugin, plugins: EspakPlugin[], config: UserConfig): Promise<Plugin>;
+interface CustomBuildOption {
+    dist: TempDist;
+    plugins: EspakPlugin[];
+}
+export declare function entryHandler(src: string[], option: CustomBuildOption): Promise<void>;
 export {};
