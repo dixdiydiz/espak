@@ -14,20 +14,14 @@ import {
   OnLoadResult,
   BuildOptions,
 } from 'esbuild'
-import { createTempDist, TempDist } from '../index'
+import { createTempDist } from '../index'
 import { isObject } from '../utils'
 
 interface ResolveModuleResult {
-  resolvepath: string
-  root: string
-  dir: string
-  base: string
-  ext: string
+  modulePath: string
   name: string
-  relativedir: string
-  relativepath: string
 }
-export function resolveModule(extensions: string[], alias: unknown, to: string, from: string): ResolveModuleResult {
+export function resolveModule(extensions: string[], alias: unknown, to: string, fromdir: string): ResolveModuleResult {
   if (alias && isObject(alias) && !/^(\.\/|\.\.\/)/.test(to)) {
     for (let [key, val] of Object.entries(alias)) {
       const reg = new RegExp(`^${key}`)
@@ -37,26 +31,14 @@ export function resolveModule(extensions: string[], alias: unknown, to: string, 
       }
     }
   }
-  const { dir: fromdir } = path.parse(from)
-  const file = resolve.sync(to, {
+  const modulePath = resolve.sync(to, {
     basedir: fromdir,
     extensions,
   })
-  const { root, dir, base, ext, name } = path.parse(file)
-  let relativedir = path.relative(dir, fromdir)
-  if (!relativedir) {
-    relativedir = './'
-  }
-  const relativepath = path.resolve(relativedir, base)
+  const { name } = path.parse(modulePath)
   return {
-    resolvepath: to,
-    root,
-    dir,
-    base,
-    ext,
+    modulePath,
     name,
-    relativedir,
-    relativepath,
   }
 }
 
@@ -64,15 +46,23 @@ export function resolveModule(extensions: string[], alias: unknown, to: string, 
  * rewrite esbuild plugin types
  * start
  */
+export interface EspakOnResolveArgs extends OnResolveArgs {
+  modulePath: string
+}
 export interface EspakBuildOptions extends BuildOptions {
-  sourcefile?: string
+  sourcePath?: string
+  outputDir?: string
+  outputExtension?: string
+  fileName?: string
+  key?: string
 }
 export interface EspakOnResolveResult extends OnResolveResult {
-  buildOptions?: EspakBuildOptions
+  outputOptions?: EspakBuildOptions
+  buildOptions?: BuildOptions
 }
 
 type OnResloveCallback = (
-  args: OnResolveArgs
+  args: EspakOnResolveArgs
 ) => EspakOnResolveResult | null | undefined | Promise<EspakOnResolveResult | null | undefined>
 type OnLoadCallback = (args: OnLoadArgs) => OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>
 
@@ -126,13 +116,13 @@ function mobilizePlugin(plugins: EspakPlugin[]) {
   const namespaces: string[] = []
   plugins.forEach((ele) => {
     try {
-      const { setup, namespace } = ele
+      const { name = '', setup, namespace } = ele
       if (namespace) {
         namespaces.push(namespace)
       }
       setup({
-        onResolve,
-        onLoad,
+        onResolve: onResolve(name),
+        onLoad: onLoad(name),
       })
     } catch (e) {
       log.error(e)
@@ -144,11 +134,19 @@ function mobilizePlugin(plugins: EspakPlugin[]) {
     namespaces,
   }
 
-  function onResolve(options: OnResolveOptions, callback: OnResloveCallback): void {
-    resolveMap.set(options, callback)
+  function onResolve(name: string) {
+    return (options: OnResolveOptions, callback: OnResloveCallback): void => {
+      const onResolveCallback = (args: any) => callback(args)
+      onResolveCallback.pluginName = name
+      resolveMap.set(options, onResolveCallback)
+    }
   }
-  function onLoad(options: OnLoadOptions, callback: OnLoadCallback): void {
-    loadMap.set(options, callback)
+  function onLoad(name: string) {
+    return (options: OnLoadOptions, callback: OnLoadCallback): void => {
+      const onLoadCallback = (args: any) => callback(args)
+      onLoadCallback.pluginName = name
+      loadMap.set(options, onLoadCallback)
+    }
   }
 }
 
@@ -158,20 +156,58 @@ async function onResolves(
   args: OnResolveArgs,
   esbuildPlugin: Plugin
 ): Promise<unknown> {
-  const { path, importer, resolveDir, namespace: importerNamespace } = args
-  const dist: TempDist = await createTempDist()
-  if (importer) {
-    for (let [key, cb] of resolveMap) {
-      const { filter, namespace } = key
-      if (filter.test(path) && namespace === importerNamespace) {
-        const resolveResult = await cb({ ...args })
-        if (resolveResult?.buildOptions) {
+  const { path: rawModulePath, importer, resolveDir, namespace: importerNamespace } = args
+  const dist: string = await createTempDist()
+  // namespace default set to "file"
+  for (let [{ filter, namespace = 'file' }, callback] of resolveMap) {
+    const { modulePath, name } = resolveFn(rawModulePath, resolveDir)
+    if ([rawModulePath, modulePath].some((ele) => filter.test(ele)) && namespace === importerNamespace) {
+      const resolveResult: EspakOnResolveResult | undefined | null = await callback({ ...args, modulePath })
+      let relative: string = ''
+      if (resolveResult?.outputOptions) {
+        const {
+          sourcePath,
+          fileName = '',
+          key = '',
+          outputDir = '',
+          outputExtension = '.js',
+        } = resolveResult.outputOptions
+        const buildOptions = isObject(resolveResult.buildOptions) ? resolveResult.buildOptions : {}
+        Reflect.deleteProperty(resolveResult, 'outputOptions')
+        Reflect.deleteProperty(resolveResult, 'buildOptions')
+        const entry = sourcePath || modulePath
+        if (infileToOutfile[entry]) {
+          relative = path.relative(infileToOutfile[importer], infileToOutfile[entry])
+        } else {
+          const outfile = path.resolve(dist, outputDir, `${fileName || name}${key ? `-${key}` : ''}${outputExtension}`)
+          try {
+            await startBuildServe([
+              {
+                minify: true,
+                format: 'esm' as Format,
+                ...buildOptions,
+                entryPoints: [entry],
+                bundle: true,
+                outfile,
+                plugins: [esbuildPlugin],
+              },
+            ])
+            infileToOutfile[entry] = outfile
+            relative = path.relative(infileToOutfile[importer], outfile)
+          } catch (e) {
+            log.error(e)
+            process.exit(1)
+          }
         }
       }
+
+      return {
+        ...resolveResult,
+        path: resolveResult?.path || relative,
+      }
     }
-  } else {
-    return null
   }
+  return null
 }
 
 async function onLoads(
@@ -181,13 +217,37 @@ async function onLoads(
   esbuildPlugin: Plugin
 ): Promise<unknown> {
   const { path, namespace: argsNamespace } = args
-  const dist: TempDist = await createTempDist()
+  const dist: string = await createTempDist()
   // for (let [key, value] of resolveMap) {
   //   const { filter, namespace } = key
   // }
   return null
 }
 
+interface ClassifyEspakOnResolveResult extends Omit<EspakOnResolveResult, keyof OnResolveResult> {
+  resolveResult: OnResolveResult
+}
+function verifyOnResolveResult(pluginName: string, resolveResult: unknown): ClassifyEspakOnResolveResult {
+  const support: (keyof OnResolveResult)[] = ['path', 'external', 'namespace', 'errors', 'warnings', 'pluginName']
+  let result: OnResolveResult
+  let outputOptions
+  let buildOptions
+  if (isObject(resolveResult)) {
+    result = Object.create(null)
+    outputOptions = resolveResult.outputOptions
+    buildOptions = resolveResult.buildOptions
+    Reflect.deleteProperty(resolveResult, outputOptions)
+    for (let [key, val] of Object.entries(resolveResult)) {
+      if (support.includes(key)) {
+      }
+    }
+  }
+  return {
+    resolveResult: result,
+    outputOptions,
+    buildOptions,
+  }
+}
 // async function exceptionHandle(fn: Function, ...args: any[]): Promise<Plugin | null> {
 //   try {
 //     return await fn(...args)
@@ -196,20 +256,25 @@ async function onLoads(
 //     return null
 //   }
 // }
+
+type PlainObject = { [key: string]: string }
+const infileToOutfile: PlainObject = Object.create(null)
 interface CustomBuildOption {
-  dist: TempDist
-  plugins: EspakPlugin[]
+  dist: string
+  plugins: Plugin[]
 }
 export async function entryHandler(src: string[], option: CustomBuildOption): Promise<void> {
   const { dist, plugins } = option
   const builder = src.map((entry) => {
     const { name } = path.parse(entry)
+    const outfile = path.resolve(dist, 'src', `${name}.js`)
+    infileToOutfile[entry] = outfile
     return {
       entryPoints: [entry],
       bundle: true,
       minify: true,
       format: 'esm' as Format,
-      outfile: path.resolve(dist.tempSrc, name, '.js'),
+      outfile,
       plugins,
     }
   })

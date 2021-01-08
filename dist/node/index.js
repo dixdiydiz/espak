@@ -33,15 +33,8 @@ async function createTempDist() {
         return dist;
     }
     try {
-        const temp = fs_extra_1.default.mkdtempSync(path_1.default.join(os_1.default.tmpdir(), 'espak-'));
-        const tempSrc = path_1.default.join(temp, 'src');
-        const tempModule = path_1.default.join(temp, 'module');
-        loglevel_1.default.info('temp', temp);
-        dist = Object.freeze({
-            temp,
-            tempSrc,
-            tempModule,
-        });
+        dist = fs_extra_1.default.mkdtempSync(path_1.default.join(os_1.default.tmpdir(), 'espak-'));
+        loglevel_1.default.info('dist', dist);
         return dist;
     }
     catch (e) {
@@ -69,7 +62,7 @@ function exitHandler(option = {
 }) {
     const { exitCode } = option;
     if (dist) {
-        fs_extra_1.default.removeSync(dist.temp);
+        // fs.removeSync(dist)
     }
     loglevel_1.default.info(chalk_1.default.magenta(`exitCode:--${exitCode}`));
     process.exit(exitCode);

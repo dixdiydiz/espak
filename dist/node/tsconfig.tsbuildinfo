@@ -452,28 +452,28 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/proxyplugin.ts": {
-        "version": "540a13ce6bc1343575f718eb93f48c8a3c3b5cd466f2753b0bbc4abd972a10dc",
+        "version": "0c82acde92c6c4e6c69fd027c922e9c3227f1f538b98a6f35cfa658da2a75435",
         "signature": "91d098b2b421128fdea3d46ef5542a34f1f9f53d9afb05cf50aca81d64545952",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/webmoduleplugin.ts": {
-        "version": "d89c756a98b6366d3433b6316c98fa5e52066069767125e1b00e4de11399aad9",
+        "version": "db1eef6ce1c55bdcfd1f50ec95beee4f2b885a11979380658b2ad457d87c2fd3",
         "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       },
       "../../src/node/build/command.ts": {
-        "version": "0618da5a2688def9a26de106bd42c2ab6c37a7e30504cab721dda1abd7310eb2",
-        "signature": "affa568df599960361ee31af68759d895c98762294c9f1ce9d37a77d0d50999c",
+        "version": "cffe8be7e860dfad020de0deeac0a57617313e6c347012c1bc560b74e05ac359",
+        "signature": "6aac4c069e8330678962da2f969b2b734ba5526404198ac3f6e7ebc6c1dc3199",
         "affectsGlobalScope": false
       },
       "../../src/node/index.ts": {
-        "version": "be35750aa0e8a099afb761524fb166b1f8d0768f7ff1b905ff365e5a9accd564",
-        "signature": "148eb77e1ec29dd6a2c33b4856dc75b91c071e3dee72c29ceb8aafdd609e4527",
+        "version": "443a63c128c5bf3c502d48268ec8171485a33e920962df03742856207badbf33",
+        "signature": "0553ca3d1f4b8ba349a971b3429fdbb3a611e07a7d1e8c610bffed5757b068e8",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/fabrication.ts": {
-        "version": "ef34ed48b9a773a7e8f5e1770b53788391dd7e11d93fb8ec7f547f6b1447c68f",
-        "signature": "1e8c1bc4056b3fe21f77ab63db848cd27698918d9e95cc93cd67bd9195fbf066",
+        "version": "85b651b40de2a2b59a10ef0f89cbb249700dca95e9acf4f61e6e6a81b0887208",
+        "signature": "bca6eaab5bffa1be0fd84b56203d58fa1e7c625c8e11f420cf8e0d45e3193f12",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
@@ -696,7 +696,6 @@
         "../../node_modules/@types/resolve/index.d.ts",
         "../../node_modules/loglevel/index.d.ts",
         "../../src/node/config.ts",
-        "../../src/node/index.ts",
         "../../src/node/transform/fabrication.ts",
         "../../src/node/transform/proxyplugin.ts",
         "../../src/node/transform/webmoduleplugin.ts",
@@ -737,7 +736,6 @@
         "../../src/node/utils.ts"
       ],
       "../../src/node/transform/webmoduleplugin.ts": [
-        "../../node_modules/@types/node/path.d.ts",
         "../../node_modules/@types/resolve/index.d.ts",
         "../../node_modules/loglevel/index.d.ts",
         "../../src/node/index.ts",
@@ -929,9 +927,6 @@
       "../../node_modules/loglevel-plugin-prefix/index.d.ts": [
         "../../node_modules/loglevel/index.d.ts"
       ],
-      "../../src/node/build/command.ts": [
-        "../../src/node/index.ts"
-      ],
       "../../src/node/config.ts": [
         "../../src/node/transform/fabrication.ts"
       ],
@@ -940,8 +935,7 @@
       ],
       "../../src/node/transform/fabrication.ts": [
         "../../node_modules/esbuild/lib/main.d.ts",
-        "../../src/node/config.ts",
-        "../../src/node/index.ts"
+        "../../src/node/config.ts"
       ],
       "../../src/node/transform/proxyplugin.ts": [
         "../../src/node/transform/fabrication.ts"
@@ -1051,25 +1045,7 @@
         [
           {
             "file": "../../src/node/transform/fabrication.ts",
-            "start": 3975,
-            "length": 10,
-            "messageText": "'resolveDir' is declared but its value is never read.",
-            "category": 1,
-            "code": 6133,
-            "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 4033,
-            "length": 4,
-            "messageText": "'dist' is declared but its value is never read.",
-            "category": 1,
-            "code": 6133,
-            "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 4575,
+            "start": 6287,
             "length": 34,
             "messageText": "All destructured elements are unused.",
             "category": 1,
@@ -1078,12 +1054,46 @@
           },
           {
             "file": "../../src/node/transform/fabrication.ts",
-            "start": 4625,
+            "start": 6337,
             "length": 4,
             "messageText": "'dist' is declared but its value is never read.",
             "category": 1,
             "code": 6133,
             "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 6627,
+            "length": 21,
+            "messageText": "'verifyOnResolveResult' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 7145,
+            "length": 3,
+            "messageText": "'val' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 7213,
+            "length": 3,
+            "code": 2345,
+            "category": 1,
+            "messageText": "Argument of type 'string' is not assignable to parameter of type '\"path\" | \"namespace\" | \"external\" | \"pluginName\" | \"errors\" | \"warnings\"'."
+          },
+          {
+            "file": "../../src/node/transform/fabrication.ts",
+            "start": 7269,
+            "length": 6,
+            "messageText": "Variable 'result' is used before being assigned.",
+            "category": 1,
+            "code": 2454
           }
         ]
       ],

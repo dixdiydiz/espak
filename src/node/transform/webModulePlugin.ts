@@ -1,7 +1,6 @@
 import { EspakPlugin } from '../index'
 import resolve from 'resolve'
 import log from 'loglevel'
-import path from 'path'
 import { isArray } from '../utils'
 
 const webModulePlugin: (external: string[]) => Promise<EspakPlugin> = async (external) => {
@@ -25,16 +24,21 @@ const webModulePlugin: (external: string[]) => Promise<EspakPlugin> = async (ext
     setup({ onResolve }) {
       onResolveItems.forEach((ele) => {
         onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
-          const to = path.join(process.cwd(), 'module/')
-          const { dir } = path.parse(args.importer)
+          console.log('webmoduleplugin', args)
+          if (/node_modules/.test(args.importer)) {
+            return {
+              ...args,
+            }
+          }
           return {
-            path: path.join(path.relative(dir, to), `${ele}.js`),
             external: true,
+            outputOptions: {
+              sourcePath: args.modulePath,
+              outputDir: 'module',
+              fileName: ele,
+              outputExtension: '.js',
+            },
             buildOptions: {
-              sourcefile: resolve.sync(ele, {
-                basedir: process.cwd(),
-              }),
-              outdir: 'module',
               define: {
                 'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
               },

@@ -1,14 +1,13 @@
 import log from 'loglevel'
 import path from 'path'
 import resolve from 'resolve'
-import { TempDist } from '../index'
 import proxyPlugin from '../transform/proxyPlugin'
 import { generateConfig, UserConfig } from '../config'
 import { entryHandler, createPlugin } from '../transform/fabrication'
 import webModulePlugin from '../transform/webModulePlugin'
 import { isArray } from '../utils'
 
-export async function command(dist: TempDist): Promise<void> {
+export async function command(dist: string): Promise<void> {
   const config: UserConfig = await generateConfig()
   const { entry: configEntry, external, plugins } = config
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']

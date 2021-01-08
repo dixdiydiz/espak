@@ -29,26 +29,14 @@ prefix.apply(log, {
   },
 })
 
-export interface TempDist {
-  temp: string
-  tempSrc: string
-  tempModule: string
-}
-let dist: TempDist
-export async function createTempDist(): Promise<TempDist> {
+let dist: string
+export async function createTempDist(): Promise<string> {
   if (dist) {
     return dist
   }
   try {
-    const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
-    const tempSrc = path.join(temp, 'src')
-    const tempModule = path.join(temp, 'module')
-    log.info('temp', temp)
-    dist = Object.freeze({
-      temp,
-      tempSrc,
-      tempModule,
-    })
+    dist = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
+    log.info('dist', dist)
     return dist
   } catch (e) {
     log.error(chalk.red(e))
@@ -83,7 +71,7 @@ function exitHandler(
 ): void {
   const { exitCode } = option
   if (dist) {
-    fs.removeSync(dist.temp)
+    // fs.removeSync(dist)
   }
   log.info(chalk.magenta(`exitCode:--${exitCode}`))
   process.exit(exitCode)

@@ -7,7 +7,6 @@ const proxyPlugin: ProxyPlugin = async ({ namespaces }, onResolves, onLoads) => 
     name: 'plainPlugin',
     setup({ onResolve, onLoad }) {
       onResolve({ filter: /.*/ }, async (args) => {
-        console.log(args)
         return await onResolves(
           {
             ...args,

@@ -24,6 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
+const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
 const webModulePlugin = async (external) => {
     const pkgPath = resolve_1.default.sync('./package.json', {
@@ -40,35 +41,49 @@ const webModulePlugin = async (external) => {
     const onResolveItems = utils_1.isArray(external)
         ? packageDependencies.filter((ele) => !external.includes(ele))
         : packageDependencies;
-    return {
-        name: 'webModulePlugin',
-        setup({ onResolve }) {
-            onResolveItems.forEach((ele) => {
-                onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
-                    console.log('webmoduleplugin', args);
-                    if (/node_modules/.test(args.importer)) {
+    const mapPaths = Object.create(null);
+    onResolveItems.forEach((ele) => {
+        mapPaths[ele] = resolve_1.default.sync(ele, {
+            basedir: process.cwd(),
+        });
+    });
+    return async ({ dist, buildServe }) => {
+        const buildOptions = Object.entries(mapPaths).map(([key, val]) => ({
+            entryPoints: [val],
+            outfile: path_1.default.join(dist.tempModule, `${key}.js`),
+            bundle: true,
+            minify: true,
+            format: 'esm',
+            define: {
+                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+            },
+        }));
+        await buildServe(buildOptions);
+        return {
+            name: 'webModulePlugin',
+            setup({ onResolve }) {
+                onResolveItems.forEach((ele) => {
+                    onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
+                        const to = path_1.default.join(process.cwd(), 'module/');
+                        const { dir } = path_1.default.parse(args.importer);
                         return {
-                            ...args,
+                            path: path_1.default.join(path_1.default.relative(dir, to), `${ele}.js`),
+                            external: true,
                         };
-                    }
-                    return {
-                        external: true,
-                        outputOptions: {
-                            sourcePath: args.modulePath,
-                            outputDir: 'module',
-                            fileName: ele,
-                            outputExtension: '.js',
-                        },
-                        buildOptions: {
-                            define: {
-                                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
-                            },
-                        },
-                    };
+                    });
                 });
-            });
-        },
+                if (utils_1.isArray(external)) {
+                    external.forEach((ele) => {
+                        onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
+                            return {
+                                namespace: ele,
+                            };
+                        });
+                    });
+                }
+            },
+        };
     };
 };
 exports.default = webModulePlugin;
-//# sourceMappingURL=webModulePlugin.js.map
+//# sourceMappingURL=webModulePluginbakkkk.js.map
