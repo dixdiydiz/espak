@@ -48,7 +48,7 @@ const webModulePlugin = async (external) => {
                     console.log('webmoduleplugin', args);
                     if (/node_modules/.test(args.importer)) {
                         return {
-                            ...args,
+                            path: args.path,
                         };
                     }
                     return {

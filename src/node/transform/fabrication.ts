@@ -61,10 +61,14 @@ export interface EspakOnResolveResult extends OnResolveResult {
   buildOptions?: BuildOptions
 }
 
-type OnResloveCallback = (
-  args: EspakOnResolveArgs
-) => EspakOnResolveResult | null | undefined | Promise<EspakOnResolveResult | null | undefined>
-type OnLoadCallback = (args: OnLoadArgs) => OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>
+interface OnResloveCallback {
+  (args: EspakOnResolveArgs): EspakOnResolveResult | null | undefined | Promise<EspakOnResolveResult | null | undefined>
+  plguinName?: string | null | undefined
+}
+interface OnLoadCallback {
+  (args: OnLoadArgs): OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>
+  plguinName?: string | null | undefined
+}
 
 export interface PluginBuild {
   onResolve(options: OnResolveOptions, callback: OnResloveCallback): void
@@ -75,8 +79,11 @@ export interface EspakPlugin {
   setup: (build: PluginBuild) => void
   namespace?: string
 }
-
-type ResolveMap = Map<OnResolveOptions, OnResloveCallback>
+interface OnLoadCallback {
+  (args: OnLoadArgs): OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>
+  pluginName: string | undefined | null
+}
+type ResolveMap = Map<OnResolveOptions, OnResolveResult>
 
 type LoadMap = Map<OnLoadOptions, OnLoadCallback>
 /**
@@ -162,19 +169,17 @@ async function onResolves(
   for (let [{ filter, namespace = 'file' }, callback] of resolveMap) {
     const { modulePath, name } = resolveFn(rawModulePath, resolveDir)
     if ([rawModulePath, modulePath].some((ele) => filter.test(ele)) && namespace === importerNamespace) {
-      const resolveResult: EspakOnResolveResult | undefined | null = await callback({ ...args, modulePath })
+      const rawResolveResult: EspakOnResolveResult | undefined | null = await (callback as Function)({
+        ...args,
+        modulePath,
+      })
+      const { resolveResult: ripeResolveResult, outputOptions, buildOptions } = verifyOnResolveResult(
+        callback.pluginName,
+        rawResolveResult
+      )
       let relative: string = ''
-      if (resolveResult?.outputOptions) {
-        const {
-          sourcePath,
-          fileName = '',
-          key = '',
-          outputDir = '',
-          outputExtension = '.js',
-        } = resolveResult.outputOptions
-        const buildOptions = isObject(resolveResult.buildOptions) ? resolveResult.buildOptions : {}
-        Reflect.deleteProperty(resolveResult, 'outputOptions')
-        Reflect.deleteProperty(resolveResult, 'buildOptions')
+      if (outputOptions) {
+        const { sourcePath, fileName = '', key = '', outputDir = '', outputExtension = '.js' } = outputOptions
         const entry = sourcePath || modulePath
         if (infileToOutfile[entry]) {
           relative = path.relative(infileToOutfile[importer], infileToOutfile[entry])
@@ -202,8 +207,8 @@ async function onResolves(
       }
 
       return {
-        ...resolveResult,
-        path: resolveResult?.path || relative,
+        ...ripeResolveResult,
+        path: ripeResolveResult?.path || relative,
       }
     }
   }
@@ -227,25 +232,36 @@ async function onLoads(
 interface ClassifyEspakOnResolveResult extends Omit<EspakOnResolveResult, keyof OnResolveResult> {
   resolveResult: OnResolveResult
 }
-function verifyOnResolveResult(pluginName: string, resolveResult: unknown): ClassifyEspakOnResolveResult {
-  const support: (keyof OnResolveResult)[] = ['path', 'external', 'namespace', 'errors', 'warnings', 'pluginName']
-  let result: OnResolveResult
-  let outputOptions
-  let buildOptions
+function verifyOnResolveResult(
+  pluginName: string | undefined | null,
+  resolveResult: unknown
+): ClassifyEspakOnResolveResult {
+  const support: string[] = ['path', 'external', 'namespace', 'errors', 'warnings', 'pluginName']
+  const extraOptions: EspakOnResolveResult = {
+    outputOptions: undefined,
+    buildOptions: undefined,
+  }
+  let result: any = resolveResult
   if (isObject(resolveResult)) {
     result = Object.create(null)
-    outputOptions = resolveResult.outputOptions
-    buildOptions = resolveResult.buildOptions
-    Reflect.deleteProperty(resolveResult, outputOptions)
+    const extraOptionsKeys: string[] = Object.keys(extraOptions)
     for (let [key, val] of Object.entries(resolveResult)) {
       if (support.includes(key)) {
+        result[key] = val
+      } else if (extraOptionsKeys.includes(key)) {
+        extraOptions[key as keyof typeof extraOptions] = val
+      } else {
+        log.error(
+          `[plugin error]: Invalid option from onResolve() callback in plugin ${pluginName || 'unknown plugin'}: ${key}`
+        )
+        process.exit(1)
       }
     }
   }
   return {
     resolveResult: result,
-    outputOptions,
-    buildOptions,
+    outputOptions: extraOptions.outputOptions,
+    buildOptions: extraOptions.buildOptions,
   }
 }
 // async function exceptionHandle(fn: Function, ...args: any[]): Promise<Plugin | null> {

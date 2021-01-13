@@ -84,13 +84,14 @@ async function onResolves(resolveFn, resolveMap, args, esbuildPlugin) {
     for (let [{ filter, namespace = 'file' }, callback] of resolveMap) {
         const { modulePath, name } = resolveFn(rawModulePath, resolveDir);
         if ([rawModulePath, modulePath].some((ele) => filter.test(ele)) && namespace === importerNamespace) {
-            const resolveResult = await callback({ ...args, modulePath });
+            const rawResolveResult = await callback({
+                ...args,
+                modulePath,
+            });
+            const { resolveResult: ripeResolveResult, outputOptions, buildOptions } = verifyOnResolveResult(callback.pluginName, rawResolveResult);
             let relative = '';
-            if (resolveResult?.outputOptions) {
-                const { sourcePath, fileName = '', key = '', outputDir = '', outputExtension = '.js', } = resolveResult.outputOptions;
-                const buildOptions = utils_1.isObject(resolveResult.buildOptions) ? resolveResult.buildOptions : {};
-                Reflect.deleteProperty(resolveResult, 'outputOptions');
-                Reflect.deleteProperty(resolveResult, 'buildOptions');
+            if (outputOptions) {
+                const { sourcePath, fileName = '', key = '', outputDir = '', outputExtension = '.js' } = outputOptions;
                 const entry = sourcePath || modulePath;
                 if (infileToOutfile[entry]) {
                     relative = path_1.default.relative(infileToOutfile[importer], infileToOutfile[entry]);
@@ -119,8 +120,8 @@ async function onResolves(resolveFn, resolveMap, args, esbuildPlugin) {
                 }
             }
             return {
-                ...resolveResult,
-                path: resolveResult?.path || relative,
+                ...ripeResolveResult,
+                path: ripeResolveResult?.path || relative,
             };
         }
     }
@@ -136,23 +137,31 @@ async function onLoads(resolveFn, loadMap, args, esbuildPlugin) {
 }
 function verifyOnResolveResult(pluginName, resolveResult) {
     const support = ['path', 'external', 'namespace', 'errors', 'warnings', 'pluginName'];
-    let result;
-    let outputOptions;
-    let buildOptions;
+    const extraOptions = {
+        outputOptions: undefined,
+        buildOptions: undefined,
+    };
+    let result = resolveResult;
     if (utils_1.isObject(resolveResult)) {
         result = Object.create(null);
-        outputOptions = resolveResult.outputOptions;
-        buildOptions = resolveResult.buildOptions;
-        Reflect.deleteProperty(resolveResult, outputOptions);
+        const extraOptionsKeys = Object.keys(extraOptions);
         for (let [key, val] of Object.entries(resolveResult)) {
             if (support.includes(key)) {
+                result[key] = val;
+            }
+            else if (extraOptionsKeys.includes(key)) {
+                extraOptions[key] = val;
+            }
+            else {
+                loglevel_1.default.error(`[plugin error]: Invalid option from onResolve() callback in plugin ${pluginName || 'unknown plugin'}: ${key}`);
+                process.exit(1);
             }
         }
     }
     return {
         resolveResult: result,
-        outputOptions,
-        buildOptions,
+        outputOptions: extraOptions.outputOptions,
+        buildOptions: extraOptions.buildOptions,
     };
 }
 const infileToOutfile = Object.create(null);

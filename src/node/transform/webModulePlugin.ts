@@ -27,7 +27,7 @@ const webModulePlugin: (external: string[]) => Promise<EspakPlugin> = async (ext
           console.log('webmoduleplugin', args)
           if (/node_modules/.test(args.importer)) {
             return {
-              ...args,
+              path: args.path,
             }
           }
           return {

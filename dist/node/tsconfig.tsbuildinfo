@@ -457,7 +457,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/webmoduleplugin.ts": {
-        "version": "db1eef6ce1c55bdcfd1f50ec95beee4f2b885a11979380658b2ad457d87c2fd3",
+        "version": "c8253e0c6918216a29415a9c7df0a04465a64a3772f4a6a5a4ca3e1c8b8cb80a",
         "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       },
@@ -472,8 +472,8 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/fabrication.ts": {
-        "version": "85b651b40de2a2b59a10ef0f89cbb249700dca95e9acf4f61e6e6a81b0887208",
-        "signature": "bca6eaab5bffa1be0fd84b56203d58fa1e7c625c8e11f420cf8e0d45e3193f12",
+        "version": "2d16b569e11ce2cf74162580de2799a358a64baf9d5595206edca58796220728",
+        "signature": "4d3dddfc36e8970776f3e4471357fe77519da8a180c7b92c3b01db86515e30ba",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
@@ -1045,7 +1045,7 @@
         [
           {
             "file": "../../src/node/transform/fabrication.ts",
-            "start": 6287,
+            "start": 6442,
             "length": 34,
             "messageText": "All destructured elements are unused.",
             "category": 1,
@@ -1054,46 +1054,12 @@
           },
           {
             "file": "../../src/node/transform/fabrication.ts",
-            "start": 6337,
+            "start": 6492,
             "length": 4,
             "messageText": "'dist' is declared but its value is never read.",
             "category": 1,
             "code": 6133,
             "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 6627,
-            "length": 21,
-            "messageText": "'verifyOnResolveResult' is declared but its value is never read.",
-            "category": 1,
-            "code": 6133,
-            "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 7145,
-            "length": 3,
-            "messageText": "'val' is declared but its value is never read.",
-            "category": 1,
-            "code": 6133,
-            "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 7213,
-            "length": 3,
-            "code": 2345,
-            "category": 1,
-            "messageText": "Argument of type 'string' is not assignable to parameter of type '\"path\" | \"namespace\" | \"external\" | \"pluginName\" | \"errors\" | \"warnings\"'."
-          },
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 7269,
-            "length": 6,
-            "messageText": "Variable 'result' is used before being assigned.",
-            "category": 1,
-            "code": 2454
           }
         ]
       ],

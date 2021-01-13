@@ -23,8 +23,14 @@ export interface EspakOnResolveResult extends OnResolveResult {
     outputOptions?: EspakBuildOptions;
     buildOptions?: BuildOptions;
 }
-declare type OnResloveCallback = (args: EspakOnResolveArgs) => EspakOnResolveResult | null | undefined | Promise<EspakOnResolveResult | null | undefined>;
-declare type OnLoadCallback = (args: OnLoadArgs) => OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>;
+interface OnResloveCallback {
+    (args: EspakOnResolveArgs): EspakOnResolveResult | null | undefined | Promise<EspakOnResolveResult | null | undefined>;
+    plguinName?: string | null | undefined;
+}
+interface OnLoadCallback {
+    (args: OnLoadArgs): OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>;
+    plguinName?: string | null | undefined;
+}
 export interface PluginBuild {
     onResolve(options: OnResolveOptions, callback: OnResloveCallback): void;
     onLoad(options: OnLoadOptions, callback: OnLoadCallback): void;
@@ -33,6 +39,10 @@ export interface EspakPlugin {
     name: string;
     setup: (build: PluginBuild) => void;
     namespace?: string;
+}
+interface OnLoadCallback {
+    (args: OnLoadArgs): OnLoadResult | null | undefined | Promise<OnLoadResult | null | undefined>;
+    pluginName: string | undefined | null;
 }
 /**
  * rewrite esbuild plugin types
