@@ -452,12 +452,12 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/proxyplugin.ts": {
-        "version": "0c82acde92c6c4e6c69fd027c922e9c3227f1f538b98a6f35cfa658da2a75435",
+        "version": "88135cde4113a06f7ecf041471d796a9fe526b05d26ea754f59fd5bf96c5d157",
         "signature": "91d098b2b421128fdea3d46ef5542a34f1f9f53d9afb05cf50aca81d64545952",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/webmoduleplugin.ts": {
-        "version": "c8253e0c6918216a29415a9c7df0a04465a64a3772f4a6a5a4ca3e1c8b8cb80a",
+        "version": "e3c7015a76ce8c88a29a8f5bb671f91f33a49e0bbaaacd2e4744fac3ecc94d2e",
         "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       },
@@ -467,13 +467,13 @@
         "affectsGlobalScope": false
       },
       "../../src/node/index.ts": {
-        "version": "443a63c128c5bf3c502d48268ec8171485a33e920962df03742856207badbf33",
+        "version": "fbe0b4b01ffde6a5735cc03baa54f907d28152e5f6d8e3e4560e4c3d89ac9157",
         "signature": "0553ca3d1f4b8ba349a971b3429fdbb3a611e07a7d1e8c610bffed5757b068e8",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/fabrication.ts": {
-        "version": "2d16b569e11ce2cf74162580de2799a358a64baf9d5595206edca58796220728",
-        "signature": "4d3dddfc36e8970776f3e4471357fe77519da8a180c7b92c3b01db86515e30ba",
+        "version": "c7bd2fd2f7116bb137bca71e1c0695640747d119f910375bb900edfed5c9b154",
+        "signature": "d143e6495f50081d1b0d6349bdf6f60ca510709787173fe731ee30dbe1d5c6c4",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
@@ -1040,29 +1040,7 @@
       "../../src/node/config.ts",
       "../../src/node/constant.ts",
       "../../src/node/index.ts",
-      [
-        "../../src/node/transform/fabrication.ts",
-        [
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 6442,
-            "length": 34,
-            "messageText": "All destructured elements are unused.",
-            "category": 1,
-            "code": 6198,
-            "reportsUnnecessary": true
-          },
-          {
-            "file": "../../src/node/transform/fabrication.ts",
-            "start": 6492,
-            "length": 4,
-            "messageText": "'dist' is declared but its value is never read.",
-            "category": 1,
-            "code": 6133,
-            "reportsUnnecessary": true
-          }
-        ]
-      ],
+      "../../src/node/transform/fabrication.ts",
       "../../src/node/transform/proxyplugin.ts",
       "../../src/node/transform/webmoduleplugin.ts",
       "../../src/node/transform/wrapesbuild.ts",

@@ -97,7 +97,7 @@ export interface BuildUtil {
 export type ProxyPlugin = (
   util: BuildUtil,
   onResolves: (args: OnResolveArgs, plugin: Plugin) => Promise<any>,
-  onLoads: any
+  onLoads: (args: OnLoadArgs, plugin: Plugin) => Promise<OnLoadResult | null | undefined>
 ) => Promise<Plugin>
 
 export async function createPlugin(
@@ -218,14 +218,22 @@ async function onResolves(
 async function onLoads(
   resolveFn: (to: string, from: string) => ResolveModuleResult,
   loadMap: LoadMap,
-  args: OnResolveArgs,
-  esbuildPlugin: Plugin
-): Promise<unknown> {
-  const { path, namespace: argsNamespace } = args
-  const dist: string = await createTempDist()
-  // for (let [key, value] of resolveMap) {
-  //   const { filter, namespace } = key
-  // }
+  args: OnLoadArgs,
+  esbuildPlugin: Plugin // not use yet
+): Promise<OnLoadResult | null | undefined> {
+  const { path: absoluteModulePath, namespace: moduleNamespace } = args
+
+  for (let [{ filter, namespace }, callback] of loadMap) {
+    if (filter.test(absoluteModulePath) && namespace === moduleNamespace) {
+      const rawLoadResult: OnLoadResult | undefined | null = await (callback as Function)({
+        ...args,
+      })
+
+      return {
+        ...rawLoadResult,
+      }
+    }
+  }
   return null
 }
 
@@ -264,14 +272,6 @@ function verifyOnResolveResult(
     buildOptions: extraOptions.buildOptions,
   }
 }
-// async function exceptionHandle(fn: Function, ...args: any[]): Promise<Plugin | null> {
-//   try {
-//     return await fn(...args)
-//   } catch (e) {
-//     log.error(e)
-//     return null
-//   }
-// }
 
 type PlainObject = { [key: string]: string }
 const infileToOutfile: PlainObject = Object.create(null)

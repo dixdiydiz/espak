@@ -45,10 +45,9 @@ const webModulePlugin = async (external) => {
         setup({ onResolve }) {
             onResolveItems.forEach((ele) => {
                 onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
-                    console.log('webmoduleplugin', args);
                     if (/node_modules/.test(args.importer)) {
                         return {
-                            path: args.path,
+                            path: args.modulePath,
                         };
                     }
                     return {

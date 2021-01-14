@@ -4,7 +4,7 @@ import { isArray } from '../utils'
 
 const proxyPlugin: ProxyPlugin = async ({ namespaces }, onResolves, onLoads) => {
   const self = {
-    name: 'plainPlugin',
+    name: 'espakProxyPlugin',
     setup({ onResolve, onLoad }) {
       onResolve({ filter: /.*/ }, async (args) => {
         return await onResolves(
@@ -19,7 +19,7 @@ const proxyPlugin: ProxyPlugin = async ({ namespaces }, onResolves, onLoads) => 
           {
             ...args,
           },
-          self
+          self // not use yet
         )
       })
       if (isArray(namespaces)) {
@@ -37,7 +37,7 @@ const proxyPlugin: ProxyPlugin = async ({ namespaces }, onResolves, onLoads) => 
               {
                 ...args,
               },
-              self
+              self // not use yet
             )
           })
         })

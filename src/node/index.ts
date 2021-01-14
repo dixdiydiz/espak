@@ -71,7 +71,7 @@ function exitHandler(
 ): void {
   const { exitCode } = option
   if (dist) {
-    // fs.removeSync(dist)
+    fs.removeSync(dist)
   }
   log.info(chalk.magenta(`exitCode:--${exitCode}`))
   process.exit(exitCode)

@@ -51,7 +51,7 @@ interface OnLoadCallback {
 export interface BuildUtil {
     namespaces?: string[];
 }
-export declare type ProxyPlugin = (util: BuildUtil, onResolves: (args: OnResolveArgs, plugin: Plugin) => Promise<any>, onLoads: any) => Promise<Plugin>;
+export declare type ProxyPlugin = (util: BuildUtil, onResolves: (args: OnResolveArgs, plugin: Plugin) => Promise<any>, onLoads: (args: OnLoadArgs, plugin: Plugin) => Promise<OnLoadResult | null | undefined>) => Promise<Plugin>;
 export declare function createPlugin(proxyPlugin: ProxyPlugin, plugins: EspakPlugin[], config: UserConfig): Promise<Plugin>;
 interface CustomBuildOption {
     dist: string;

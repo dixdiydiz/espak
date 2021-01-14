@@ -127,12 +127,19 @@ async function onResolves(resolveFn, resolveMap, args, esbuildPlugin) {
     }
     return null;
 }
-async function onLoads(resolveFn, loadMap, args, esbuildPlugin) {
-    const { path, namespace: argsNamespace } = args;
-    const dist = await index_1.createTempDist();
-    // for (let [key, value] of resolveMap) {
-    //   const { filter, namespace } = key
-    // }
+async function onLoads(resolveFn, loadMap, args, esbuildPlugin // not use yet
+) {
+    const { path: absoluteModulePath, namespace: moduleNamespace } = args;
+    for (let [{ filter, namespace }, callback] of loadMap) {
+        if (filter.test(absoluteModulePath) && namespace === moduleNamespace) {
+            const rawLoadResult = await callback({
+                ...args,
+            });
+            return {
+                ...rawLoadResult,
+            };
+        }
+    }
     return null;
 }
 function verifyOnResolveResult(pluginName, resolveResult) {

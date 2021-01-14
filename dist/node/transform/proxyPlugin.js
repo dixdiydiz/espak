@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
 const proxyPlugin = async ({ namespaces }, onResolves, onLoads) => {
     const self = {
-        name: 'plainPlugin',
+        name: 'espakProxyPlugin',
         setup({ onResolve, onLoad }) {
             onResolve({ filter: /.*/ }, async (args) => {
                 return await onResolves({
@@ -13,7 +13,8 @@ const proxyPlugin = async ({ namespaces }, onResolves, onLoads) => {
             onLoad({ filter: /.*/ }, async (args) => {
                 return await onLoads({
                     ...args,
-                }, self);
+                }, self // not use yet
+                );
             });
             if (utils_1.isArray(namespaces)) {
                 namespaces.forEach((ns) => {
@@ -25,7 +26,8 @@ const proxyPlugin = async ({ namespaces }, onResolves, onLoads) => {
                     onLoad({ filter: /.*/, namespace: ns }, async (args) => {
                         return await onLoads({
                             ...args,
-                        }, self);
+                        }, self // not use yet
+                        );
                     });
                 });
             }

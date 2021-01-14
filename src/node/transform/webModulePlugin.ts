@@ -24,10 +24,9 @@ const webModulePlugin: (external: string[]) => Promise<EspakPlugin> = async (ext
     setup({ onResolve }) {
       onResolveItems.forEach((ele) => {
         onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
-          console.log('webmoduleplugin', args)
           if (/node_modules/.test(args.importer)) {
             return {
-              path: args.path,
+              path: args.modulePath,
             }
           }
           return {
