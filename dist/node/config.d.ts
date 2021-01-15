@@ -6,7 +6,7 @@ export interface Resolve {
 export interface UserConfig {
     public: string;
     entry: string | Record<string, string> | string[];
-    output: string;
+    outputDir: string;
     resolve: Resolve;
     external: string[] | undefined;
     plugins: EspakPlugin[];

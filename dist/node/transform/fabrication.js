@@ -83,6 +83,7 @@ async function onResolves(resolveFn, resolveMap, args, esbuildPlugin) {
     // namespace default set to "file"
     for (let [{ filter, namespace = 'file' }, callback] of resolveMap) {
         const { modulePath, name } = resolveFn(rawModulePath, resolveDir);
+        // match import path or absolute path
         if ([rawModulePath, modulePath].some((ele) => filter.test(ele)) && namespace === importerNamespace) {
             const rawResolveResult = await callback({
                 ...args,
@@ -94,11 +95,12 @@ async function onResolves(resolveFn, resolveMap, args, esbuildPlugin) {
                 const { sourcePath, fileName = '', key = '', outputDir = '', outputExtension = '.js' } = outputOptions;
                 const entry = sourcePath || modulePath;
                 if (infileToOutfile[entry]) {
-                    relative = path_1.default.relative(infileToOutfile[importer], infileToOutfile[entry]);
+                    relative = convertRelativePath(infileToOutfile[importer], infileToOutfile[entry]);
                 }
                 else {
                     const outfile = path_1.default.resolve(dist, outputDir, `${fileName || name}${key ? `-${key}` : ''}${outputExtension}`);
                     try {
+                        infileToOutfile[entry] = outfile;
                         await wrapEsbuild_1.startBuildServe([
                             {
                                 minify: true,
@@ -110,8 +112,7 @@ async function onResolves(resolveFn, resolveMap, args, esbuildPlugin) {
                                 plugins: [esbuildPlugin],
                             },
                         ]);
-                        infileToOutfile[entry] = outfile;
-                        relative = path_1.default.relative(infileToOutfile[importer], outfile);
+                        relative = convertRelativePath(infileToOutfile[importer], infileToOutfile[entry]);
                     }
                     catch (e) {
                         loglevel_1.default.error(e);
@@ -126,6 +127,14 @@ async function onResolves(resolveFn, resolveMap, args, esbuildPlugin) {
         }
     }
     return null;
+    function convertRelativePath(importer, modulePath) {
+        const { dir } = path_1.default.parse(importer);
+        const relative = path_1.default.relative(dir, modulePath);
+        // if (!/\//.test(relative)) {
+        //   return `./${relative}`
+        // }
+        return relative;
+    }
 }
 async function onLoads(resolveFn, loadMap, args, esbuildPlugin // not use yet
 ) {

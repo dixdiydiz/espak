@@ -35,6 +35,7 @@ const webModulePlugin: (external: string[]) => Promise<EspakPlugin> = async (ext
               sourcePath: args.modulePath,
               outputDir: 'module',
               fileName: ele,
+              minify: false,
               outputExtension: '.js',
             },
             buildOptions: {

@@ -54,14 +54,14 @@ async function generateConfig() {
         loglevel_1.default.warn('configuration file is not available, exit.');
         process.exit(1);
     }
-    const { public: publicDir = './public', entry = 'src/index.js', output = 'dist', external, plugins, resolve, } = userConfig;
+    const { public: publicDir = './public', entry = 'src/index.js', outputDir = 'dist', external, plugins, resolve, } = userConfig;
     const defaultResolve = {
         extensions: ['.tsx', '.ts', '.jsx', '.js'],
     };
     return Object.freeze({
         public: publicDir,
         entry,
-        output,
+        outputDir,
         resolve: handleResovle(resolve, defaultResolve),
         external,
         plugins: utils_1.isArray(plugins) ? plugins : [],

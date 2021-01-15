@@ -168,6 +168,7 @@ async function onResolves(
   // namespace default set to "file"
   for (let [{ filter, namespace = 'file' }, callback] of resolveMap) {
     const { modulePath, name } = resolveFn(rawModulePath, resolveDir)
+    // match import path or absolute path
     if ([rawModulePath, modulePath].some((ele) => filter.test(ele)) && namespace === importerNamespace) {
       const rawResolveResult: EspakOnResolveResult | undefined | null = await (callback as Function)({
         ...args,
@@ -182,10 +183,11 @@ async function onResolves(
         const { sourcePath, fileName = '', key = '', outputDir = '', outputExtension = '.js' } = outputOptions
         const entry = sourcePath || modulePath
         if (infileToOutfile[entry]) {
-          relative = path.relative(infileToOutfile[importer], infileToOutfile[entry])
+          relative = convertRelativePath(infileToOutfile[importer], infileToOutfile[entry])
         } else {
           const outfile = path.resolve(dist, outputDir, `${fileName || name}${key ? `-${key}` : ''}${outputExtension}`)
           try {
+            infileToOutfile[entry] = outfile
             await startBuildServe([
               {
                 minify: true,
@@ -197,15 +199,13 @@ async function onResolves(
                 plugins: [esbuildPlugin],
               },
             ])
-            infileToOutfile[entry] = outfile
-            relative = path.relative(infileToOutfile[importer], outfile)
+            relative = convertRelativePath(infileToOutfile[importer], infileToOutfile[entry])
           } catch (e) {
             log.error(e)
             process.exit(1)
           }
         }
       }
-
       return {
         ...ripeResolveResult,
         path: ripeResolveResult?.path || relative,
@@ -213,6 +213,15 @@ async function onResolves(
     }
   }
   return null
+
+  function convertRelativePath(importer: string, modulePath: string): string {
+    const { dir } = path.parse(importer)
+    const relative = path.relative(dir, modulePath)
+    // if (!/\//.test(relative)) {
+    //   return `./${relative}`
+    // }
+    return relative
+  }
 }
 
 async function onLoads(

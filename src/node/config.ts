@@ -12,7 +12,7 @@ export interface Resolve {
 export interface UserConfig {
   public: string
   entry: string | Record<string, string> | string[]
-  output: string
+  outputDir: string
   resolve: Resolve
   external: string[] | undefined
   plugins: EspakPlugin[]
@@ -46,7 +46,7 @@ export async function generateConfig(): Promise<UserConfig> {
   const {
     public: publicDir = './public',
     entry = 'src/index.js',
-    output = 'dist',
+    outputDir = 'dist',
     external,
     plugins,
     resolve,
@@ -57,7 +57,7 @@ export async function generateConfig(): Promise<UserConfig> {
   return Object.freeze({
     public: publicDir,
     entry,
-    output,
+    outputDir,
     resolve: handleResovle(resolve, defaultResolve),
     external,
     plugins: isArray(plugins) ? plugins : [],

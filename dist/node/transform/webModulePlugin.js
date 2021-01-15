@@ -56,6 +56,7 @@ const webModulePlugin = async (external) => {
                             sourcePath: args.modulePath,
                             outputDir: 'module',
                             fileName: ele,
+                            minify: false,
                             outputExtension: '.js',
                         },
                         buildOptions: {
