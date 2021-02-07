@@ -9,6 +9,7 @@ const customModulePlugin: EspakPlugin = {
     onResolve({ filter: reg }, (args) => {
       return {
         external: true,
+        a: 1,
         outputOptions: {
           sourcePath: args.modulePath,
           outputDir: 'src',

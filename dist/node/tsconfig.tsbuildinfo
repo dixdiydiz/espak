@@ -417,8 +417,8 @@
         "affectsGlobalScope": false
       },
       "../../node_modules/esbuild/lib/main.d.ts": {
-        "version": "045ce4b67f8ac840d79c9915118222dd29efa357fb5fca74e18a8efa9f7d8eeb",
-        "signature": "045ce4b67f8ac840d79c9915118222dd29efa357fb5fca74e18a8efa9f7d8eeb",
+        "version": "47cedbc59d8d0acc15c5f32ba01eff47809f335d04bd526e2cf922c811090187",
+        "signature": "47cedbc59d8d0acc15c5f32ba01eff47809f335d04bd526e2cf922c811090187",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/wrapesbuild.ts": {
@@ -462,7 +462,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/transform/custommoduleplugin.ts": {
-        "version": "875b4b84873940481e271ee56c0b06e625d6d18ddc108953a6a5dac7cffe72c0",
+        "version": "8df4aae713364d4ce80f3c0ffc59889af3f7d3a8918aa74d240bc199f4ef2592",
         "signature": "edaf2579a9a719861135f5c7af58cf8d9db1a3f0d82c0e98058568dde106c9e8",
         "affectsGlobalScope": false
       },
@@ -489,6 +489,26 @@
       "../../src/node/constant.ts": {
         "version": "d561ad69139080d713a1f811d507229e95fb7ef128c0bec936f07000e291e3f0",
         "signature": "5680d1e5dc238c70853b3312a96342a80bfbe5f5ed89f8b596e643bb71031269",
+        "affectsGlobalScope": false
+      },
+      "../../src/node/build/webmoduleplugin.ts": {
+        "version": "3987827fb222b75e0428039ac8d1a04bdd4f8a7a9cb230832fb443709a25e19b",
+        "signature": "424f906518a2c8081c866d4abcd3be1dd855d528d47cf716fe9128fb377be2a7",
+        "affectsGlobalScope": false
+      },
+      "../../src/node/plugin-system/agency.ts": {
+        "version": "c9bc183136491ab158418e7ca41c9a8a92c98a995f2cfda9d802253bb9863fb7",
+        "signature": "c99d3489e21492a8a4652028969f183ba44102bd722062c78218a5229b4faf30",
+        "affectsGlobalScope": false
+      },
+      "../../src/node/plugin-system/mapping.ts": {
+        "version": "21e1d165bcc3f508cf4862f9ff47ccd9cab7fcbe2c2eefdfb916975c85f221ed",
+        "signature": "ad2822e264e9b008363826ad104783cb9f03fa47d44fc325cc124fbdcf64dc66",
+        "affectsGlobalScope": false
+      },
+      "../../src/node/plugin-system/proxyplugin.ts": {
+        "version": "e679b85500e432150eac939093fa4378b24553cf6c83e0a80115cf5a0e34f394",
+        "signature": "d437667481f6df39831d358f2b6ac8fe1761a9878c5d97587a70b9aa290c0621",
         "affectsGlobalScope": false
       }
     },
@@ -708,6 +728,11 @@
         "../../src/node/transform/webmoduleplugin.ts",
         "../../src/node/utils.ts"
       ],
+      "../../src/node/build/webmoduleplugin.ts": [
+        "../../node_modules/@types/resolve/index.d.ts",
+        "../../node_modules/loglevel/index.d.ts",
+        "../../src/node/utils.ts"
+      ],
       "../../src/node/config.ts": [
         "../../node_modules/@types/fs-extra/index.d.ts",
         "../../node_modules/@types/node/path.d.ts",
@@ -726,6 +751,15 @@
         "../../node_modules/loglevel/index.d.ts",
         "../../src/node/build/command.ts",
         "../../src/node/transform/fabrication.ts"
+      ],
+      "../../src/node/plugin-system/agency.ts": [
+        "../../node_modules/esbuild/lib/main.d.ts",
+        "../../node_modules/loglevel/index.d.ts",
+        "../../src/node/config.ts",
+        "../../src/node/utils.ts"
+      ],
+      "../../src/node/plugin-system/proxyplugin.ts": [
+        "../../src/node/plugin-system/agency.ts"
       ],
       "../../src/node/transform/custommoduleplugin.ts": [
         "../../src/node/index.ts"
@@ -943,6 +977,13 @@
       "../../src/node/index.ts": [
         "../../src/node/transform/fabrication.ts"
       ],
+      "../../src/node/plugin-system/agency.ts": [
+        "../../node_modules/esbuild/lib/main.d.ts",
+        "../../src/node/config.ts"
+      ],
+      "../../src/node/plugin-system/proxyplugin.ts": [
+        "../../src/node/plugin-system/agency.ts"
+      ],
       "../../src/node/transform/custommoduleplugin.ts": [
         "../../src/node/index.ts"
       ],
@@ -1050,9 +1091,185 @@
       "../../node_modules/typescript/lib/lib.es5.d.ts",
       "../../node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "../../src/node/build/command.ts",
+      [
+        "../../src/node/build/webmoduleplugin.ts",
+        [
+          {
+            "file": "../../src/node/build/webmoduleplugin.ts",
+            "start": 686,
+            "length": 9,
+            "messageText": "Binding element 'onResolve' implicitly has an 'any' type.",
+            "category": 1,
+            "code": 7031
+          },
+          {
+            "file": "../../src/node/build/webmoduleplugin.ts",
+            "start": 796,
+            "length": 4,
+            "messageText": "Parameter 'args' implicitly has an 'any' type.",
+            "category": 1,
+            "code": 7006
+          }
+        ]
+      ],
       "../../src/node/config.ts",
       "../../src/node/constant.ts",
       "../../src/node/index.ts",
+      [
+        "../../src/node/plugin-system/agency.ts",
+        [
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 188,
+            "length": 6,
+            "messageText": "'Format' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 489,
+            "length": 19,
+            "messageText": "'EsbuildBuildOptions' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 572,
+            "length": 35,
+            "messageText": "'isObject' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 1730,
+            "length": 5,
+            "code": 2344,
+            "category": 1,
+            "messageText": {
+              "messageText": "Type '[any]' does not satisfy the constraint '[]'.",
+              "category": 1,
+              "code": 2344,
+              "next": [
+                {
+                  "messageText": "Source has 1 element(s) but target allows only 0.",
+                  "category": 1,
+                  "code": 2619
+                }
+              ]
+            }
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 1897,
+            "length": 11,
+            "code": 2322,
+            "category": 1,
+            "messageText": {
+              "messageText": "Type 'any[]' is not assignable to type 'T'.",
+              "category": 1,
+              "code": 2322,
+              "next": [
+                {
+                  "messageText": "'T' could be instantiated with an arbitrary type which could be unrelated to 'any[]'.",
+                  "category": 1,
+                  "code": 5082
+                }
+              ]
+            }
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 2337,
+            "length": 15,
+            "messageText": "'decomposePlugin' is declared but its value is never read.",
+            "category": 1,
+            "code": 6133,
+            "reportsUnnecessary": true
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 2630,
+            "length": 75,
+            "code": 2345,
+            "category": 1,
+            "messageText": {
+              "messageText": "Argument of type '{ onResolve: (options: EsbuildOnResolveOptions, callback: OnResolveCallback) => void; onLoad: (options: EsbuildOnLoadOptions, callback: OnLoadCallback) => void; }' is not assignable to parameter of type 'PluginBuild'.",
+              "category": 1,
+              "code": 2345,
+              "next": [
+                {
+                  "messageText": "Property 'omenHook' is missing in type '{ onResolve: (options: EsbuildOnResolveOptions, callback: OnResolveCallback) => void; onLoad: (options: EsbuildOnLoadOptions, callback: OnLoadCallback) => void; }' but required in type 'PluginBuild'.",
+                  "category": 1,
+                  "code": 2741
+                }
+              ]
+            },
+            "relatedInformation": [
+              {
+                "file": "../../src/node/plugin-system/agency.ts",
+                "start": 1399,
+                "length": 34,
+                "messageText": "'omenHook' is declared here.",
+                "category": 3,
+                "code": 2728
+              }
+            ]
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 3331,
+            "length": 14,
+            "messageText": "Cannot find name 'PendingPlguins'.",
+            "category": 1,
+            "code": 2304
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 3438,
+            "length": 54,
+            "code": 2322,
+            "category": 1,
+            "messageText": {
+              "messageText": "Type 'Plugin | Promise<Plugin>' is not assignable to type 'Plugin'.",
+              "category": 1,
+              "code": 2322,
+              "next": [
+                {
+                  "messageText": "Type 'Promise<Plugin>' is missing the following properties from type 'Plugin': name, setup",
+                  "category": 1,
+                  "code": 2739
+                }
+              ]
+            }
+          },
+          {
+            "file": "../../src/node/plugin-system/agency.ts",
+            "start": 3445,
+            "length": 47,
+            "messageText": "Expected 2 arguments, but got 1.",
+            "category": 1,
+            "code": 2554,
+            "relatedInformation": [
+              {
+                "file": "../../src/node/plugin-system/agency.ts",
+                "start": 729,
+                "length": 66,
+                "messageText": "An argument for 'onLoads' was not provided.",
+                "category": 3,
+                "code": 6210
+              }
+            ]
+          }
+        ]
+      ],
+      "../../src/node/plugin-system/mapping.ts",
+      "../../src/node/plugin-system/proxyplugin.ts",
       "../../src/node/transform/custommoduleplugin.ts",
       "../../src/node/transform/fabrication.ts",
       "../../src/node/transform/proxyplugin.ts",
