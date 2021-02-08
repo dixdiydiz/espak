@@ -1,1 +1,0 @@
-import t from"../module/react.js";import o from"../module/react-dom.js";import r,{aaa as e}from"test.js";import m from"App.js";console.log(r,e);o.render(t.createElement(t.StrictMode,null,";",t.createElement(m,null)),document.getElementById("root"));import.meta&&console.log(import.meta);

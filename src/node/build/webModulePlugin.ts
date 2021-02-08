@@ -1,8 +1,9 @@
 import resolve from 'resolve'
 import log from 'loglevel'
+import { Plugin } from '../plugin-system/agency'
 import { isArray } from '../utils'
 
-const webModulePlugin: (external: string[]) => Promise<any> = async (external) => {
+const webModulePlugin: (external: string[]) => Promise<Plugin> = async (external) => {
   const pkgPath = resolve.sync('./package.json', {
     basedir: process.cwd(),
   })

@@ -5,8 +5,9 @@ import fs from 'fs-extra'
 import proxyPlugin from '../transform/proxyPlugin'
 import { generateConfig, UserConfig } from '../config'
 import { entryHandler, createPlugin } from '../transform/fabrication'
-import webModulePlugin from '../transform/webModulePlugin'
-import customModulePlugin from '../transform/customModulePlugin'
+import webModulePlugin from './webModulePlugin'
+// import customModulePlugin from '../transform/customModulePlugin'
+import { connectConfigHelper } from '../plugin-system/agency'
 import { isArray } from '../utils'
 
 export async function command(dist: string): Promise<void> {
@@ -28,9 +29,10 @@ export async function command(dist: string): Promise<void> {
       }
     }
   }
-  const modulePlugin = await webModulePlugin(isArray(external) ? external : [])
-  const combinePlugins = [modulePlugin, customModulePlugin, ...plugins]
-  const plugin = await createPlugin(proxyPlugin, combinePlugins, config)
+  const modulePlugin = await connectConfigHelper<string>(webModulePlugin, 'external')
+  // const modulePlugin = await webModulePlugin(isArray(external) ? external : [])
+  // const combinePlugins = [modulePlugin, customModulePlugin, ...plugins]
+  // const plugin = await createPlugin(proxyPlugin, combinePlugins, config)
   await entryHandler(entries, {
     dist,
     plugins: [plugin],
