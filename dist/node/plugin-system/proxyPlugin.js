@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const proxyPlugin = (onResolves, onLoads) => ({
+const proxyPlugin = (proxyResolveAct, proxyLoadAct) => ({
     name: 'espakProxyPlugin',
     setup({ onResolve, onLoad }) {
         onResolve({ filter: /.*/ }, async (args) => {
-            return await onResolves(args);
+            return await proxyResolveAct(args);
         });
         onLoad({ filter: /.*/ }, async (args) => {
-            return await onLoads(args);
+            return await proxyLoadAct(args);
         });
     },
 });

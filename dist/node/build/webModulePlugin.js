@@ -25,6 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
 const utils_1 = require("../utils");
+const path_1 = __importDefault(require("path"));
 const webModulePlugin = async (external) => {
     const pkgPath = resolve_1.default.sync('./package.json', {
         basedir: process.cwd(),
@@ -42,28 +43,27 @@ const webModulePlugin = async (external) => {
         : packageDependencies;
     return {
         name: 'webModulePlugin',
-        setup({ onResolve }) {
+        setup({ onResolve, triggerBuild }) {
             onResolveItems.forEach((ele) => {
-                onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
+                onResolve({ filter: new RegExp(`^${ele}$`) }, async (args) => {
                     if (/node_modules/.test(args.importer)) {
                         return {
-                            path: args.modulePath,
+                            path: args.absolutePath,
                         };
                     }
+                    const { base } = path_1.default.parse(args.absolutePath);
+                    const result = await triggerBuild({
+                        entryPoints: [args.absolutePath],
+                        format: 'esm',
+                        outfile: `module/${base}`,
+                        minify: false,
+                        define: {
+                            'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+                        },
+                    });
+                    console.log(result);
                     return {
                         external: true,
-                        outputOptions: {
-                            sourcePath: args.modulePath,
-                            outputDir: 'module',
-                            fileName: ele,
-                            minify: false,
-                            outputExtension: '.js',
-                        },
-                        buildOptions: {
-                            define: {
-                                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
-                            },
-                        },
                     };
                 });
             });

@@ -1,4 +1,4 @@
-import { EspakPlugin } from './transform/fabrication';
+import { PendingPlugin } from './plugin-system/agency';
 export interface Resolve {
     alias?: Record<string, string>;
     extensions: string[];
@@ -9,6 +9,6 @@ export interface UserConfig {
     outputDir: string;
     resolve: Resolve;
     external: string[] | undefined;
-    plugins: EspakPlugin[];
+    plugins: PendingPlugin[];
 }
 export declare function generateConfig(): Promise<UserConfig>;
