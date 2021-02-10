@@ -2,6 +2,8 @@ import resolve from 'resolve'
 import log from 'loglevel'
 import { Plugin } from '../plugin-system/agency'
 import { isArray } from '../utils'
+import { Format } from 'esbuild'
+import path from 'path'
 
 const webModulePlugin: (external: string[]) => Promise<Plugin> = async (external) => {
   const pkgPath = resolve.sync('./package.json', {
@@ -21,28 +23,27 @@ const webModulePlugin: (external: string[]) => Promise<Plugin> = async (external
     : packageDependencies
   return {
     name: 'webModulePlugin',
-    setup({ onResolve }) {
+    setup({ onResolve, triggerBuild }) {
       onResolveItems.forEach((ele) => {
-        onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
+        onResolve({ filter: new RegExp(`^${ele}$`) }, async (args) => {
           if (/node_modules/.test(args.importer)) {
             return {
-              path: args.modulePath,
+              path: args.absolutePath,
             }
           }
+          const { base } = path.parse(args.absolutePath)
+          const result = await triggerBuild({
+            entryPoints: [args.absolutePath],
+            format: 'esm' as Format,
+            outfile: `module/${base}`,
+            minify: false,
+            define: {
+              'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+            },
+          })
+          console.log(result)
           return {
             external: true,
-            outputOptions: {
-              sourcePath: args.modulePath,
-              outputDir: 'module',
-              fileName: ele,
-              minify: false,
-              outputExtension: '.js',
-            },
-            buildOptions: {
-              define: {
-                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
-              },
-            },
           }
         })
       })

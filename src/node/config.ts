@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
 import { buildConfig } from './transform/wrapEsbuild'
-import { EspakPlugin } from './transform/fabrication'
+import { PendingPlugin } from './plugin-system/agency'
 import { isArray } from './utils'
 
 export interface Resolve {
@@ -15,7 +15,7 @@ export interface UserConfig {
   outputDir: string
   resolve: Resolve
   external: string[] | undefined
-  plugins: EspakPlugin[]
+  plugins: PendingPlugin[]
 }
 
 export async function generateConfig(): Promise<UserConfig> {

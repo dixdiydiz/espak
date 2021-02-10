@@ -2,17 +2,14 @@ import log from 'loglevel'
 import path from 'path'
 import resolve from 'resolve'
 import fs from 'fs-extra'
-import proxyPlugin from '../transform/proxyPlugin'
 import { generateConfig, UserConfig } from '../config'
-import { entryHandler, createPlugin } from '../transform/fabrication'
 import webModulePlugin from './webModulePlugin'
-// import customModulePlugin from '../transform/customModulePlugin'
-import { connectConfigHelper } from '../plugin-system/agency'
-import { isArray } from '../utils'
+import { connectConfigHelper, constructEsbuildPlugin, entryHandler } from '../plugin-system/agency'
+import proxyPlugin from '../plugin-system/proxyPlugin'
 
 export async function command(dist: string): Promise<void> {
   const config: UserConfig = await generateConfig()
-  const { entry: configEntry, external, plugins, outputDir } = config
+  const { entry: configEntry, plugins, outputDir } = config
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']
   const entries = []
   for (let [_, val] of Object.entries(configEntry)) {
@@ -29,14 +26,9 @@ export async function command(dist: string): Promise<void> {
       }
     }
   }
-  const modulePlugin = await connectConfigHelper<string>(webModulePlugin, 'external')
-  // const modulePlugin = await webModulePlugin(isArray(external) ? external : [])
-  // const combinePlugins = [modulePlugin, customModulePlugin, ...plugins]
-  // const plugin = await createPlugin(proxyPlugin, combinePlugins, config)
-  await entryHandler(entries, {
-    dist,
-    plugins: [plugin],
-  })
+  const modulePlugin = await connectConfigHelper<[string[]]>(webModulePlugin, ['external'])
+  const plugin = await constructEsbuildPlugin(proxyPlugin, [modulePlugin, ...plugins], config)
+  await entryHandler(entries, [plugin])
   const absoluteOutputDir = path.resolve(process.cwd(), outputDir)
   await cloneDist(dist, absoluteOutputDir)
 }

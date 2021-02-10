@@ -8,15 +8,13 @@ const loglevel_1 = __importDefault(require("loglevel"));
 const path_1 = __importDefault(require("path"));
 const resolve_1 = __importDefault(require("resolve"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
-const proxyPlugin_1 = __importDefault(require("../transform/proxyPlugin"));
 const config_1 = require("../config");
-const fabrication_1 = require("../transform/fabrication");
-const webModulePlugin_1 = __importDefault(require("../transform/webModulePlugin"));
-const customModulePlugin_1 = __importDefault(require("../transform/customModulePlugin"));
-const utils_1 = require("../utils");
+const webModulePlugin_1 = __importDefault(require("./webModulePlugin"));
+const agency_1 = require("../plugin-system/agency");
+const proxyPlugin_1 = __importDefault(require("../plugin-system/proxyPlugin"));
 async function command(dist) {
     const config = await config_1.generateConfig();
-    const { entry: configEntry, external, plugins, outputDir } = config;
+    const { entry: configEntry, plugins, outputDir } = config;
     const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js'];
     const entries = [];
     for (let [_, val] of Object.entries(configEntry)) {
@@ -34,13 +32,9 @@ async function command(dist) {
             }
         }
     }
-    const modulePlugin = await webModulePlugin_1.default(utils_1.isArray(external) ? external : []);
-    const combinePlugins = [modulePlugin, customModulePlugin_1.default, ...plugins];
-    const plugin = await fabrication_1.createPlugin(proxyPlugin_1.default, combinePlugins, config);
-    await fabrication_1.entryHandler(entries, {
-        dist,
-        plugins: [plugin],
-    });
+    const modulePlugin = await agency_1.connectConfigHelper(webModulePlugin_1.default, ['external']);
+    const plugin = await agency_1.constructEsbuildPlugin(proxyPlugin_1.default, [modulePlugin, ...plugins], config);
+    await agency_1.entryHandler(entries, [plugin]);
     const absoluteOutputDir = path_1.default.resolve(process.cwd(), outputDir);
     await cloneDist(dist, absoluteOutputDir);
 }
