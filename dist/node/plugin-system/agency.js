@@ -10,7 +10,7 @@ const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const esbuild_1 = require("esbuild");
 const index_1 = require("../index");
-// import { MapModule } from './mapping'
+const mapping_1 = require("./mapping");
 const utils_1 = require("../utils");
 function connectConfigHelper(callback, args) {
     const wrapPlugin = async (config) => {
@@ -32,12 +32,14 @@ async function decomposePlugin(pendingPlugins, config) {
     for (let cb of pendingPlugins) {
         const { name = '', setup } = '_needConfig' in cb ? await cb(config) : cb;
         try {
-            setup({
-                onResolve: onResolve(name),
-                onLoad: onLoad(name),
-                heelHook,
-                triggerBuild: triggerBuild(name),
-            });
+            if (setup) {
+                setup({
+                    onResolve: onResolve(name),
+                    onLoad: onLoad(name),
+                    heelHook,
+                    triggerBuild: triggerBuild(name),
+                });
+            }
         }
         catch (e) {
             loglevel_1.default.error(`plugin ${name} error: ${e}`);
@@ -69,29 +71,29 @@ async function decomposePlugin(pendingPlugins, config) {
         /**
          * only support build one file, don't use outdir.
          * */
-        return async (options, rewrite = false) => {
+        return async (options, overwrite = false) => {
             if (!utils_1.isArray(options)) {
                 options = [options];
             }
             try {
-                for (let opt of options) {
-                    const { entryPoints, outfile, plugins = [] } = opt;
-                    if (utils_1.isArray(entryPoints)) {
-                        if (entryPoints.length > 1) {
-                            loglevel_1.default.warn('triggerBuild only support build one file once. other files will be ignored.');
-                        }
-                        opt.entryPoints = entryPoints.slice(0, 1);
-                    }
-                    Reflect.deleteProperty(opt, 'outdir');
-                    if (outfile) {
-                        opt.outfile = path_1.default.join(distDir, outfile);
-                        opt.plugins = [...plugins, ...triggerBuildPlugins];
-                    }
-                }
-                const metafile = path_1.default.join(distDir, 'meta.json');
-                const meta = await narrowBuild(name, options, metafile);
-                console.log(meta);
-                return meta;
+                // for (let opt of options) {
+                //   const { entryPoints, outfile, plugins = [] } = opt
+                //   if (isArray(entryPoints)) {
+                //     if (entryPoints.length > 1) {
+                //       log.warn('triggerBuild only support build one file once. other files will be ignored.')
+                //     }
+                //     opt.entryPoints = entryPoints.slice(0, 1)
+                //   }
+                //   Reflect.deleteProperty(opt, 'outdir')
+                //   if (outfile) {
+                //     opt.outfile = path.join(distDir, outfile)
+                //     opt.plugins = [...plugins, ...triggerBuildPlugins]
+                //   }
+                // }
+                // const metafile = path.join(distDir, 'meta.json')
+                // const meta: Metadata = await narrowBuild(name, options, metafile)
+                // console.log(meta)
+                // return meta
             }
             catch (e) {
                 loglevel_1.default.error(`triggerBuild callback get some error in ${name} plugin`);
@@ -172,57 +174,47 @@ function aliasReplacer(alias) {
     }
     return (path) => path;
 }
-async function narrowBuild(mark, options, metafile, rewrite = false) {
-    let metadata = { inputs: {}, outputs: {} };
+async function narrowBuild(errorMarkup, options, overwrite = false) {
+    const result = Object.create(null);
     try {
-        // options = options
-        //   .filter((opt) => {
-        //     if (opt.entryPoints?.length) {
-        //       const input = opt.entryPoints![0]
-        //       const mod = MapModule._cache[input]
-        //       if (mod) {
-        //         result[input] = mod.outfile
-        //         return false
-        //       }
-        //       const mod = new MapModule(input)
-        //       mod.addCache()
-        //       mod.outfile = opt.outfile || ''
-        //       result[input] = mod.outfile
-        //       return true
-        //     }
-        //     return false
-        //   })
-        //   .map((opt) => ({
-        //     ...opt,
-        //     metafile,
-        //   }))
-        options = options.map((opt) => ({
-            ...opt,
-            metafile,
-        }));
         const service = await esbuild_1.startService();
         const promises = [];
-        for (let opt of options) {
-            promises.push(service.build(opt).then((res) => {
-                const data = JSON.parse(fs_extra_1.default.readFileSync(metafile, 'utf-8'));
-                const { inputs, outputs } = metadata;
-                metadata = {
-                    inputs: {
-                        ...inputs,
-                        ...data.inputs,
-                    },
-                    outputs: {
-                        ...outputs,
-                        ...data.outputs,
-                    },
-                };
+        options
+            .filter((opt) => {
+            const id = opt.entryPoints[0];
+            const mod = mapping_1.MapModule._cache[id];
+            if (!overwrite && mod?.write) {
+                result[id] = mod;
+                return false;
+            }
+            return true;
+        })
+            .forEach((opt) => {
+            const infile = opt.entryPoints[0];
+            const outfile = opt.outfile;
+            const mod = new mapping_1.MapModule(infile, outfile);
+            promises.push(service
+                .build({
+                ...opt,
+                write: false,
+            })
+                .then((res) => {
+                if (res?.outputFiles.length) {
+                    for (let i = 0; i < res.outputFiles.length; i++) {
+                        const { path, contents } = res.outputFiles[i];
+                        mod.size = utils_1.formatBytes(contents.byteLength);
+                        fs_extra_1.default.appendFileSync(path, contents);
+                        mod.write = true;
+                        result[infile] = mod;
+                    }
+                }
             }));
-        }
+        });
         await Promise.all(promises);
-        return metadata;
+        return result;
     }
     catch (e) {
-        loglevel_1.default.error(`build error in ${mark}:`);
+        loglevel_1.default.error(`build error in ${errorMarkup}:`);
         loglevel_1.default.error(e);
         process.exit(1);
     }
@@ -241,8 +233,7 @@ async function entryHandler(srcs, plugins) {
             plugins,
         };
     });
-    const metafile = path_1.default.join(distDir, 'meta.json');
-    await narrowBuild('entry file', options, metafile);
+    await narrowBuild('entry file', options);
 }
 exports.entryHandler = entryHandler;
 //# sourceMappingURL=agency.js.map

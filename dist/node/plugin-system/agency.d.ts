@@ -1,5 +1,5 @@
 import { UserConfig } from '../config';
-import { Plugin as EsbuildPlugin, OnResolveOptions as EsbuildOnResolveOptions, OnResolveArgs as EsbuildOnResolveArgs, OnResolveResult as EsbuildOnResolveResult, OnLoadOptions as EsbuildOnLoadOptions, OnLoadArgs as EsbuildOnLoadArgs, OnLoadResult as EsbuildOnLoadResult, BuildOptions } from 'esbuild';
+import { Plugin as EsbuildPlugin, OnResolveOptions as EsbuildOnResolveOptions, OnResolveArgs as EsbuildOnResolveArgs, OnResolveResult as EsbuildOnResolveResult, OnLoadOptions as EsbuildOnLoadOptions, OnLoadArgs as EsbuildOnLoadArgs, OnLoadResult as EsbuildOnLoadResult, BuildOptions as EsbuildBuildOptions } from 'esbuild';
 export interface ProxyPlugin {
     (proxyResolveAct: (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>, proxyLoadAct: (args: EsbuildOnLoadArgs) => Promise<OnLoadResult>): EsbuildPlugin | Promise<EsbuildPlugin>;
 }
@@ -21,6 +21,10 @@ interface OnLoadCallback {
     _pluginName?: string;
 }
 declare type HeelHookCallback = (pluginData: any) => any;
+export interface BuildOptions extends Omit<EsbuildBuildOptions, 'outdir' | 'outbase'> {
+    entryPoints: [string];
+    outfile: string;
+}
 export interface PluginBuild {
     onResolve(options: EsbuildOnResolveOptions, callback: OnResolveCallback): void;
     onLoad(options: EsbuildOnLoadOptions, callback: OnLoadCallback): void;
@@ -28,8 +32,9 @@ export interface PluginBuild {
     triggerBuild(options: BuildOptions): Promise<any>;
 }
 export interface Plugin {
-    name: string;
-    setup: (build: PluginBuild) => void;
+    name?: string;
+    setup?: (build: PluginBuild) => void;
+    generateIndexHtml?: (html: string) => string;
 }
 /**
  * rewrite esbuild some inner interface
@@ -42,7 +47,6 @@ export interface ConnectConfigHelper {
 declare type ValOfConfig<T> = T extends any[] ? T : T extends (...args: infer U) => Plugin | Promise<Plugin> ? U : T[];
 export declare function connectConfigHelper<T = any[]>(callback: (...args: ValOfConfig<T>) => Plugin | Promise<Plugin>, args: string[]): ConnectConfigHelper;
 export declare type PendingPlugin = ConnectConfigHelper | Plugin;
-export declare type TriggerBuildOptions = Omit<BuildOptions, 'outdir'>;
 export declare function constructEsbuildPlugin(proxyPlugin: ProxyPlugin, plugins: PendingPlugin[], config: UserConfig): Promise<EsbuildPlugin>;
 export declare function entryHandler(srcs: string[], plugins: EsbuildPlugin[]): Promise<void>;
 export {};

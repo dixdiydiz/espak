@@ -12,16 +12,13 @@ import {
   OnLoadOptions as EsbuildOnLoadOptions,
   OnLoadArgs as EsbuildOnLoadArgs,
   OnLoadResult as EsbuildOnLoadResult,
-  BuildOptions,
+  BuildOptions as EsbuildBuildOptions,
   Format,
   startService,
-  // BuildResult,
-  // BuildIncremental,
-  // OutputFile,
 } from 'esbuild'
 import { createTempDist } from '../index'
-// import { MapModule } from './mapping'
-import { isObject, isArray } from '../utils'
+import { MapModule } from './mapping'
+import { isObject, isArray, formatBytes } from '../utils'
 
 export interface ProxyPlugin {
   (
@@ -47,7 +44,10 @@ interface OnLoadCallback {
   _pluginName?: string
 }
 type HeelHookCallback = (pluginData: any) => any
-// type AllBuildResult = BuildResult | BuildIncremental | (BuildResult & { outputFiles: OutputFile[] })
+export interface BuildOptions extends Omit<EsbuildBuildOptions, 'outdir' | 'outbase'> {
+  entryPoints: [string]
+  outfile: string
+}
 export interface PluginBuild {
   onResolve(options: EsbuildOnResolveOptions, callback: OnResolveCallback): void
   onLoad(options: EsbuildOnLoadOptions, callback: OnLoadCallback): void
@@ -56,8 +56,9 @@ export interface PluginBuild {
 }
 
 export interface Plugin {
-  name: string
-  setup: (build: PluginBuild) => void
+  name?: string
+  setup?: (build: PluginBuild) => void
+  generateIndexHtml?: (html: string) => string
 }
 /**
  * rewrite esbuild some inner interface
@@ -96,7 +97,6 @@ interface PluginDeconstruction {
   triggerBuildPlugins: TriggerBuildPlugins
 }
 
-export type TriggerBuildOptions = Omit<BuildOptions, 'outdir'>
 async function decomposePlugin(pendingPlugins: PendingPlugin[], config: UserConfig): Promise<PluginDeconstruction> {
   const distDir = await createTempDist()
   const onResolveMap: OnResolveMap = new Map()
@@ -106,12 +106,14 @@ async function decomposePlugin(pendingPlugins: PendingPlugin[], config: UserConf
   for (let cb of pendingPlugins) {
     const { name = '', setup } = '_needConfig' in cb ? await cb(config) : cb
     try {
-      setup({
-        onResolve: onResolve(name),
-        onLoad: onLoad(name),
-        heelHook,
-        triggerBuild: triggerBuild(name),
-      })
+      if (setup) {
+        setup({
+          onResolve: onResolve(name),
+          onLoad: onLoad(name),
+          heelHook,
+          triggerBuild: triggerBuild(name),
+        })
+      }
     } catch (e) {
       log.error(`plugin ${name} error: ${e}`)
       process.exit(1)
@@ -143,31 +145,32 @@ async function decomposePlugin(pendingPlugins: PendingPlugin[], config: UserConf
      * only support build one file, don't use outdir.
      * */
     return async (
-      options: TriggerBuildOptions | TriggerBuildOptions[],
-      rewrite: boolean = false
-    ): Promise<Metadata> => {
+      options: BuildOptions | BuildOptions[],
+      overwrite: boolean = false
+    ): Promise<Record<string, MapModule>> => {
       if (!isArray(options)) {
         options = [options]
       }
+
       try {
-        for (let opt of options) {
-          const { entryPoints, outfile, plugins = [] } = opt
-          if (isArray(entryPoints)) {
-            if (entryPoints.length > 1) {
-              log.warn('triggerBuild only support build one file once. other files will be ignored.')
-            }
-            opt.entryPoints = entryPoints.slice(0, 1)
-          }
-          Reflect.deleteProperty(opt, 'outdir')
-          if (outfile) {
-            opt.outfile = path.join(distDir, outfile)
-            opt.plugins = [...plugins, ...triggerBuildPlugins]
-          }
-        }
-        const metafile = path.join(distDir, 'meta.json')
-        const meta: Metadata = await narrowBuild(name, options, metafile)
-        console.log(meta)
-        return meta
+        // for (let opt of options) {
+        //   const { entryPoints, outfile, plugins = [] } = opt
+        //   if (isArray(entryPoints)) {
+        //     if (entryPoints.length > 1) {
+        //       log.warn('triggerBuild only support build one file once. other files will be ignored.')
+        //     }
+        //     opt.entryPoints = entryPoints.slice(0, 1)
+        //   }
+        //   Reflect.deleteProperty(opt, 'outdir')
+        //   if (outfile) {
+        //     opt.outfile = path.join(distDir, outfile)
+        //     opt.plugins = [...plugins, ...triggerBuildPlugins]
+        //   }
+        // }
+        // const metafile = path.join(distDir, 'meta.json')
+        // const meta: Metadata = await narrowBuild(name, options, metafile)
+        // console.log(meta)
+        // return meta
       } catch (e) {
         log.error(`triggerBuild callback get some error in ${name} plugin`)
         log.error(e)
@@ -272,62 +275,52 @@ function aliasReplacer(alias: unknown): (path: string) => string {
 }
 
 async function narrowBuild(
-  mark: string,
+  errorMarkup: string,
   options: BuildOptions[],
-  metafile: string,
-  rewrite: boolean = false
-): Promise<Metadata> {
-  let metadata: Metadata = { inputs: {}, outputs: {} }
+  overwrite: boolean = false
+): Promise<Record<string, MapModule>> {
+  const result = Object.create(null)
   try {
-    // options = options
-    //   .filter((opt) => {
-    //     if (opt.entryPoints?.length) {
-    //       const input = opt.entryPoints![0]
-    //       const mod = MapModule._cache[input]
-    //       if (mod) {
-    //         result[input] = mod.outfile
-    //         return false
-    //       }
-    //       const mod = new MapModule(input)
-    //       mod.addCache()
-    //       mod.outfile = opt.outfile || ''
-    //       result[input] = mod.outfile
-    //       return true
-    //     }
-    //     return false
-    //   })
-    //   .map((opt) => ({
-    //     ...opt,
-    //     metafile,
-    //   }))
-    options = options.map((opt) => ({
-      ...opt,
-      metafile,
-    }))
     const service = await startService()
-    const promises = []
-    for (let opt of options) {
-      promises.push(
-        service.build(opt).then((res) => {
-          const data: Metadata = JSON.parse(fs.readFileSync(metafile, 'utf-8'))
-          const { inputs, outputs } = metadata
-          metadata = {
-            inputs: {
-              ...inputs,
-              ...data.inputs,
-            },
-            outputs: {
-              ...outputs,
-              ...data.outputs,
-            },
-          }
-        })
-      )
-    }
+    const promises: Promise<any>[] = []
+    options
+      .filter((opt) => {
+        const id = opt.entryPoints[0]
+        const mod = MapModule._cache[id]
+        if (!overwrite && mod?.write) {
+          result[id] = mod
+          return false
+        }
+        return true
+      })
+      .forEach((opt) => {
+        const infile = opt.entryPoints[0]
+        const outfile = opt.outfile
+        const mod = new MapModule(infile, outfile)
+        promises.push(
+          service
+            .build({
+              ...opt,
+              write: false,
+            })
+            .then((res) => {
+              if (res?.outputFiles.length) {
+                for (let i = 0; i < res.outputFiles.length; i++) {
+                  const { path, contents } = res.outputFiles[i]
+                  mod.size = formatBytes(contents.byteLength)
+                  fs.appendFileSync(path, contents)
+                  mod.write = true
+                  result[infile] = mod
+                }
+              }
+            })
+        )
+      })
+
     await Promise.all(promises)
-    return metadata
+    return result
   } catch (e) {
-    log.error(`build error in ${mark}:`)
+    log.error(`build error in ${errorMarkup}:`)
     log.error(e)
     process.exit(1)
   }
@@ -335,7 +328,7 @@ async function narrowBuild(
 
 export async function entryHandler(srcs: string[], plugins: EsbuildPlugin[]): Promise<void> {
   const distDir = await createTempDist()
-  const options = srcs.map((src) => {
+  const options: BuildOptions[] = srcs.map((src) => {
     const { name } = path.parse(src)
     const outfile = path.resolve(distDir, 'src', `${name}.js`)
     return {
@@ -347,6 +340,5 @@ export async function entryHandler(srcs: string[], plugins: EsbuildPlugin[]): Pr
       plugins,
     }
   })
-  const metafile = path.join(distDir, 'meta.json')
-  await narrowBuild('entry file', options, metafile)
+  await narrowBuild('entry file', options)
 }

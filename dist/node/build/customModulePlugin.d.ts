@@ -1,3 +1,3 @@
-import { EspakPlugin } from '../index';
-declare const customModulePlugin: EspakPlugin;
+import { Plugin } from '../plugin-system/agency';
+declare const customModulePlugin: (alias: unknown) => Plugin;
 export default customModulePlugin;

@@ -446,9 +446,14 @@
         "signature": "0d14fa22c41fdc7277e6f71473b20ebc07f40f00e38875142335d5b63cdfc9d2",
         "affectsGlobalScope": false
       },
+      "../../src/node/build/custommoduleplugin.ts": {
+        "version": "13ad9b1b10d86cc073521b1a0b93be2f000e06fcda5ca53b023218742ab7a847",
+        "signature": "74e2bf49593acf0e53320524d6b47c11d3ed20f65ba6f6142abed6f3457162bd",
+        "affectsGlobalScope": false
+      },
       "../../src/node/utils.ts": {
-        "version": "96b1e7625f86f270965f751b57a7d257c2c3d91b323a6b29ade0c27c61c0264a",
-        "signature": "b76a23b0ba46a4c1ad14d5d0e544d0485c08ee3dfa9e9d75a5747684f8a92b3a",
+        "version": "f0db88f7852e94fa12e2d5a107f40f87fa0c85907a755a44b37b84fdfbe10af4",
+        "signature": "c240dc2ba7d358f74ebf3910208467bd6449f174b3761c529540666738079805",
         "affectsGlobalScope": false
       },
       "../../src/node/build/webmoduleplugin.ts": {
@@ -462,7 +467,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/command.ts": {
-        "version": "79e8ee655a1453954b4806f4bdc87d547fbfbcf7b765414b53ab1417340b61b0",
+        "version": "63c673b17b3628ac73411ec8c08196640e4c7867dd2c67e7ec0974e4bccbe10f",
         "signature": "6aac4c069e8330678962da2f969b2b734ba5526404198ac3f6e7ebc6c1dc3199",
         "affectsGlobalScope": false
       },
@@ -476,9 +481,14 @@
         "signature": "0553ca3d1f4b8ba349a971b3429fdbb3a611e07a7d1e8c610bffed5757b068e8",
         "affectsGlobalScope": false
       },
+      "../../src/node/plugin-system/mapping.ts": {
+        "version": "aaeaa061b5ad616788e95fd8d8935bfd436c0b5977ac7ffa45d84722ac86665b",
+        "signature": "3896f2c1f05894152fe16ddc560eab1a9b9ce06f41e18a83596680742befc477",
+        "affectsGlobalScope": false
+      },
       "../../src/node/plugin-system/agency.ts": {
-        "version": "dc5e417b285094a9627e12d837aaab23ff5028c497758703d2b13735106ed952",
-        "signature": "ba3c90d72e53fab7bcb4299e6cf09fb5f8bd46eefff14729a77dc0d392d4630f",
+        "version": "684e896954d8ac863a3c150405855ce4d4ad09451315079c656bb0e57c5d80b9",
+        "signature": "19ae3efb9838a61ff20d30eb5ceb06c249b470d322da7f28dc5418636418655d",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
@@ -491,19 +501,14 @@
         "signature": "5680d1e5dc238c70853b3312a96342a80bfbe5f5ed89f8b596e643bb71031269",
         "affectsGlobalScope": false
       },
-      "../../src/node/build/custommoduleplugin.ts": {
-        "version": "8df4aae713364d4ce80f3c0ffc59889af3f7d3a8918aa74d240bc199f4ef2592",
-        "signature": "edaf2579a9a719861135f5c7af58cf8d9db1a3f0d82c0e98058568dde106c9e8",
-        "affectsGlobalScope": false
-      },
       "../../src/node/plugin-system/esbuildservice.ts": {
         "version": "a9144052de6d9892301ca9610ef197796a05f1948469d347c4a3519d53877968",
         "signature": "37176abb261b9aaf0e90c4351cd280e436b63b013936908b9884ec26b9e50885",
         "affectsGlobalScope": false
       },
-      "../../src/node/plugin-system/mapping.ts": {
-        "version": "21e1d165bcc3f508cf4862f9ff47ccd9cab7fcbe2c2eefdfb916975c85f221ed",
-        "signature": "ad2822e264e9b008363826ad104783cb9f03fa47d44fc325cc124fbdcf64dc66",
+      "../../src/node/plugin-system/extendplugin.ts": {
+        "version": "e21dc3b0fe7b8beb579311d16ac89f62af331ddb0124fe36af94c71aad301e5f",
+        "signature": "98f3f0aafa81faf7a9f965073b6574115f938e45fef0872e78f0d0e29a545e3c",
         "affectsGlobalScope": false
       },
       "../../src/node/transform/custommoduleplugin.ts": {
@@ -731,13 +736,16 @@
         "../../node_modules/@types/node/path.d.ts",
         "../../node_modules/@types/resolve/index.d.ts",
         "../../node_modules/loglevel/index.d.ts",
+        "../../src/node/build/custommoduleplugin.ts",
         "../../src/node/build/webmoduleplugin.ts",
         "../../src/node/config.ts",
         "../../src/node/plugin-system/agency.ts",
         "../../src/node/plugin-system/proxyplugin.ts"
       ],
       "../../src/node/build/custommoduleplugin.ts": [
-        "../../src/node/index.ts"
+        "../../node_modules/@types/node/path.d.ts",
+        "../../node_modules/esbuild/lib/main.d.ts",
+        "../../src/node/plugin-system/agency.ts"
       ],
       "../../src/node/build/webmoduleplugin.ts": [
         "../../node_modules/@types/node/path.d.ts",
@@ -774,11 +782,17 @@
         "../../node_modules/loglevel/index.d.ts",
         "../../src/node/config.ts",
         "../../src/node/index.ts",
+        "../../src/node/plugin-system/mapping.ts",
         "../../src/node/utils.ts"
       ],
       "../../src/node/plugin-system/esbuildservice.ts": [
         "../../node_modules/esbuild/lib/main.d.ts",
         "../../src/node/utils.ts"
+      ],
+      "../../src/node/plugin-system/extendplugin.ts": [
+        "../../node_modules/@types/fs-extra/index.d.ts",
+        "../../node_modules/loglevel/index.d.ts",
+        "../../src/node/index.ts"
       ],
       "../../src/node/plugin-system/proxyplugin.ts": [
         "../../src/node/plugin-system/agency.ts"
@@ -994,7 +1008,7 @@
         "../../node_modules/loglevel/index.d.ts"
       ],
       "../../src/node/build/custommoduleplugin.ts": [
-        "../../src/node/index.ts"
+        "../../src/node/plugin-system/agency.ts"
       ],
       "../../src/node/build/webmoduleplugin.ts": [
         "../../src/node/plugin-system/agency.ts"
@@ -1121,22 +1135,8 @@
       "../../node_modules/typescript/lib/lib.es2020.string.d.ts",
       "../../node_modules/typescript/lib/lib.es5.d.ts",
       "../../node_modules/typescript/lib/lib.esnext.intl.d.ts",
-      "../../src/node/build/command.ts",
-      "../../src/node/build/custommoduleplugin.ts",
-      "../../src/node/build/webmoduleplugin.ts",
-      "../../src/node/config.ts",
       "../../src/node/constant.ts",
-      "../../src/node/index.ts",
-      "../../src/node/plugin-system/agency.ts",
-      "../../src/node/plugin-system/esbuildservice.ts",
-      "../../src/node/plugin-system/mapping.ts",
-      "../../src/node/plugin-system/proxyplugin.ts",
-      "../../src/node/transform/custommoduleplugin.ts",
-      "../../src/node/transform/fabrication.ts",
-      "../../src/node/transform/proxyplugin.ts",
-      "../../src/node/transform/webmoduleplugin.ts",
-      "../../src/node/transform/wrapesbuild.ts",
-      "../../src/node/utils.ts"
+      "../../src/node/transform/wrapesbuild.ts"
     ]
   },
   "version": "4.1.3"
