@@ -1,23 +1,19 @@
 import { UserConfig } from '../config';
-import { Plugin as EsbuildPlugin, OnResolveOptions as EsbuildOnResolveOptions, OnResolveArgs as EsbuildOnResolveArgs, OnResolveResult as EsbuildOnResolveResult, OnLoadOptions as EsbuildOnLoadOptions, OnLoadArgs as EsbuildOnLoadArgs, OnLoadResult as EsbuildOnLoadResult, BuildOptions as EsbuildBuildOptions } from 'esbuild';
+import { Plugin as EsbuildPlugin, OnResolveOptions, OnResolveArgs as EsbuildOnResolveArgs, OnResolveResult, OnLoadOptions, OnLoadArgs, OnLoadResult, BuildOptions as EsbuildBuildOptions } from 'esbuild';
+import { MapModule } from './mapping';
+import { GenerateIndexHtml } from './extendPlugin';
 export interface ProxyPlugin {
-    (proxyResolveAct: (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>, proxyLoadAct: (args: EsbuildOnLoadArgs) => Promise<OnLoadResult>): EsbuildPlugin | Promise<EsbuildPlugin>;
+    (proxyResolveMap: Map<OnResolveOptions, (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>>, proxyLoadMap: Map<OnLoadOptions, (args: OnLoadArgs) => Promise<OnLoadResult>>): EsbuildPlugin;
 }
-interface OnResolveArgs {
-    path: string;
-    absolutePath: string;
-    importer: string;
-    namespace: string;
-    resolveDir: string;
+interface OnResolveArgs extends EsbuildOnResolveArgs {
+    importerOutfile: string;
 }
-declare type OnResolveResult = EsbuildOnResolveResult | null | undefined;
 interface OnResolveCallback {
     (args: OnResolveArgs): OnResolveResult | Promise<OnResolveResult>;
     _pluginName?: string;
 }
-declare type OnLoadResult = EsbuildOnLoadResult | null | undefined;
 interface OnLoadCallback {
-    (args: EsbuildOnLoadArgs): OnLoadResult;
+    (args: OnLoadArgs): OnLoadResult;
     _pluginName?: string;
 }
 declare type HeelHookCallback = (pluginData: any) => any;
@@ -26,15 +22,15 @@ export interface BuildOptions extends Omit<EsbuildBuildOptions, 'outdir' | 'outb
     outfile: string;
 }
 export interface PluginBuild {
-    onResolve(options: EsbuildOnResolveOptions, callback: OnResolveCallback): void;
-    onLoad(options: EsbuildOnLoadOptions, callback: OnLoadCallback): void;
+    onResolve(options: OnResolveOptions, callback: OnResolveCallback): void;
+    onLoad(options: OnLoadOptions, callback: OnLoadCallback): void;
     heelHook(callback: HeelHookCallback): void;
-    triggerBuild(options: BuildOptions): Promise<any>;
+    triggerBuild(options: BuildOptions): Promise<Record<string, MapModule>>;
 }
 export interface Plugin {
     name?: string;
     setup?: (build: PluginBuild) => void;
-    generateIndexHtml?: (html: string) => string;
+    generateIndexHtml?: Partial<GenerateIndexHtml>;
 }
 /**
  * rewrite esbuild some inner interface
@@ -48,5 +44,6 @@ declare type ValOfConfig<T> = T extends any[] ? T : T extends (...args: infer U)
 export declare function connectConfigHelper<T = any[]>(callback: (...args: ValOfConfig<T>) => Plugin | Promise<Plugin>, args: string[]): ConnectConfigHelper;
 export declare type PendingPlugin = ConnectConfigHelper | Plugin;
 export declare function constructEsbuildPlugin(proxyPlugin: ProxyPlugin, plugins: PendingPlugin[], config: UserConfig): Promise<EsbuildPlugin>;
-export declare function entryHandler(srcs: string[], plugins: EsbuildPlugin[]): Promise<void>;
+export declare function entryHandler(srcs: string[], plugins: EsbuildPlugin[], publicDir: string): Promise<void>;
+export declare function fileToOutfile(src: string, ext?: string): string;
 export {};

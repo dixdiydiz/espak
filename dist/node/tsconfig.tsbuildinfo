@@ -416,19 +416,19 @@
         "signature": "47b04bde9f716e25d2f38f9d5f1afe47395ac523f7e3caf50a8a37f4c3b00560",
         "affectsGlobalScope": false
       },
-      "../../node_modules/esbuild/lib/main.d.ts": {
-        "version": "47cedbc59d8d0acc15c5f32ba01eff47809f335d04bd526e2cf922c811090187",
-        "signature": "47cedbc59d8d0acc15c5f32ba01eff47809f335d04bd526e2cf922c811090187",
-        "affectsGlobalScope": false
-      },
-      "../../src/node/transform/wrapesbuild.ts": {
-        "version": "f0543e7f7a47bcf1e85d4c32710dd074411f26c5ed6145cd9324861994145f09",
-        "signature": "9fb9215139f20a234045bf7bc32136ded7f3773798ced4b0f3058101a770a7f7",
+      "../../node_modules/require-module-from-string/types/index.d.ts": {
+        "version": "e427dd6cfda15b5d5d17642de4bf7280e63a2a2856db5c6d8f3821d1b036d587",
+        "signature": "e427dd6cfda15b5d5d17642de4bf7280e63a2a2856db5c6d8f3821d1b036d587",
         "affectsGlobalScope": false
       },
       "../../node_modules/@types/resolve/index.d.ts": {
         "version": "8a19491eba2108d5c333c249699f40aff05ad312c04a17504573b27d91f0aede",
         "signature": "8a19491eba2108d5c333c249699f40aff05ad312c04a17504573b27d91f0aede",
+        "affectsGlobalScope": false
+      },
+      "../../node_modules/esbuild/lib/main.d.ts": {
+        "version": "47cedbc59d8d0acc15c5f32ba01eff47809f335d04bd526e2cf922c811090187",
+        "signature": "47cedbc59d8d0acc15c5f32ba01eff47809f335d04bd526e2cf922c811090187",
         "affectsGlobalScope": false
       },
       "../../node_modules/commander/typings/index.d.ts": {
@@ -447,8 +447,8 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/custommoduleplugin.ts": {
-        "version": "13ad9b1b10d86cc073521b1a0b93be2f000e06fcda5ca53b023218742ab7a847",
-        "signature": "74e2bf49593acf0e53320524d6b47c11d3ed20f65ba6f6142abed6f3457162bd",
+        "version": "d6b32c0ad09065b54292caa8281531f843ffa52d222093c53573de0a0baedb30",
+        "signature": "b77fc5e63bd3cb117ad644021e5ed8d29b02eaa332732cc6e4012a6f38960a9c",
         "affectsGlobalScope": false
       },
       "../../src/node/utils.ts": {
@@ -457,28 +457,23 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/webmoduleplugin.ts": {
-        "version": "adedc26d75af40dbc3b11933cf63dff855fe859a9701985bfb1b06462f4c21f0",
+        "version": "22ace8398474004521467a1acce6c2495275713d06f171fdb0d0c4e51aef92a8",
         "signature": "69e2ccb6f12621b423dc50db272068f9a9336a3c09a927b3f02c7d590856c7d4",
         "affectsGlobalScope": false
       },
       "../../src/node/plugin-system/proxyplugin.ts": {
-        "version": "7ce4cc061d5ffbf240a2a63abd3e2c7dbdce39dd7f6d3ac1a7bb81d44334fada",
+        "version": "9b09b010ee0ef5546c95d373f362d54e859ce9dba2060f02e77db809f6994598",
         "signature": "d437667481f6df39831d358f2b6ac8fe1761a9878c5d97587a70b9aa290c0621",
         "affectsGlobalScope": false
       },
       "../../src/node/build/command.ts": {
-        "version": "63c673b17b3628ac73411ec8c08196640e4c7867dd2c67e7ec0974e4bccbe10f",
+        "version": "8ce5787e166f0a2106fde0f4ea8a5fc6be31ec6275374a1fc1f45d6c75a27375",
         "signature": "6aac4c069e8330678962da2f969b2b734ba5526404198ac3f6e7ebc6c1dc3199",
         "affectsGlobalScope": false
       },
-      "../../src/node/transform/fabrication.ts": {
-        "version": "bb48d384970c15d1015294dcaa80d5ee90431781a62b9cdec3136c50ad85514c",
-        "signature": "d143e6495f50081d1b0d6349bdf6f60ca510709787173fe731ee30dbe1d5c6c4",
-        "affectsGlobalScope": false
-      },
       "../../src/node/index.ts": {
-        "version": "fbe0b4b01ffde6a5735cc03baa54f907d28152e5f6d8e3e4560e4c3d89ac9157",
-        "signature": "0553ca3d1f4b8ba349a971b3429fdbb3a611e07a7d1e8c610bffed5757b068e8",
+        "version": "b6c2cd9313c48952a79d248b93eb00dd784c4e2040413ca9995605482f44074d",
+        "signature": "5bb6cf9c65083543a1c1fe908ccf584a6970f1b5931cdd1f85498f3bd7787c03",
         "affectsGlobalScope": false
       },
       "../../src/node/plugin-system/mapping.ts": {
@@ -486,14 +481,19 @@
         "signature": "3896f2c1f05894152fe16ddc560eab1a9b9ce06f41e18a83596680742befc477",
         "affectsGlobalScope": false
       },
+      "../../src/node/plugin-system/extendplugin.ts": {
+        "version": "e373019f753116285312b36039fbcb2f882cf34642555554ca5028f11572fa6c",
+        "signature": "0f00a18e6bbb8e7be211387ae1936f01d05ebfaea5cec3515b7ebac16f7f5fc8",
+        "affectsGlobalScope": false
+      },
       "../../src/node/plugin-system/agency.ts": {
-        "version": "684e896954d8ac863a3c150405855ce4d4ad09451315079c656bb0e57c5d80b9",
-        "signature": "19ae3efb9838a61ff20d30eb5ceb06c249b470d322da7f28dc5418636418655d",
+        "version": "bbc9174c1a0815edeaf9869bb609d38657e18a7eaaca2f08c14f2e55748a72cd",
+        "signature": "80ef401adda22e9a0dc69bf85213057a5707519712ca21fff9cff79b41ac1a6a",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
-        "version": "b329f633a319637f177becf52240c833a8226af95f2f8906bc98b8f9591b50db",
-        "signature": "28438d0aa805c4ccfa44b8787b54ee8ae53626d3ee59dc1c81bceef156f9e390",
+        "version": "b3e5b4651aae1b8000177c97f72cf0337e040d1f5e5f9721f63c2d8accfb13d3",
+        "signature": "66b12d542c9e502538d71503a26a93933ccfadc5bf987a0f1ce201d2611e0eb7",
         "affectsGlobalScope": false
       },
       "../../src/node/constant.ts": {
@@ -504,26 +504,6 @@
       "../../src/node/plugin-system/esbuildservice.ts": {
         "version": "a9144052de6d9892301ca9610ef197796a05f1948469d347c4a3519d53877968",
         "signature": "37176abb261b9aaf0e90c4351cd280e436b63b013936908b9884ec26b9e50885",
-        "affectsGlobalScope": false
-      },
-      "../../src/node/plugin-system/extendplugin.ts": {
-        "version": "e21dc3b0fe7b8beb579311d16ac89f62af331ddb0124fe36af94c71aad301e5f",
-        "signature": "98f3f0aafa81faf7a9f965073b6574115f938e45fef0872e78f0d0e29a545e3c",
-        "affectsGlobalScope": false
-      },
-      "../../src/node/transform/custommoduleplugin.ts": {
-        "version": "8df4aae713364d4ce80f3c0ffc59889af3f7d3a8918aa74d240bc199f4ef2592",
-        "signature": "edaf2579a9a719861135f5c7af58cf8d9db1a3f0d82c0e98058568dde106c9e8",
-        "affectsGlobalScope": false
-      },
-      "../../src/node/transform/proxyplugin.ts": {
-        "version": "88135cde4113a06f7ecf041471d796a9fe526b05d26ea754f59fd5bf96c5d157",
-        "signature": "91d098b2b421128fdea3d46ef5542a34f1f9f53d9afb05cf50aca81d64545952",
-        "affectsGlobalScope": false
-      },
-      "../../src/node/transform/webmoduleplugin.ts": {
-        "version": "b5f4f2be1ea470f76600e41ec4ed2c3987c948e3d3f8628d3a8b3f16013b7ed0",
-        "signature": "b6a79cde8dba71be187331fd86758486f6ac7f388a87f305505d8b01b4c6fc75",
         "affectsGlobalScope": false
       }
     },
@@ -759,8 +739,8 @@
         "../../node_modules/@types/fs-extra/index.d.ts",
         "../../node_modules/@types/node/path.d.ts",
         "../../node_modules/loglevel/index.d.ts",
+        "../../node_modules/require-module-from-string/types/index.d.ts",
         "../../src/node/plugin-system/agency.ts",
-        "../../src/node/transform/wrapesbuild.ts",
         "../../src/node/utils.ts"
       ],
       "../../src/node/index.ts": [
@@ -771,8 +751,7 @@
         "../../node_modules/commander/typings/index.d.ts",
         "../../node_modules/loglevel-plugin-prefix/index.d.ts",
         "../../node_modules/loglevel/index.d.ts",
-        "../../src/node/build/command.ts",
-        "../../src/node/transform/fabrication.ts"
+        "../../src/node/build/command.ts"
       ],
       "../../src/node/plugin-system/agency.ts": [
         "../../node_modules/@types/fs-extra/index.d.ts",
@@ -782,6 +761,7 @@
         "../../node_modules/loglevel/index.d.ts",
         "../../src/node/config.ts",
         "../../src/node/index.ts",
+        "../../src/node/plugin-system/extendplugin.ts",
         "../../src/node/plugin-system/mapping.ts",
         "../../src/node/utils.ts"
       ],
@@ -791,42 +771,12 @@
       ],
       "../../src/node/plugin-system/extendplugin.ts": [
         "../../node_modules/@types/fs-extra/index.d.ts",
+        "../../node_modules/@types/node/path.d.ts",
         "../../node_modules/loglevel/index.d.ts",
         "../../src/node/index.ts"
       ],
       "../../src/node/plugin-system/proxyplugin.ts": [
         "../../src/node/plugin-system/agency.ts"
-      ],
-      "../../src/node/transform/custommoduleplugin.ts": [
-        "../../src/node/index.ts"
-      ],
-      "../../src/node/transform/fabrication.ts": [
-        "../../node_modules/@types/node/path.d.ts",
-        "../../node_modules/@types/resolve/index.d.ts",
-        "../../node_modules/esbuild/lib/main.d.ts",
-        "../../node_modules/loglevel/index.d.ts",
-        "../../src/node/config.ts",
-        "../../src/node/index.ts",
-        "../../src/node/transform/wrapesbuild.ts",
-        "../../src/node/utils.ts"
-      ],
-      "../../src/node/transform/proxyplugin.ts": [
-        "../../node_modules/esbuild/lib/main.d.ts",
-        "../../src/node/transform/fabrication.ts",
-        "../../src/node/utils.ts"
-      ],
-      "../../src/node/transform/webmoduleplugin.ts": [
-        "../../node_modules/@types/resolve/index.d.ts",
-        "../../node_modules/loglevel/index.d.ts",
-        "../../src/node/index.ts",
-        "../../src/node/utils.ts"
-      ],
-      "../../src/node/transform/wrapesbuild.ts": [
-        "../../node_modules/@types/fs-extra/index.d.ts",
-        "../../node_modules/@types/node/os.d.ts",
-        "../../node_modules/@types/node/path.d.ts",
-        "../../node_modules/esbuild/lib/main.d.ts",
-        "../../node_modules/loglevel/index.d.ts"
       ]
     },
     "exportedModulesMap": {
@@ -1016,34 +966,17 @@
       "../../src/node/config.ts": [
         "../../src/node/plugin-system/agency.ts"
       ],
-      "../../src/node/index.ts": [
-        "../../src/node/transform/fabrication.ts"
-      ],
       "../../src/node/plugin-system/agency.ts": [
         "../../node_modules/esbuild/lib/main.d.ts",
-        "../../src/node/config.ts"
+        "../../src/node/config.ts",
+        "../../src/node/plugin-system/extendplugin.ts",
+        "../../src/node/plugin-system/mapping.ts"
       ],
       "../../src/node/plugin-system/esbuildservice.ts": [
         "../../node_modules/esbuild/lib/main.d.ts"
       ],
       "../../src/node/plugin-system/proxyplugin.ts": [
         "../../src/node/plugin-system/agency.ts"
-      ],
-      "../../src/node/transform/custommoduleplugin.ts": [
-        "../../src/node/index.ts"
-      ],
-      "../../src/node/transform/fabrication.ts": [
-        "../../node_modules/esbuild/lib/main.d.ts",
-        "../../src/node/config.ts"
-      ],
-      "../../src/node/transform/proxyplugin.ts": [
-        "../../src/node/transform/fabrication.ts"
-      ],
-      "../../src/node/transform/webmoduleplugin.ts": [
-        "../../src/node/index.ts"
-      ],
-      "../../src/node/transform/wrapesbuild.ts": [
-        "../../node_modules/esbuild/lib/main.d.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -1101,6 +1034,7 @@
       "../../node_modules/esbuild/lib/main.d.ts",
       "../../node_modules/loglevel-plugin-prefix/index.d.ts",
       "../../node_modules/loglevel/index.d.ts",
+      "../../node_modules/require-module-from-string/types/index.d.ts",
       "../../node_modules/typescript/lib/lib.es2015.collection.d.ts",
       "../../node_modules/typescript/lib/lib.es2015.core.d.ts",
       "../../node_modules/typescript/lib/lib.es2015.d.ts",
@@ -1135,8 +1069,18 @@
       "../../node_modules/typescript/lib/lib.es2020.string.d.ts",
       "../../node_modules/typescript/lib/lib.es5.d.ts",
       "../../node_modules/typescript/lib/lib.esnext.intl.d.ts",
+      "../../src/node/build/command.ts",
+      "../../src/node/build/custommoduleplugin.ts",
+      "../../src/node/build/webmoduleplugin.ts",
+      "../../src/node/config.ts",
       "../../src/node/constant.ts",
-      "../../src/node/transform/wrapesbuild.ts"
+      "../../src/node/index.ts",
+      "../../src/node/plugin-system/agency.ts",
+      "../../src/node/plugin-system/esbuildservice.ts",
+      "../../src/node/plugin-system/extendplugin.ts",
+      "../../src/node/plugin-system/mapping.ts",
+      "../../src/node/plugin-system/proxyplugin.ts",
+      "../../src/node/utils.ts"
     ]
   },
   "version": "4.1.3"

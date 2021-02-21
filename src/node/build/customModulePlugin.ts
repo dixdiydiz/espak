@@ -1,48 +1,28 @@
-import { Plugin } from '../plugin-system/agency'
 import path from 'path'
-import {Format} from "esbuild";
+import { Format } from 'esbuild'
+import { Plugin, fileToOutfile } from '../plugin-system/agency'
 
-const customModulePlugin: (alias: unknown)=> Plugin = (alias: unknown) => {
-  const match: string[] = ['./', '../', ...Object.keys( isObject(alias) ? alias : )]
-  const rege: RegExp = new RegExp(
-    match.reduce((prev, curr) => {
-      return `${prev}|^${curr}`
-    }, '^\\b$')
-  )
-  return {
-    name: 'customModulePlugin',
-    setup({onResolve, heelHook, triggerBuild}) {
-      onResolve({filter: rege}, (args) => {
-        heelHook(() => triggerBuild({
-          entryPoints: [args.absolutePath],
+const customModulePlugin: Plugin = {
+  name: 'customModulePlugin',
+  setup({ onResolve, heelHook, triggerBuild }) {
+    onResolve({ filter: /\.ts$|\.tsx$|\.js$|\.jsx$/ }, (args) => {
+      const { dir, name } = path.parse(args.path)
+      const relativePath = path.relative(args.resolveDir, path.join(dir, `${name}.js`))
+      const outfile = fileToOutfile(args.path, '.js')
+      heelHook(() =>
+        triggerBuild({
+          entryPoints: [args.path],
           format: 'esm' as Format,
-          outfile: `module`,
+          outfile: outfile,
           minify: false,
-        }))
-        return {
-          external: true,
-        }
-      })
-    }
-  }
+        })
+      )
+      return {
+        external: true,
+        path: relativePath,
+      }
+    })
+  },
 }
-
-// const customModulePlugin:  = {
-//   name: 'customModulePlugin',
-//   setup({ onResolve }) {
-//     onResolve({ filter: reg }, (args) => {
-//       return {
-//         external: true,
-//         a: 1,
-//         outputOptions: {
-//           sourcePath: args.modulePath,
-//           outputDir: 'src',
-//           outputExtension: '.js',
-//           outbase: 'src',
-//         },
-//       }
-//     })
-//   },
-// }
 
 export default customModulePlugin

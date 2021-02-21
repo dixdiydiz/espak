@@ -1,43 +1,29 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const customModulePlugin = (alias) => {
-    const match = ['./', '../', ...Object.keys(isObject(alias) ? alias : )];
-    const rege = new RegExp(match.reduce((prev, curr) => {
-        return `${prev}|^${curr}`;
-    }, '^\\b$'));
-    return {
-        name: 'customModulePlugin',
-        setup({ onResolve, heelHook, triggerBuild }) {
-            onResolve({ filter: rege }, (args) => {
-                heelHook(() => triggerBuild({
-                    entryPoints: [args.absolutePath],
-                    format: 'esm',
-                    outfile: `module`,
-                    minify: false,
-                }));
-                return {
-                    external: true,
-                };
-            });
-        }
-    };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-// const customModulePlugin:  = {
-//   name: 'customModulePlugin',
-//   setup({ onResolve }) {
-//     onResolve({ filter: reg }, (args) => {
-//       return {
-//         external: true,
-//         a: 1,
-//         outputOptions: {
-//           sourcePath: args.modulePath,
-//           outputDir: 'src',
-//           outputExtension: '.js',
-//           outbase: 'src',
-//         },
-//       }
-//     })
-//   },
-// }
+Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
+const agency_1 = require("../plugin-system/agency");
+const customModulePlugin = {
+    name: 'customModulePlugin',
+    setup({ onResolve, heelHook, triggerBuild }) {
+        onResolve({ filter: /\.ts$|\.tsx$|\.js$|\.jsx$/ }, (args) => {
+            const { dir, name } = path_1.default.parse(args.path);
+            const relativePath = path_1.default.relative(args.resolveDir, path_1.default.join(dir, `${name}.js`));
+            const outfile = agency_1.fileToOutfile(args.path, '.js');
+            heelHook(() => triggerBuild({
+                entryPoints: [args.path],
+                format: 'esm',
+                outfile: outfile,
+                minify: false,
+            }));
+            return {
+                external: true,
+                path: relativePath,
+            };
+        });
+    },
+};
 exports.default = customModulePlugin;
 //# sourceMappingURL=customModulePlugin.js.map

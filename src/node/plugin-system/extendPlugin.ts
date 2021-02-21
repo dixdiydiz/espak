@@ -1,19 +1,20 @@
 import log from 'loglevel'
 import fs from 'fs-extra'
 import { createTempDist } from '../index'
+import path from 'path'
 
 export interface GenerateIndexHtml {
   (html: string): string
-  _pluginName?: string
+  _pluginName: string
 }
-interface nextChain {
+interface NextChain {
   action: GenerateIndexHtml
-  next: nextChain | null | undefined
+  next: NextChain | null | undefined
 }
-interface firstChain extends nextChain {
-  last: nextChain | firstChain
+interface FirstChain extends NextChain {
+  last: NextChain | FirstChain
 }
-export let generateHtmlChain: firstChain
+export let generateHtmlChain: FirstChain
 export function generateIndexHtmlHook(cb: GenerateIndexHtml): void {
   const nextChain = {
     action: cb,
@@ -30,12 +31,33 @@ export function generateIndexHtmlHook(cb: GenerateIndexHtml): void {
   }
 }
 
-export async function clonePublicDir(publicdir: string) {
+async function clonePublicDir(publicDir: string) {
   const distDir = await createTempDist()
   try {
-    await fs.copy(publicdir, distDir, {
+    await fs.copy(publicDir, distDir, {
       overwrite: false,
     })
+  } catch (e) {
+    log.error(e)
+    process.exit(1)
+  }
+}
+
+export async function overWriteHtml(publicDir: string) {
+  if (publicDir) {
+    await clonePublicDir(publicDir)
+  }
+  try {
+    const indexPath = path.join(publicDir, 'index.html')
+    let chain: FirstChain | NextChain | null | undefined = generateHtmlChain
+    if (chain) {
+      let content = fs.readFileSync(indexPath, 'utf8')
+      do {
+        content = chain.action(content)
+        chain = chain.next
+      } while (chain)
+      await fs.outputFile(indexPath, content)
+    }
   } catch (e) {
     log.error(e)
     process.exit(1)

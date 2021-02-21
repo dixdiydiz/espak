@@ -4,7 +4,7 @@ export interface Resolve {
     extensions: string[];
 }
 export interface UserConfig {
-    public: string;
+    publicDir: string;
     entry: string | Record<string, string> | string[];
     outputDir: string;
     resolve: Resolve;

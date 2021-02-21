@@ -28,7 +28,7 @@ loglevel_plugin_prefix_1.default.apply(loglevel_1.default, {
     },
 });
 let dist;
-async function createTempDist() {
+function createTempDist() {
     if (dist) {
         return dist;
     }
@@ -53,7 +53,7 @@ async function serve() {
 }
 async function build() {
     process.env.NODE_ENV = 'production'; // developement
-    const dist = await createTempDist();
+    const dist = createTempDist();
     await command_1.command(dist);
     process.exit(0);
 }

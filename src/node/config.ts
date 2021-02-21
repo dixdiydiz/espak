@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import { buildConfig } from './transform/wrapEsbuild'
+import requireModule from 'require-module-from-string'
 import { PendingPlugin } from './plugin-system/agency'
 import { isArray } from './utils'
 
@@ -10,7 +10,7 @@ export interface Resolve {
   extensions: string[]
 }
 export interface UserConfig {
-  public: string
+  publicDir: string
   entry: string | Record<string, string> | string[]
   outputDir: string
   resolve: Resolve
@@ -32,7 +32,7 @@ export async function generateConfig(): Promise<UserConfig> {
             userConfig = await import(profile)
             break
           case '.ts': {
-            userConfig = await buildConfig(profile, prefix)
+            userConfig = await requireModule('', profile)
           }
         }
         break
@@ -44,7 +44,7 @@ export async function generateConfig(): Promise<UserConfig> {
     process.exit(1)
   }
   const {
-    public: publicDir = './public',
+    publicDir = path.join(process.cwd(), './public'),
     entry = 'src/index.js',
     outputDir = 'dist',
     external,
@@ -55,7 +55,7 @@ export async function generateConfig(): Promise<UserConfig> {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   }
   return Object.freeze({
-    public: publicDir,
+    publicDir,
     entry,
     outputDir,
     resolve: handleResovle(resolve, defaultResolve),

@@ -2,9 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapModule = void 0;
 class MapModule {
-    constructor(id = '') {
-        this.outfile = '';
+    constructor(id = '', outfile = '', autoAddCache = true) {
+        this.size = '';
+        this.write = false; // if write to file
         this.id = id;
+        this.outfile = outfile;
+        if (autoAddCache) {
+            this.addCache();
+        }
     }
     addCache() {
         MapModule._cache[this.id] = this;

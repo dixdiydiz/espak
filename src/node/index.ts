@@ -8,8 +8,6 @@ import chalk, { Chalk } from 'chalk'
 const { version } = require('../../package.json')
 import { command as buildCommand } from './build/command'
 
-export type { EspakPlugin } from './transform/fabrication'
-
 type LogKinds = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR'
 
 const colors: Record<LogKinds, Chalk> = {
@@ -30,7 +28,7 @@ prefix.apply(log, {
 })
 
 let dist: string
-export async function createTempDist(): Promise<string> {
+export function createTempDist(): string {
   if (dist) {
     return dist
   }
@@ -56,7 +54,7 @@ async function serve(): Promise<void> {
 
 async function build(): Promise<void> {
   process.env.NODE_ENV = 'production' // developement
-  const dist = await createTempDist()
+  const dist = createTempDist()
   await buildCommand(dist)
   process.exit(0)
 }

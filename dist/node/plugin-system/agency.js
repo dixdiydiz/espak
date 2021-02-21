@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.entryHandler = exports.constructEsbuildPlugin = exports.connectConfigHelper = void 0;
+exports.fileToOutfile = exports.entryHandler = exports.constructEsbuildPlugin = exports.connectConfigHelper = void 0;
 const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
 const path_1 = __importDefault(require("path"));
@@ -11,26 +11,26 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const esbuild_1 = require("esbuild");
 const index_1 = require("../index");
 const mapping_1 = require("./mapping");
+const extendPlugin_1 = require("./extendPlugin");
 const utils_1 = require("../utils");
 function connectConfigHelper(callback, args) {
     const wrapPlugin = async (config) => {
         const valOfConfig = args.map((keys) => {
             return keys.split('.').reduce((prev, curr) => (prev ? prev[curr] : prev), config);
         });
-        return await callback(...valOfConfig);
+        return callback(...valOfConfig);
     };
     wrapPlugin._needConfig = true;
     return wrapPlugin;
 }
 exports.connectConfigHelper = connectConfigHelper;
 async function decomposePlugin(pendingPlugins, config) {
-    const distDir = await index_1.createTempDist();
     const onResolveMap = new Map();
     const onLoadMap = new Map();
     const heelHookSet = new Set();
     const triggerBuildPlugins = new Set();
     for (let cb of pendingPlugins) {
-        const { name = '', setup } = '_needConfig' in cb ? await cb(config) : cb;
+        const { name = '', setup, generateIndexHtml } = '_needConfig' in cb ? await cb(config) : cb;
         try {
             if (setup) {
                 setup({
@@ -39,6 +39,10 @@ async function decomposePlugin(pendingPlugins, config) {
                     heelHook,
                     triggerBuild: triggerBuild(name),
                 });
+            }
+            if (utils_1.isFunction(generateIndexHtml)) {
+                generateIndexHtml._pluginName = name;
+                extendPlugin_1.generateIndexHtmlHook(generateIndexHtml);
             }
         }
         catch (e) {
@@ -75,92 +79,103 @@ async function decomposePlugin(pendingPlugins, config) {
             if (!utils_1.isArray(options)) {
                 options = [options];
             }
-            try {
-                // for (let opt of options) {
-                //   const { entryPoints, outfile, plugins = [] } = opt
-                //   if (isArray(entryPoints)) {
-                //     if (entryPoints.length > 1) {
-                //       log.warn('triggerBuild only support build one file once. other files will be ignored.')
-                //     }
-                //     opt.entryPoints = entryPoints.slice(0, 1)
-                //   }
-                //   Reflect.deleteProperty(opt, 'outdir')
-                //   if (outfile) {
-                //     opt.outfile = path.join(distDir, outfile)
-                //     opt.plugins = [...plugins, ...triggerBuildPlugins]
-                //   }
-                // }
-                // const metafile = path.join(distDir, 'meta.json')
-                // const meta: Metadata = await narrowBuild(name, options, metafile)
-                // console.log(meta)
-                // return meta
-            }
-            catch (e) {
-                loglevel_1.default.error(`triggerBuild callback get some error in ${name} plugin`);
-                loglevel_1.default.error(e);
-                process.exit(1);
-            }
+            return narrowBuild(`plugin ${name}`, options, overwrite);
         };
     }
 }
-async function proxyResolveAct(aliasReplacer, extensions, onResolveMap, heelHookSet, args) {
-    const { path, namespace, resolveDir, pluginData } = args;
-    const aliasPath = aliasReplacer(path);
-    const absolutePath = resolve_1.default.sync(aliasPath, {
-        basedir: resolveDir,
-        extensions,
-    });
-    let result;
-    for (let [{ filter, namespace: pluginNamespace }, callback] of onResolveMap) {
-        if ((pluginNamespace && namespace !== pluginNamespace) || !filter.test(absolutePath)) {
-            continue;
-        }
-        heelHookSet.clear();
-        result = await callback({
-            ...args,
-            absolutePath,
+// async function proxyResolveAct(
+//   aliasReplacer: (path: string) => string,
+//   extensions: string[],
+//   onResolveMap: OnResolveMap,
+//   heelHookSet: HeelHookSet,
+//   args: EsbuildOnResolveArgs
+// ): Promise<OnResolveResult> {
+//   const { path, namespace, resolveDir, pluginData } = args
+//   const aliasPath = aliasReplacer(path)
+//   const absolutePath = resolve.sync(aliasPath, {
+//     basedir: resolveDir,
+//     extensions,
+//   })
+//   let result: OnResolveResult
+//   for (let [{ filter, namespace: pluginNamespace }, callback] of onResolveMap) {
+//     if ((pluginNamespace && namespace !== pluginNamespace) || !filter.test(absolutePath)) {
+//       continue
+//     }
+//     heelHookSet.clear()
+//     result = await callback({
+//       ...args,
+//       absolutePath,
+//       importerOutfile: args.importer ? MapModule._cache[args.importer].outfile : '',
+//     })
+//     if (isObject(result)) {
+//       result.pluginName = callback._pluginName
+//       // If path not set, esbuild will continue to run on-resolve callbacks that were registered after the current one.
+//       if (result.path) {
+//         for (let hook of heelHookSet) {
+//           await hook(pluginData)
+//         }
+//         return result
+//       }
+//     }
+//     // else continue
+//   }
+//   return result
+// }
+async function proxyResolveAct(aliasReplacer, extensions, onResolveMap, heelHookSet) {
+    const newlyOnResolveMap = new Map();
+    for (let [option, callback] of onResolveMap.entries()) {
+        newlyOnResolveMap.set(option, async (args) => {
+            const { path, resolveDir, pluginData } = args;
+            const aliasPath = aliasReplacer(path);
+            args.path = resolve_1.default.sync(aliasPath, {
+                basedir: resolveDir,
+                extensions,
+            });
+            heelHookSet.clear();
+            const result = await callback({
+                ...args,
+                importerOutfile: args.importer ? mapping_1.MapModule._cache[args.importer].outfile : '',
+            });
+            if (utils_1.isObject(result)) {
+                result.pluginName = callback._pluginName;
+                if (result.path) {
+                    for (let hook of heelHookSet) {
+                        await hook(pluginData);
+                    }
+                }
+            }
+            return result;
         });
-        if (utils_1.isObject(result)) {
-            result.pluginName = callback._pluginName;
-            // If path not set, esbuild will continue to run on-resolve callbacks that were registered after the current one.
-            if (result.path) {
-                for (let hook of heelHookSet) {
-                    await hook(pluginData);
-                }
-                return result;
-            }
-        }
-        // else continue
     }
-    return result;
+    return newlyOnResolveMap;
 }
-async function proxyLoadAct(onLoadMap, heelHookSet, args) {
-    const { path, pluginData, namespace } = args;
-    let result;
-    for (let [{ filter, namespace: pluginNamespace }, callback] of onLoadMap) {
-        if ((pluginNamespace && namespace !== pluginNamespace) || !filter.test(path)) {
-            continue;
-        }
-        heelHookSet.clear();
-        result = await callback({ ...args });
-        if (utils_1.isObject(result)) {
-            // If this is not set, esbuild will continue to run on-load callbacks that were registered after the current one
-            if (result.contents) {
-                for (let hook of heelHookSet) {
-                    await hook(pluginData);
+async function proxyLoadAct(onLoadMap, heelHookSet) {
+    const newlyOnLoadMap = new Map();
+    for (let [option, callback] of onLoadMap.entries()) {
+        newlyOnLoadMap.set(option, async (args) => {
+            const { pluginData } = args;
+            heelHookSet.clear();
+            const result = await callback({
+                ...args,
+            });
+            if (utils_1.isObject(result)) {
+                result.pluginName = callback._pluginName;
+                if (result.contents) {
+                    for (let hook of heelHookSet) {
+                        await hook(pluginData);
+                    }
                 }
-                return result;
             }
-        }
-        // else continue
+            return result;
+        });
     }
-    return result;
+    return newlyOnLoadMap;
 }
 async function constructEsbuildPlugin(proxyPlugin, plugins, config) {
     const { resolve: { alias, extensions }, } = config;
     const replacer = aliasReplacer(alias);
     const { onResolveMap, onLoadMap, heelHookSet, triggerBuildPlugins } = await decomposePlugin(plugins, config);
-    const esbuildPlugin = await proxyPlugin(proxyResolveAct.bind(null, replacer, extensions, onResolveMap, heelHookSet), proxyLoadAct.bind(null, onLoadMap, heelHookSet));
+    const esbuildPlugin = proxyPlugin(await proxyResolveAct(replacer, extensions, onResolveMap, heelHookSet), await proxyLoadAct(onLoadMap, heelHookSet));
     triggerBuildPlugins.add(esbuildPlugin);
     return esbuildPlugin;
 }
@@ -191,7 +206,7 @@ async function narrowBuild(errorMarkup, options, overwrite = false) {
         })
             .forEach((opt) => {
             const infile = opt.entryPoints[0];
-            const outfile = opt.outfile;
+            const outfile = (opt.outfile = fileToOutfile(opt.outfile));
             const mod = new mapping_1.MapModule(infile, outfile);
             promises.push(service
                 .build({
@@ -219,11 +234,9 @@ async function narrowBuild(errorMarkup, options, overwrite = false) {
         process.exit(1);
     }
 }
-async function entryHandler(srcs, plugins) {
-    const distDir = await index_1.createTempDist();
+async function entryHandler(srcs, plugins, publicDir) {
     const options = srcs.map((src) => {
-        const { name } = path_1.default.parse(src);
-        const outfile = path_1.default.resolve(distDir, 'src', `${name}.js`);
+        const outfile = fileToOutfile(src, '.js');
         return {
             entryPoints: [src],
             bundle: true,
@@ -234,6 +247,19 @@ async function entryHandler(srcs, plugins) {
         };
     });
     await narrowBuild('entry file', options);
+    await extendPlugin_1.overWriteHtml(publicDir);
 }
 exports.entryHandler = entryHandler;
+function fileToOutfile(src, ext) {
+    const dist = index_1.createTempDist();
+    if (src.includes(dist)) {
+        return src;
+    }
+    const { dir, name, ext: originExt } = path_1.default.parse(src);
+    const splitdir = dir.split(process.cwd());
+    const midpath = splitdir[0].length ? splitdir[0] : splitdir[1];
+    ext = ext ?? originExt;
+    return path_1.default.join(dist, midpath, `${name}${ext}`);
+}
+exports.fileToOutfile = fileToOutfile;
 //# sourceMappingURL=agency.js.map

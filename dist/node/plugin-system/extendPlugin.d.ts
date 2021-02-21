@@ -1,15 +1,15 @@
 export interface GenerateIndexHtml {
     (html: string): string;
-    _pluginName?: string;
+    _pluginName: string;
 }
-interface nextChain {
+interface NextChain {
     action: GenerateIndexHtml;
-    next: nextChain | null | undefined;
+    next: NextChain | null | undefined;
 }
-interface firstChain extends nextChain {
-    last: nextChain | firstChain;
+interface FirstChain extends NextChain {
+    last: NextChain | FirstChain;
 }
-export declare let generateHtmlChain: firstChain;
+export declare let generateHtmlChain: FirstChain;
 export declare function generateIndexHtmlHook(cb: GenerateIndexHtml): void;
-export declare function clonePublicDir(publicdir: string): Promise<void>;
+export declare function overWriteHtml(publicDir: string): Promise<void>;
 export {};

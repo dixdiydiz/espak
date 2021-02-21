@@ -9,12 +9,13 @@ const path_1 = __importDefault(require("path"));
 const resolve_1 = __importDefault(require("resolve"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const config_1 = require("../config");
+const customModulePlugin_1 = __importDefault(require("./customModulePlugin"));
 const webModulePlugin_1 = __importDefault(require("./webModulePlugin"));
 const agency_1 = require("../plugin-system/agency");
 const proxyPlugin_1 = __importDefault(require("../plugin-system/proxyPlugin"));
 async function command(dist) {
     const config = await config_1.generateConfig();
-    const { entry: configEntry, plugins, outputDir } = config;
+    const { entry: configEntry, plugins, outputDir, publicDir } = config;
     const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js'];
     const entries = [];
     for (let [_, val] of Object.entries(configEntry)) {
@@ -33,8 +34,8 @@ async function command(dist) {
         }
     }
     const modulePlugin = await agency_1.connectConfigHelper(webModulePlugin_1.default, ['external']);
-    const plugin = await agency_1.constructEsbuildPlugin(proxyPlugin_1.default, [modulePlugin, ...plugins], config);
-    await agency_1.entryHandler(entries, [plugin]);
+    const plugin = await agency_1.constructEsbuildPlugin(proxyPlugin_1.default, [modulePlugin, customModulePlugin_1.default, ...plugins], config);
+    await agency_1.entryHandler(entries, [plugin], publicDir);
     const absoluteOutputDir = path_1.default.resolve(process.cwd(), outputDir);
     await cloneDist(dist, absoluteOutputDir);
 }

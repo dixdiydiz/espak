@@ -1,3 +1,3 @@
 import { Plugin } from '../plugin-system/agency';
-declare const customModulePlugin: (alias: unknown) => Plugin;
+declare const customModulePlugin: Plugin;
 export default customModulePlugin;

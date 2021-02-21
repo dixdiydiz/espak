@@ -1,13 +1,13 @@
 import { ProxyPlugin } from './agency'
 
-const proxyPlugin: ProxyPlugin = (proxyResolveAct, proxyLoadAct) => ({
+const proxyPlugin: ProxyPlugin = (proxyResolveMap, proxyLoadMap) => ({
   name: 'espakProxyPlugin',
   setup({ onResolve, onLoad }) {
-    onResolve({ filter: /.*/ }, async (args) => {
-      return await proxyResolveAct(args)
+    proxyResolveMap.forEach((val, key) => {
+      onResolve(key, val)
     })
-    onLoad({ filter: /.*/ }, async (args) => {
-      return await proxyLoadAct(args)
+    proxyLoadMap.forEach((val, key) => {
+      onLoad(key, val)
     })
   },
 })

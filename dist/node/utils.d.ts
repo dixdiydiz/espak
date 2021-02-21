@@ -10,3 +10,4 @@ export declare const toTypeString: (val: unknown) => string;
 export declare const toRawType: (val: unknown) => string;
 export declare const isStringObject: (val: unknown) => val is String;
 export declare const isPlainPromise: <T = any>(val: unknown) => val is Promise<T>;
+export declare function formatBytes(bytes: number, decimals?: number): string;

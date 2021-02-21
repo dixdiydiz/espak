@@ -21,6 +21,7 @@ const webModulePlugin: (external: string[]) => Promise<Plugin> = async (external
   const onResolveItems: string[] = isArray(external)
     ? packageDependencies.filter((ele) => !external.includes(ele))
     : packageDependencies
+  let cache = Object.create(null)
   return {
     name: 'webModulePlugin',
     setup({ onResolve, triggerBuild }) {
@@ -28,22 +29,36 @@ const webModulePlugin: (external: string[]) => Promise<Plugin> = async (external
         onResolve({ filter: new RegExp(`^${ele}$`) }, async (args) => {
           if (/node_modules/.test(args.importer)) {
             return {
-              path: args.absolutePath,
+              path: args.path,
             }
           }
-          const { base } = path.parse(args.absolutePath)
+          if (cache[args.path]) {
+            const { dir } = path.parse(args.importerOutfile)
+            const outfile = cache[args.path].outfile
+            return {
+              external: true,
+              path: path.relative(dir, outfile),
+            }
+          }
           const result = await triggerBuild({
-            entryPoints: [args.absolutePath],
+            entryPoints: [args.path],
             format: 'esm' as Format,
-            outfile: `module/${base}`,
+            outfile: `module/${ele}.js`,
             minify: false,
             define: {
               'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
             },
           })
           console.log(result)
+          const { dir } = path.parse(args.importerOutfile)
+          const outfile = result[args.path].outfile
+          cache = {
+            ...cache,
+            ...result,
+          }
           return {
             external: true,
+            path: path.relative(dir, outfile),
           }
         })
       })

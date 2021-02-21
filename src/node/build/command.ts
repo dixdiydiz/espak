@@ -10,7 +10,7 @@ import proxyPlugin from '../plugin-system/proxyPlugin'
 
 export async function command(dist: string): Promise<void> {
   const config: UserConfig = await generateConfig()
-  const { entry: configEntry, plugins, outputDir } = config
+  const { entry: configEntry, plugins, outputDir, publicDir } = config
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']
   const entries = []
   for (let [_, val] of Object.entries(configEntry)) {
@@ -28,8 +28,8 @@ export async function command(dist: string): Promise<void> {
     }
   }
   const modulePlugin = await connectConfigHelper<[string[]]>(webModulePlugin, ['external'])
-  const plugin = await constructEsbuildPlugin(proxyPlugin, [modulePlugin, ...plugins], config)
-  await entryHandler(entries, [plugin])
+  const plugin = await constructEsbuildPlugin(proxyPlugin, [modulePlugin, customModulePlugin, ...plugins], config)
+  await entryHandler(entries, [plugin], publicDir)
   const absoluteOutputDir = path.resolve(process.cwd(), outputDir)
   await cloneDist(dist, absoluteOutputDir)
 }

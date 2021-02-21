@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isPlainPromise = exports.isStringObject = exports.toRawType = exports.toTypeString = exports.objectToString = exports.isPromise = exports.isObject = exports.isFunction = exports.isArray = exports.isNumber = exports.isSymbol = exports.isString = void 0;
+exports.formatBytes = exports.isPlainPromise = exports.isStringObject = exports.toRawType = exports.toTypeString = exports.objectToString = exports.isPromise = exports.isObject = exports.isFunction = exports.isArray = exports.isNumber = exports.isSymbol = exports.isString = void 0;
 // type assertion
 const isString = (val) => typeof val === 'string';
 exports.isString = isString;
@@ -25,4 +25,14 @@ const isStringObject = (val) => !exports.isString(val) && exports.toTypeString(v
 exports.isStringObject = isStringObject;
 const isPlainPromise = (val) => exports.toTypeString(val) === '[object Promise]';
 exports.isPlainPromise = isPlainPromise;
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0)
+        return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+exports.formatBytes = formatBytes;
 //# sourceMappingURL=utils.js.map
