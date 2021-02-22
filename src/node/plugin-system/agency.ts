@@ -22,11 +22,12 @@ import { isObject, isArray, formatBytes, isFunction } from '../utils'
 
 export interface ProxyPlugin {
   (
-    proxyResolveMap: Map<OnResolveOptions, (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>>,
-    proxyLoadMap: Map<OnLoadOptions, (args: OnLoadArgs) => Promise<OnLoadResult>>
+    proxyResolveAct: (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>,
+    proxyLoadAct: (args: OnLoadArgs) => Promise<OnLoadResult>
   ): EsbuildPlugin
 }
 interface OnResolveArgs extends EsbuildOnResolveArgs {
+  absolutePath: string
   importerOutfile: string
 }
 
@@ -146,116 +147,76 @@ async function decomposePlugin(pendingPlugins: PendingPlugin[], config: UserConf
       options: BuildOptions | BuildOptions[],
       overwrite: boolean = false
     ): Promise<Record<string, MapModule>> => {
-      if (!isArray(options)) {
-        options = [options]
-      }
+      options = isArray(options) ? options : [options]
+      options.forEach((opt) => {
+        const { plugins = [] } = opt
+        opt.plugins = [...plugins, ...triggerBuildPlugins]
+      })
       return narrowBuild(`plugin ${name}`, options, overwrite)
     }
   }
 }
 
-// async function proxyResolveAct(
-//   aliasReplacer: (path: string) => string,
-//   extensions: string[],
-//   onResolveMap: OnResolveMap,
-//   heelHookSet: HeelHookSet,
-//   args: EsbuildOnResolveArgs
-// ): Promise<OnResolveResult> {
-//   const { path, namespace, resolveDir, pluginData } = args
-//   const aliasPath = aliasReplacer(path)
-//   const absolutePath = resolve.sync(aliasPath, {
-//     basedir: resolveDir,
-//     extensions,
-//   })
-//   let result: OnResolveResult
-//   for (let [{ filter, namespace: pluginNamespace }, callback] of onResolveMap) {
-//     if ((pluginNamespace && namespace !== pluginNamespace) || !filter.test(absolutePath)) {
-//       continue
-//     }
-//     heelHookSet.clear()
-//     result = await callback({
-//       ...args,
-//       absolutePath,
-//       importerOutfile: args.importer ? MapModule._cache[args.importer].outfile : '',
-//     })
-//     if (isObject(result)) {
-//       result.pluginName = callback._pluginName
-//       // If path not set, esbuild will continue to run on-resolve callbacks that were registered after the current one.
-//       if (result.path) {
-//         for (let hook of heelHookSet) {
-//           await hook(pluginData)
-//         }
-//         return result
-//       }
-//     }
-//     // else continue
-//   }
-//   return result
-// }
-
 async function proxyResolveAct(
   aliasReplacer: (path: string) => string,
   extensions: string[],
   onResolveMap: OnResolveMap,
-  heelHookSet: HeelHookSet
-): Promise<Map<OnResolveOptions, (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>>> {
-  const newlyOnResolveMap = new Map()
-  for (let [option, callback] of onResolveMap.entries()) {
-    newlyOnResolveMap.set(
-      option,
-      async (args: EsbuildOnResolveArgs): Promise<OnResolveResult> => {
-        const { path, resolveDir, pluginData } = args
-        const aliasPath = aliasReplacer(path)
-        args.path = resolve.sync(aliasPath, {
-          basedir: resolveDir,
-          extensions,
-        })
-        heelHookSet.clear()
-        const result: OnResolveResult = await callback({
-          ...args,
-          importerOutfile: args.importer ? MapModule._cache[args.importer].outfile : '',
-        })
-        if (isObject(result)) {
-          result.pluginName = callback._pluginName
-          if (result.path) {
-            for (let hook of heelHookSet) {
-              await hook(pluginData)
-            }
-          }
+  heelHookSet: HeelHookSet,
+  args: EsbuildOnResolveArgs
+): Promise<OnResolveResult> {
+  const { path, namespace, resolveDir, pluginData } = args
+  const aliasPath = aliasReplacer(path)
+  const absolutePath = resolve.sync(aliasPath, {
+    basedir: resolveDir,
+    extensions,
+  })
+  let result: OnResolveResult = {}
+  for (let [{ filter, namespace: pluginNamespace }, callback] of onResolveMap) {
+    if ((pluginNamespace && namespace !== pluginNamespace) || !(filter.test(path) || filter.test(absolutePath))) {
+      continue
+    }
+    heelHookSet.clear()
+    result = await callback({
+      ...args,
+      absolutePath,
+      importerOutfile: args.importer ? MapModule._cache[args.importer].outfile : '',
+    })
+    if (isObject(result)) {
+      result.pluginName = callback._pluginName
+      // If path not set, esbuild will continue to run on-resolve callbacks that were registered after the current one.
+      if (result.path) {
+        for (let hook of heelHookSet) {
+          await hook(pluginData)
         }
         return result
       }
-    )
+    }
+    // else continue
   }
-  return newlyOnResolveMap
+  return result
 }
-async function proxyLoadAct(
-  onLoadMap: OnLoadMap,
-  heelHookSet: HeelHookSet
-): Promise<Map<OnLoadOptions, (args: OnLoadArgs) => Promise<OnLoadResult>>> {
-  const newlyOnLoadMap = new Map()
-  for (let [option, callback] of onLoadMap.entries()) {
-    newlyOnLoadMap.set(
-      option,
-      async (args: OnLoadArgs): Promise<OnLoadResult> => {
-        const { pluginData } = args
-        heelHookSet.clear()
-        const result: OnLoadResult = await callback({
-          ...args,
-        })
-        if (isObject(result)) {
-          result.pluginName = callback._pluginName
-          if (result.contents) {
-            for (let hook of heelHookSet) {
-              await hook(pluginData)
-            }
-          }
+
+async function proxyLoadAct(onLoadMap: OnLoadMap, heelHookSet: HeelHookSet, args: OnLoadArgs): Promise<OnLoadResult> {
+  const { path, pluginData, namespace } = args
+  let result: OnLoadResult = {}
+  for (let [{ filter, namespace: pluginNamespace }, callback] of onLoadMap) {
+    if ((pluginNamespace && namespace !== pluginNamespace) || !filter.test(path)) {
+      continue
+    }
+    heelHookSet.clear()
+    result = await callback({ ...args })
+    if (isObject(result)) {
+      // If this is not set, esbuild will continue to run on-load callbacks that were registered after the current one
+      if (result.contents) {
+        for (let hook of heelHookSet) {
+          await hook(pluginData)
         }
         return result
       }
-    )
+    }
+    // else continue
   }
-  return newlyOnLoadMap
+  return result
 }
 
 export async function constructEsbuildPlugin(
@@ -269,8 +230,8 @@ export async function constructEsbuildPlugin(
   const replacer = aliasReplacer(alias)
   const { onResolveMap, onLoadMap, heelHookSet, triggerBuildPlugins } = await decomposePlugin(plugins, config)
   const esbuildPlugin = proxyPlugin(
-    await proxyResolveAct(replacer, extensions, onResolveMap, heelHookSet),
-    await proxyLoadAct(onLoadMap, heelHookSet)
+    proxyResolveAct.bind(null, replacer, extensions, onResolveMap, heelHookSet),
+    proxyLoadAct.bind(null, onLoadMap, heelHookSet)
   )
   triggerBuildPlugins.add(esbuildPlugin)
   return esbuildPlugin
@@ -315,6 +276,8 @@ async function narrowBuild(
           service
             .build({
               ...opt,
+              minify: true,
+              keepNames: true,
               write: false,
             })
             .then((res) => {
@@ -322,7 +285,7 @@ async function narrowBuild(
                 for (let i = 0; i < res.outputFiles.length; i++) {
                   const { path, contents } = res.outputFiles[i]
                   mod.size = formatBytes(contents.byteLength)
-                  fs.appendFileSync(path, contents)
+                  fs.outputFileSync(path, contents)
                   mod.write = true
                   result[infile] = mod
                 }
@@ -346,7 +309,6 @@ export async function entryHandler(srcs: string[], plugins: EsbuildPlugin[], pub
     return {
       entryPoints: [src],
       bundle: true,
-      minify: true,
       format: 'esm' as Format,
       outfile,
       plugins,

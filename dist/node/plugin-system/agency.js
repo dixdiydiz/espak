@@ -76,106 +76,74 @@ async function decomposePlugin(pendingPlugins, config) {
          * only support build one file, don't use outdir.
          * */
         return async (options, overwrite = false) => {
-            if (!utils_1.isArray(options)) {
-                options = [options];
-            }
+            options = utils_1.isArray(options) ? options : [options];
+            options.forEach((opt) => {
+                const { plugins = [] } = opt;
+                opt.plugins = [...plugins, ...triggerBuildPlugins];
+            });
             return narrowBuild(`plugin ${name}`, options, overwrite);
         };
     }
 }
-// async function proxyResolveAct(
-//   aliasReplacer: (path: string) => string,
-//   extensions: string[],
-//   onResolveMap: OnResolveMap,
-//   heelHookSet: HeelHookSet,
-//   args: EsbuildOnResolveArgs
-// ): Promise<OnResolveResult> {
-//   const { path, namespace, resolveDir, pluginData } = args
-//   const aliasPath = aliasReplacer(path)
-//   const absolutePath = resolve.sync(aliasPath, {
-//     basedir: resolveDir,
-//     extensions,
-//   })
-//   let result: OnResolveResult
-//   for (let [{ filter, namespace: pluginNamespace }, callback] of onResolveMap) {
-//     if ((pluginNamespace && namespace !== pluginNamespace) || !filter.test(absolutePath)) {
-//       continue
-//     }
-//     heelHookSet.clear()
-//     result = await callback({
-//       ...args,
-//       absolutePath,
-//       importerOutfile: args.importer ? MapModule._cache[args.importer].outfile : '',
-//     })
-//     if (isObject(result)) {
-//       result.pluginName = callback._pluginName
-//       // If path not set, esbuild will continue to run on-resolve callbacks that were registered after the current one.
-//       if (result.path) {
-//         for (let hook of heelHookSet) {
-//           await hook(pluginData)
-//         }
-//         return result
-//       }
-//     }
-//     // else continue
-//   }
-//   return result
-// }
-async function proxyResolveAct(aliasReplacer, extensions, onResolveMap, heelHookSet) {
-    const newlyOnResolveMap = new Map();
-    for (let [option, callback] of onResolveMap.entries()) {
-        newlyOnResolveMap.set(option, async (args) => {
-            const { path, resolveDir, pluginData } = args;
-            const aliasPath = aliasReplacer(path);
-            args.path = resolve_1.default.sync(aliasPath, {
-                basedir: resolveDir,
-                extensions,
-            });
-            heelHookSet.clear();
-            const result = await callback({
-                ...args,
-                importerOutfile: args.importer ? mapping_1.MapModule._cache[args.importer].outfile : '',
-            });
-            if (utils_1.isObject(result)) {
-                result.pluginName = callback._pluginName;
-                if (result.path) {
-                    for (let hook of heelHookSet) {
-                        await hook(pluginData);
-                    }
-                }
-            }
-            return result;
+async function proxyResolveAct(aliasReplacer, extensions, onResolveMap, heelHookSet, args) {
+    const { path, namespace, resolveDir, pluginData } = args;
+    const aliasPath = aliasReplacer(path);
+    const absolutePath = resolve_1.default.sync(aliasPath, {
+        basedir: resolveDir,
+        extensions,
+    });
+    let result = {};
+    for (let [{ filter, namespace: pluginNamespace }, callback] of onResolveMap) {
+        if ((pluginNamespace && namespace !== pluginNamespace) || !(filter.test(path) || filter.test(absolutePath))) {
+            continue;
+        }
+        heelHookSet.clear();
+        result = await callback({
+            ...args,
+            absolutePath,
+            importerOutfile: args.importer ? mapping_1.MapModule._cache[args.importer].outfile : '',
         });
+        if (utils_1.isObject(result)) {
+            result.pluginName = callback._pluginName;
+            // If path not set, esbuild will continue to run on-resolve callbacks that were registered after the current one.
+            if (result.path) {
+                for (let hook of heelHookSet) {
+                    await hook(pluginData);
+                }
+                return result;
+            }
+        }
+        // else continue
     }
-    return newlyOnResolveMap;
+    return result;
 }
-async function proxyLoadAct(onLoadMap, heelHookSet) {
-    const newlyOnLoadMap = new Map();
-    for (let [option, callback] of onLoadMap.entries()) {
-        newlyOnLoadMap.set(option, async (args) => {
-            const { pluginData } = args;
-            heelHookSet.clear();
-            const result = await callback({
-                ...args,
-            });
-            if (utils_1.isObject(result)) {
-                result.pluginName = callback._pluginName;
-                if (result.contents) {
-                    for (let hook of heelHookSet) {
-                        await hook(pluginData);
-                    }
+async function proxyLoadAct(onLoadMap, heelHookSet, args) {
+    const { path, pluginData, namespace } = args;
+    let result = {};
+    for (let [{ filter, namespace: pluginNamespace }, callback] of onLoadMap) {
+        if ((pluginNamespace && namespace !== pluginNamespace) || !filter.test(path)) {
+            continue;
+        }
+        heelHookSet.clear();
+        result = await callback({ ...args });
+        if (utils_1.isObject(result)) {
+            // If this is not set, esbuild will continue to run on-load callbacks that were registered after the current one
+            if (result.contents) {
+                for (let hook of heelHookSet) {
+                    await hook(pluginData);
                 }
+                return result;
             }
-            return result;
-        });
+        }
+        // else continue
     }
-    return newlyOnLoadMap;
+    return result;
 }
 async function constructEsbuildPlugin(proxyPlugin, plugins, config) {
     const { resolve: { alias, extensions }, } = config;
     const replacer = aliasReplacer(alias);
     const { onResolveMap, onLoadMap, heelHookSet, triggerBuildPlugins } = await decomposePlugin(plugins, config);
-    const esbuildPlugin = proxyPlugin(await proxyResolveAct(replacer, extensions, onResolveMap, heelHookSet), await proxyLoadAct(onLoadMap, heelHookSet));
+    const esbuildPlugin = proxyPlugin(proxyResolveAct.bind(null, replacer, extensions, onResolveMap, heelHookSet), proxyLoadAct.bind(null, onLoadMap, heelHookSet));
     triggerBuildPlugins.add(esbuildPlugin);
     return esbuildPlugin;
 }
@@ -211,6 +179,8 @@ async function narrowBuild(errorMarkup, options, overwrite = false) {
             promises.push(service
                 .build({
                 ...opt,
+                minify: true,
+                keepNames: true,
                 write: false,
             })
                 .then((res) => {
@@ -218,7 +188,7 @@ async function narrowBuild(errorMarkup, options, overwrite = false) {
                     for (let i = 0; i < res.outputFiles.length; i++) {
                         const { path, contents } = res.outputFiles[i];
                         mod.size = utils_1.formatBytes(contents.byteLength);
-                        fs_extra_1.default.appendFileSync(path, contents);
+                        fs_extra_1.default.outputFileSync(path, contents);
                         mod.write = true;
                         result[infile] = mod;
                     }
@@ -240,7 +210,6 @@ async function entryHandler(srcs, plugins, publicDir) {
         return {
             entryPoints: [src],
             bundle: true,
-            minify: true,
             format: 'esm',
             outfile,
             plugins,

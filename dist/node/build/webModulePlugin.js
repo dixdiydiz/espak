@@ -47,38 +47,41 @@ const webModulePlugin = async (external) => {
         setup({ onResolve, triggerBuild }) {
             onResolveItems.forEach((ele) => {
                 onResolve({ filter: new RegExp(`^${ele}$`) }, async (args) => {
-                    if (/node_modules/.test(args.importer)) {
-                        return {
-                            path: args.path,
-                        };
-                    }
-                    if (cache[args.path]) {
+                    if (args.importer) {
+                        if (/node_modules/.test(args.importer)) {
+                            return {
+                                path: args.path,
+                            };
+                        }
+                        if (cache[args.path]) {
+                            const { dir } = path_1.default.parse(args.importerOutfile);
+                            const outfile = cache[args.path].outfile;
+                            return {
+                                external: true,
+                                path: path_1.default.relative(dir, outfile),
+                            };
+                        }
+                        const result = await triggerBuild({
+                            entryPoints: [args.path],
+                            format: 'esm',
+                            outfile: `module/${ele}.js`,
+                            define: {
+                                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+                            },
+                        });
                         const { dir } = path_1.default.parse(args.importerOutfile);
-                        const outfile = cache[args.path].outfile;
+                        const outfile = result[args.path].outfile;
+                        cache = {
+                            ...cache,
+                            ...result,
+                        };
                         return {
                             external: true,
                             path: path_1.default.relative(dir, outfile),
                         };
                     }
-                    const result = await triggerBuild({
-                        entryPoints: [args.path],
-                        format: 'esm',
-                        outfile: `module/${ele}.js`,
-                        minify: false,
-                        define: {
-                            'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
-                        },
-                    });
-                    console.log(result);
-                    const { dir } = path_1.default.parse(args.importerOutfile);
-                    const outfile = result[args.path].outfile;
-                    cache = {
-                        ...cache,
-                        ...result,
-                    };
                     return {
-                        external: true,
-                        path: path_1.default.relative(dir, outfile),
+                        path: args.absolutePath,
                     };
                 });
             });

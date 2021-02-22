@@ -6,20 +6,25 @@ const customModulePlugin: Plugin = {
   name: 'customModulePlugin',
   setup({ onResolve, heelHook, triggerBuild }) {
     onResolve({ filter: /\.ts$|\.tsx$|\.js$|\.jsx$/ }, (args) => {
-      const { dir, name } = path.parse(args.path)
-      const relativePath = path.relative(args.resolveDir, path.join(dir, `${name}.js`))
-      const outfile = fileToOutfile(args.path, '.js')
-      heelHook(() =>
-        triggerBuild({
-          entryPoints: [args.path],
-          format: 'esm' as Format,
-          outfile: outfile,
-          minify: false,
-        })
-      )
-      return {
-        external: true,
-        path: relativePath,
+      if (args.importer) {
+        const { dir, name } = path.parse(args.absolutePath)
+        const relativePath = path.relative(args.resolveDir, path.join(dir, `${name}.js`))
+        const outfile = fileToOutfile(args.absolutePath, '.js')
+        heelHook(() =>
+          triggerBuild({
+            entryPoints: [args.absolutePath],
+            format: 'esm' as Format,
+            outfile: outfile,
+          })
+        )
+        return {
+          external: true,
+          path: relativePath,
+        }
+      } else {
+        return {
+          path: args.absolutePath,
+        }
       }
     })
   },

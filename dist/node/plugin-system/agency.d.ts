@@ -3,9 +3,10 @@ import { Plugin as EsbuildPlugin, OnResolveOptions, OnResolveArgs as EsbuildOnRe
 import { MapModule } from './mapping';
 import { GenerateIndexHtml } from './extendPlugin';
 export interface ProxyPlugin {
-    (proxyResolveMap: Map<OnResolveOptions, (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>>, proxyLoadMap: Map<OnLoadOptions, (args: OnLoadArgs) => Promise<OnLoadResult>>): EsbuildPlugin;
+    (proxyResolveAct: (args: EsbuildOnResolveArgs) => Promise<OnResolveResult>, proxyLoadAct: (args: OnLoadArgs) => Promise<OnLoadResult>): EsbuildPlugin;
 }
 interface OnResolveArgs extends EsbuildOnResolveArgs {
+    absolutePath: string;
     importerOutfile: string;
 }
 interface OnResolveCallback {

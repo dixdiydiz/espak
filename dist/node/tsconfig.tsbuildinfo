@@ -447,7 +447,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/custommoduleplugin.ts": {
-        "version": "d6b32c0ad09065b54292caa8281531f843ffa52d222093c53573de0a0baedb30",
+        "version": "e14113baa80dace2a6c080e34b4e86f15df39015c52e2206db65fc5c606ce20e",
         "signature": "b77fc5e63bd3cb117ad644021e5ed8d29b02eaa332732cc6e4012a6f38960a9c",
         "affectsGlobalScope": false
       },
@@ -457,12 +457,12 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/webmoduleplugin.ts": {
-        "version": "22ace8398474004521467a1acce6c2495275713d06f171fdb0d0c4e51aef92a8",
+        "version": "f14a13217297524e155f6353aae694b543870a86b2ad1017827f355217b93810",
         "signature": "69e2ccb6f12621b423dc50db272068f9a9336a3c09a927b3f02c7d590856c7d4",
         "affectsGlobalScope": false
       },
       "../../src/node/plugin-system/proxyplugin.ts": {
-        "version": "9b09b010ee0ef5546c95d373f362d54e859ce9dba2060f02e77db809f6994598",
+        "version": "77eb6d3fd2095c9ff7d102f7bd3781a08730be900532d0ee0310c9f7a97ea366",
         "signature": "d437667481f6df39831d358f2b6ac8fe1761a9878c5d97587a70b9aa290c0621",
         "affectsGlobalScope": false
       },
@@ -487,8 +487,8 @@
         "affectsGlobalScope": false
       },
       "../../src/node/plugin-system/agency.ts": {
-        "version": "bbc9174c1a0815edeaf9869bb609d38657e18a7eaaca2f08c14f2e55748a72cd",
-        "signature": "80ef401adda22e9a0dc69bf85213057a5707519712ca21fff9cff79b41ac1a6a",
+        "version": "e716e77bc239fb38dfdf95649214c8d496617e240a085d02a86d815333044ed8",
+        "signature": "8e52263b02fa8f69e11f55ace4a52c3bd47aa421a28631c7d843cc0d7f965c6d",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
