@@ -8,7 +8,13 @@ const customModulePlugin: Plugin = {
     onResolve({ filter: /\.ts$|\.tsx$|\.js$|\.jsx$/ }, (args) => {
       if (args.importer) {
         const { dir, name } = path.parse(args.absolutePath)
-        const relativePath = path.relative(args.resolveDir, path.join(dir, `${name}.js`))
+        let relativePath = path
+          .relative(args.resolveDir, path.join(dir, `${name}.js`))
+          .split(path.sep)
+          .join(path.posix.sep)
+        if (!/^[./]/.test(relativePath)) {
+          relativePath = `./${relativePath}`
+        }
         const outfile = fileToOutfile(args.absolutePath, '.js')
         heelHook(() =>
           triggerBuild({

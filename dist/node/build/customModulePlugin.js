@@ -11,7 +11,13 @@ const customModulePlugin = {
         onResolve({ filter: /\.ts$|\.tsx$|\.js$|\.jsx$/ }, (args) => {
             if (args.importer) {
                 const { dir, name } = path_1.default.parse(args.absolutePath);
-                const relativePath = path_1.default.relative(args.resolveDir, path_1.default.join(dir, `${name}.js`));
+                let relativePath = path_1.default
+                    .relative(args.resolveDir, path_1.default.join(dir, `${name}.js`))
+                    .split(path_1.default.sep)
+                    .join(path_1.default.posix.sep);
+                if (!/^[./]/.test(relativePath)) {
+                    relativePath = `./${relativePath}`;
+                }
                 const outfile = agency_1.fileToOutfile(args.absolutePath, '.js');
                 heelHook(() => triggerBuild({
                     entryPoints: [args.absolutePath],

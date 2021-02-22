@@ -447,7 +447,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/custommoduleplugin.ts": {
-        "version": "e14113baa80dace2a6c080e34b4e86f15df39015c52e2206db65fc5c606ce20e",
+        "version": "5101c67df31f41b6ed588fba94b410514fd422ddc849fd4695c32ebbbedb5943",
         "signature": "b77fc5e63bd3cb117ad644021e5ed8d29b02eaa332732cc6e4012a6f38960a9c",
         "affectsGlobalScope": false
       },
