@@ -447,7 +447,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/custommoduleplugin.ts": {
-        "version": "5101c67df31f41b6ed588fba94b410514fd422ddc849fd4695c32ebbbedb5943",
+        "version": "c01c0cc6e9a9cd7cfbcacafbeb69e8c82d0d9980d5228fd1abf245abc7e60e82",
         "signature": "b77fc5e63bd3cb117ad644021e5ed8d29b02eaa332732cc6e4012a6f38960a9c",
         "affectsGlobalScope": false
       },
@@ -457,8 +457,8 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/webmoduleplugin.ts": {
-        "version": "f14a13217297524e155f6353aae694b543870a86b2ad1017827f355217b93810",
-        "signature": "69e2ccb6f12621b423dc50db272068f9a9336a3c09a927b3f02c7d590856c7d4",
+        "version": "956a94b1868cd6ec571b98438e3f9313332fc37f717a86e4537ee964b1d644a6",
+        "signature": "f9b51642d9c31e6fa60be8d37726273f5ebb59269b3546d43f0db607fc4dfcca",
         "affectsGlobalScope": false
       },
       "../../src/node/plugin-system/proxyplugin.ts": {
@@ -467,7 +467,7 @@
         "affectsGlobalScope": false
       },
       "../../src/node/build/command.ts": {
-        "version": "8ce5787e166f0a2106fde0f4ea8a5fc6be31ec6275374a1fc1f45d6c75a27375",
+        "version": "4ecc70d1028f3ad2ae1066223310b6914c34c4d8fc96a7a76412ce8cf6ccc42a",
         "signature": "6aac4c069e8330678962da2f969b2b734ba5526404198ac3f6e7ebc6c1dc3199",
         "affectsGlobalScope": false
       },
@@ -487,13 +487,13 @@
         "affectsGlobalScope": false
       },
       "../../src/node/plugin-system/agency.ts": {
-        "version": "e716e77bc239fb38dfdf95649214c8d496617e240a085d02a86d815333044ed8",
+        "version": "7807bad19f0fe1a8bfefe0954b170bbc026df662ea9e5cedacf4b738c9de4060",
         "signature": "8e52263b02fa8f69e11f55ace4a52c3bd47aa421a28631c7d843cc0d7f965c6d",
         "affectsGlobalScope": false
       },
       "../../src/node/config.ts": {
-        "version": "b3e5b4651aae1b8000177c97f72cf0337e040d1f5e5f9721f63c2d8accfb13d3",
-        "signature": "66b12d542c9e502538d71503a26a93933ccfadc5bf987a0f1ce201d2611e0eb7",
+        "version": "ef0e84a987d0eb43c4de9e8b522e5045b21064335b2342fdde81933a458af14c",
+        "signature": "2ece225bc39e4635c521abab4d3bff4d35287afe6b6c154bd0ac9ea41cb2dc4c",
         "affectsGlobalScope": false
       },
       "../../src/node/constant.ts": {

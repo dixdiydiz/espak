@@ -16,12 +16,13 @@ const customModulePlugin: Plugin = {
           relativePath = `./${relativePath}`
         }
         const outfile = fileToOutfile(args.absolutePath, '.js')
-        heelHook(() =>
-          triggerBuild({
-            entryPoints: [args.absolutePath],
-            format: 'esm' as Format,
-            outfile: outfile,
-          })
+        heelHook(
+          async () =>
+            await triggerBuild({
+              entryPoints: [args.absolutePath],
+              format: 'esm' as Format,
+              outfile: outfile,
+            })
         )
         return {
           external: true,

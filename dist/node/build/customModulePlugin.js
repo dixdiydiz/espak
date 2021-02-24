@@ -19,7 +19,7 @@ const customModulePlugin = {
                     relativePath = `./${relativePath}`;
                 }
                 const outfile = agency_1.fileToOutfile(args.absolutePath, '.js');
-                heelHook(() => triggerBuild({
+                heelHook(async () => await triggerBuild({
                     entryPoints: [args.absolutePath],
                     format: 'esm',
                     outfile: outfile,

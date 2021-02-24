@@ -33,7 +33,10 @@ async function command(dist) {
             }
         }
     }
-    const modulePlugin = await agency_1.connectConfigHelper(webModulePlugin_1.default, ['external']);
+    const modulePlugin = await agency_1.connectConfigHelper(webModulePlugin_1.default, [
+        'external',
+        'cjsModule',
+    ]);
     const plugin = await agency_1.constructEsbuildPlugin(proxyPlugin_1.default, [modulePlugin, customModulePlugin_1.default, ...plugins], config);
     await agency_1.entryHandler(entries, [plugin], publicDir);
     const absoluteOutputDir = path_1.default.resolve(process.cwd(), outputDir);

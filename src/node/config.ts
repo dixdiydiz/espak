@@ -14,7 +14,8 @@ export interface UserConfig {
   entry: string | Record<string, string> | string[]
   outputDir: string
   resolve: Resolve
-  external: string[] | undefined
+  external?: string[]
+  cjsModule?: Record<string, string>
   plugins: PendingPlugin[]
 }
 
@@ -47,7 +48,6 @@ export async function generateConfig(): Promise<UserConfig> {
     publicDir = path.join(process.cwd(), './public'),
     entry = 'src/index.js',
     outputDir = 'dist',
-    external,
     plugins,
     resolve,
   } = userConfig
@@ -55,11 +55,11 @@ export async function generateConfig(): Promise<UserConfig> {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   }
   return Object.freeze({
+    ...userConfig,
     publicDir,
     entry,
     outputDir,
     resolve: handleResovle(resolve, defaultResolve),
-    external,
     plugins: isArray(plugins) ? plugins : [],
   })
 

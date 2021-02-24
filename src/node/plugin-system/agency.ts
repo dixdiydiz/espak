@@ -255,8 +255,8 @@ async function narrowBuild(
   overwrite: boolean = false
 ): Promise<Record<string, MapModule>> {
   const result = Object.create(null)
+  const service = await startService()
   try {
-    const service = await startService()
     const promises: Promise<any>[] = []
     options
       .filter((opt) => {
@@ -300,6 +300,8 @@ async function narrowBuild(
     log.error(`build error in ${errorMarkup}:`)
     log.error(e)
     process.exit(1)
+  } finally {
+    service.stop()
   }
 }
 
@@ -315,6 +317,7 @@ export async function entryHandler(srcs: string[], plugins: EsbuildPlugin[], pub
     }
   })
   await narrowBuild('entry file', options)
+  console.log(MapModule._cache)
   await overWriteHtml(publicDir)
 }
 

@@ -26,7 +26,7 @@ const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
 const utils_1 = require("../utils");
 const path_1 = __importDefault(require("path"));
-const webModulePlugin = async (external) => {
+const webModulePlugin = async (external, cjsModule) => {
     const pkgPath = resolve_1.default.sync('./package.json', {
         basedir: process.cwd(),
     });
@@ -44,46 +44,109 @@ const webModulePlugin = async (external) => {
     let cache = Object.create(null);
     return {
         name: 'webModulePlugin',
-        setup({ onResolve, triggerBuild }) {
-            onResolveItems.forEach((ele) => {
-                onResolve({ filter: new RegExp(`^${ele}$`) }, async (args) => {
-                    if (args.importer) {
-                        if (/node_modules/.test(args.importer)) {
-                            return {
-                                path: args.path,
-                            };
-                        }
-                        if (cache[args.path]) {
-                            const { dir } = path_1.default.parse(args.importerOutfile);
-                            const outfile = cache[args.path].outfile;
-                            return {
-                                external: true,
-                                path: path_1.default.relative(dir, outfile),
-                            };
-                        }
-                        const result = await triggerBuild({
-                            entryPoints: [args.path],
-                            format: 'esm',
-                            outfile: `module/${ele}.js`,
-                            define: {
-                                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
-                            },
-                        });
-                        const { dir } = path_1.default.parse(args.importerOutfile);
-                        const outfile = result[args.path].outfile;
-                        cache = {
-                            ...cache,
-                            ...result,
+        setup({ onResolve, onLoad, triggerBuild }) {
+            const namespace = 'cjsModule';
+            const rege = new RegExp(onResolveItems.reduce((prev, curr) => {
+                return `^${prev}$|^${curr}$`;
+            }, '^\\b$'));
+            onResolve({ filter: rege }, async (args) => {
+                if (args.importer) {
+                    if (/node_modules/.test(args.importer)) {
+                        return {
+                            path: args.path,
                         };
+                    }
+                    console.log('web', cache);
+                    if (cache[args.path]) {
+                        const { dir } = path_1.default.parse(args.importerOutfile);
+                        const outfile = cache[args.path].outfile;
+                        console.log('has cache', dir, outfile);
                         return {
                             external: true,
                             path: path_1.default.relative(dir, outfile),
                         };
                     }
-                    return {
-                        path: args.absolutePath,
+                    const result = await triggerBuild({
+                        entryPoints: [args.path],
+                        format: 'esm',
+                        outfile: `module/${args.path}.js`,
+                        define: {
+                            'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+                        },
+                    });
+                    const { dir } = path_1.default.parse(args.importerOutfile);
+                    const outfile = result[args.path].outfile;
+                    cache = {
+                        ...cache,
+                        ...result,
                     };
-                });
+                    return {
+                        external: true,
+                        path: path_1.default.relative(dir, outfile),
+                    };
+                }
+                else if (cjsModule) {
+                    return {
+                        path: args.path,
+                        namespace,
+                    };
+                }
+                return {
+                    path: args.absolutePath,
+                };
+            });
+            // onResolveItems.forEach((ele) => {
+            //   onResolve({ filter: new RegExp(`^${ele}$`) }, async (args) => {
+            //     console.log('web', args)
+            //     if (args.importer) {
+            //       if (/node_modules/.test(args.importer)) {
+            //         return {
+            //           path: args.path,
+            //         }
+            //       }
+            //       if (cache[args.path]) {
+            //         const { dir } = path.parse(args.importerOutfile)
+            //         const outfile = cache[args.path].outfile
+            //         console.log('has cache', dir, outfile)
+            //         return {
+            //           external: true,
+            //           path: path.relative(dir, outfile),
+            //         }
+            //       }
+            //       const result = await triggerBuild({
+            //         entryPoints: [args.path],
+            //         format: 'esm' as Format,
+            //         outfile: `module/${ele}.js`,
+            //         define: {
+            //           'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+            //         },
+            //       })
+            //       const { dir } = path.parse(args.importerOutfile)
+            //       const outfile = result[args.path].outfile
+            //       cache = {
+            //         ...cache,
+            //         ...result,
+            //       }
+            //       console.log('no cache', dir, outfile)
+            //       return {
+            //         external: true,
+            //         path: path.relative(dir, outfile),
+            //       }
+            //     } else if (cjsModule) {
+            //       return {
+            //         path: args.path,
+            //         namespace,
+            //       }
+            //     }
+            //     return {
+            //       path: args.absolutePath,
+            //     }
+            //   })
+            // })
+            onLoad({ filter: /.*/, namespace }, (args) => {
+                return {
+                    contents: cjsModule[args.path],
+                };
             });
         },
     };

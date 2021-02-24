@@ -27,7 +27,10 @@ export async function command(dist: string): Promise<void> {
       }
     }
   }
-  const modulePlugin = await connectConfigHelper<[string[]]>(webModulePlugin, ['external'])
+  const modulePlugin = await connectConfigHelper<[string[], Record<string, string>]>(webModulePlugin, [
+    'external',
+    'cjsModule',
+  ])
   const plugin = await constructEsbuildPlugin(proxyPlugin, [modulePlugin, customModulePlugin, ...plugins], config)
   await entryHandler(entries, [plugin], publicDir)
   const absoluteOutputDir = path.resolve(process.cwd(), outputDir)

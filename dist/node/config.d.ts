@@ -8,7 +8,8 @@ export interface UserConfig {
     entry: string | Record<string, string> | string[];
     outputDir: string;
     resolve: Resolve;
-    external: string[] | undefined;
+    external?: string[];
+    cjsModule?: Record<string, string>;
     plugins: PendingPlugin[];
 }
 export declare function generateConfig(): Promise<UserConfig>;

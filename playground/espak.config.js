@@ -11,5 +11,9 @@ module.exports = {
       '@src': path.resolve(__dirname, 'src'),
     },
   },
+  cjsModule: {
+    react: "import { React } from 'https://unpkg.com/es-react';export default React;",
+    'react-dom': "import { ReactDOM } from 'https://unpkg.com/es-react';export default ReactDOM;",
+  },
   plugins: [],
 }

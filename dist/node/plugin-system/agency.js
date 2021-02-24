@@ -159,8 +159,8 @@ function aliasReplacer(alias) {
 }
 async function narrowBuild(errorMarkup, options, overwrite = false) {
     const result = Object.create(null);
+    const service = await esbuild_1.startService();
     try {
-        const service = await esbuild_1.startService();
         const promises = [];
         options
             .filter((opt) => {
@@ -203,6 +203,9 @@ async function narrowBuild(errorMarkup, options, overwrite = false) {
         loglevel_1.default.error(e);
         process.exit(1);
     }
+    finally {
+        service.stop();
+    }
 }
 async function entryHandler(srcs, plugins, publicDir) {
     const options = srcs.map((src) => {
@@ -216,6 +219,7 @@ async function entryHandler(srcs, plugins, publicDir) {
         };
     });
     await narrowBuild('entry file', options);
+    console.log(mapping_1.MapModule._cache);
     await extendPlugin_1.overWriteHtml(publicDir);
 }
 exports.entryHandler = entryHandler;
