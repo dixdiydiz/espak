@@ -8,8 +8,6 @@ import chalk, { Chalk } from 'chalk'
 const { version } = require('../../package.json')
 import { command as buildCommand } from './build/command'
 
-export type { EspakPlugin } from './transform/fabrication'
-
 type LogKinds = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR'
 
 const colors: Record<LogKinds, Chalk> = {
@@ -29,26 +27,14 @@ prefix.apply(log, {
   },
 })
 
-export interface TempDist {
-  temp: string
-  tempSrc: string
-  tempModule: string
-}
-let dist: TempDist
-export async function createTempDist(): Promise<TempDist> {
+let dist: string
+export function createTempDist(): string {
   if (dist) {
     return dist
   }
   try {
-    const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
-    const tempSrc = path.join(temp, 'src')
-    const tempModule = path.join(temp, 'module')
-    log.info('temp', temp)
-    dist = Object.freeze({
-      temp,
-      tempSrc,
-      tempModule,
-    })
+    dist = fs.mkdtempSync(path.join(os.tmpdir(), 'espak-'))
+    log.info('dist', dist)
     return dist
   } catch (e) {
     log.error(chalk.red(e))
@@ -68,7 +54,7 @@ async function serve(): Promise<void> {
 
 async function build(): Promise<void> {
   process.env.NODE_ENV = 'production' // developement
-  const dist = await createTempDist()
+  const dist = createTempDist()
   await buildCommand(dist)
   process.exit(0)
 }
@@ -83,7 +69,7 @@ function exitHandler(
 ): void {
   const { exitCode } = option
   if (dist) {
-    fs.removeSync(dist.temp)
+    fs.removeSync(dist)
   }
   log.info(chalk.magenta(`exitCode:--${exitCode}`))
   process.exit(exitCode)

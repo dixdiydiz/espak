@@ -28,7 +28,7 @@ const loglevel_1 = __importDefault(require("loglevel"));
 const os_1 = __importDefault(require("os"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
-// module from string ?
+// TODO：需要模拟成一个模块，以可以处理引入的全局模块。(相对路径模块直接bundle)
 async function buildConfig(profile, prefix) {
     const tempDir = fs_extra_1.default.mkdtempSync(path_1.default.join(os_1.default.tmpdir(), 'espak-'));
     const tmpPath = path_1.default.join(tempDir, `${prefix}.js`);
@@ -65,4 +65,4 @@ async function startBuildServe(options) {
     }
 }
 exports.startBuildServe = startBuildServe;
-//# sourceMappingURL=wrapEsBuild.js.map
+//# sourceMappingURL=wrapEsbuild.js.map

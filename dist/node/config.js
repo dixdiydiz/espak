@@ -26,7 +26,7 @@ exports.generateConfig = void 0;
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const loglevel_1 = __importDefault(require("loglevel"));
-const wrapEsbuild_1 = require("./transform/wrapEsbuild");
+const require_module_from_string_1 = __importDefault(require("require-module-from-string"));
 const utils_1 = require("./utils");
 async function generateConfig() {
     const prefix = 'espak.config';
@@ -41,8 +41,9 @@ async function generateConfig() {
                     case '.js':
                         userConfig = await Promise.resolve().then(() => __importStar(require(profile)));
                         break;
-                    case '.ts':
-                        userConfig = await wrapEsbuild_1.buildConfig(profile, prefix);
+                    case '.ts': {
+                        userConfig = await require_module_from_string_1.default('', profile);
+                    }
                 }
                 break;
             }
@@ -53,23 +54,27 @@ async function generateConfig() {
         loglevel_1.default.warn('configuration file is not available, exit.');
         process.exit(1);
     }
-    const { public: publicDir = './public', entry = 'src/index.js', output = 'dist', external, plugins, resolve, } = userConfig;
+    const { publicDir = path_1.default.join(process.cwd(), './public'), entry = 'src/index.js', outputDir = 'dist', plugins, resolve, } = userConfig;
     const defaultResolve = {
         extensions: ['.tsx', '.ts', '.jsx', '.js'],
     };
-    return {
-        public: publicDir,
+    return Object.freeze({
+        ...userConfig,
+        publicDir,
         entry,
-        output,
+        outputDir,
         resolve: handleResovle(resolve, defaultResolve),
-        external,
         plugins: utils_1.isArray(plugins) ? plugins : [],
-    };
+    });
     function handleResovle(resolve = {}, defaultResolve = {}) {
         const extensions = [...new Set([...(resolve.extensions || []), ...(defaultResolve.extensions || [])])];
-        return {
+        const result = {
             extensions,
         };
+        if (resolve.alias) {
+            result.alias = resolve.alias;
+        }
+        return result;
     }
 }
 exports.generateConfig = generateConfig;

@@ -1,18 +1,20 @@
 import log from 'loglevel'
 import path from 'path'
-import { TempDist } from '../index'
-import { isArray } from '../utils'
-import webModulePlugin from '../transform/webModulePlugin'
+import resolve from 'resolve'
+import fs from 'fs-extra'
 import { generateConfig, UserConfig } from '../config'
-import { resolveModule, customModuleHandler, createPlugins } from '../transform/fabrication'
+import customModulePlugin from './customModulePlugin'
+import webModulePlugin from './webModulePlugin'
+import { connectConfigHelper, constructEsbuildPlugin, entryHandler } from '../plugin-system/agency'
+import proxyPlugin from '../plugin-system/proxyPlugin'
 
-export async function command(dist: TempDist): Promise<void> {
+export async function command(dist: string): Promise<void> {
   const config: UserConfig = await generateConfig()
-  const { entry: configEntry, external, plugins: customPlugins } = config
+  const { entry: configEntry, plugins, outputDir, publicDir } = config
   const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js']
   const entries = []
   for (let [_, val] of Object.entries(configEntry)) {
-    const infile = resolveModule(path.resolve('./', val), {
+    const infile = resolve.sync(path.resolve('./', val), {
       basedir: process.cwd(),
       extensions: supportedExtensions,
     })
@@ -25,11 +27,21 @@ export async function command(dist: TempDist): Promise<void> {
       }
     }
   }
-  const rawPlugin = await webModulePlugin(isArray(external) ? external : [])
-  const plugins = await createPlugins([rawPlugin, ...customPlugins])
-  await customModuleHandler(entries, {
-    outdir: dist.tempSrc,
-    outbase: 'src',
-    plugins,
-  })
+  const modulePlugin = await connectConfigHelper<[string[], Record<string, string>]>(webModulePlugin, [
+    'external',
+    'cjsModule',
+  ])
+  const plugin = await constructEsbuildPlugin(proxyPlugin, [modulePlugin, customModulePlugin, ...plugins], config)
+  await entryHandler(entries, [plugin], publicDir)
+  const absoluteOutputDir = path.resolve(process.cwd(), outputDir)
+  await cloneDist(dist, absoluteOutputDir)
+}
+
+async function cloneDist(from: string, to: string): Promise<void> {
+  try {
+    await fs.copy(from, to)
+  } catch (e) {
+    log.error(`output error: ${e}`)
+    process.exit(1)
+  }
 }

@@ -1,20 +1,22 @@
 import fs from 'fs-extra'
 import path from 'path'
 import log from 'loglevel'
-import { buildConfig } from './transform/wrapEsbuild'
-import { EspakPlugin } from './transform/fabrication'
+import requireModule from 'require-module-from-string'
+import { PendingPlugin } from './plugin-system/agency'
 import { isArray } from './utils'
 
 export interface Resolve {
-  extensions?: string[]
+  alias?: Record<string, string>
+  extensions: string[]
 }
 export interface UserConfig {
-  public: string
+  publicDir: string
   entry: string | Record<string, string> | string[]
-  output: string
+  outputDir: string
   resolve: Resolve
-  external: string[] | undefined
-  plugins: EspakPlugin[]
+  external?: string[]
+  cjsModule?: Record<string, string>
+  plugins: PendingPlugin[]
 }
 
 export async function generateConfig(): Promise<UserConfig> {
@@ -30,8 +32,9 @@ export async function generateConfig(): Promise<UserConfig> {
           case '.js':
             userConfig = await import(profile)
             break
-          case '.ts':
-            userConfig = await buildConfig(profile, prefix)
+          case '.ts': {
+            userConfig = await requireModule('', profile)
+          }
         }
         break
       }
@@ -42,29 +45,32 @@ export async function generateConfig(): Promise<UserConfig> {
     process.exit(1)
   }
   const {
-    public: publicDir = './public',
+    publicDir = path.join(process.cwd(), './public'),
     entry = 'src/index.js',
-    output = 'dist',
-    external,
+    outputDir = 'dist',
     plugins,
     resolve,
   } = userConfig
-  const defaultResolve = {
+  const defaultResolve: Resolve = {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   }
-  return {
-    public: publicDir,
+  return Object.freeze({
+    ...userConfig,
+    publicDir,
     entry,
-    output,
+    outputDir,
     resolve: handleResovle(resolve, defaultResolve),
-    external,
     plugins: isArray(plugins) ? plugins : [],
-  }
+  })
 
-  function handleResovle(resolve: Resolve = {}, defaultResolve: Resolve = {}): Resolve {
+  function handleResovle(resolve: Partial<Resolve> = {}, defaultResolve: Partial<Resolve> = {}): Resolve {
     const extensions = [...new Set([...(resolve.extensions || []), ...(defaultResolve.extensions || [])])]
-    return {
+    const result: Resolve = {
       extensions,
     }
+    if (resolve.alias) {
+      result.alias = resolve.alias
+    }
+    return result
   }
 }

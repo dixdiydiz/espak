@@ -22,14 +22,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fabrication_1 = require("./fabrication");
+const resolve_1 = __importDefault(require("resolve"));
 const loglevel_1 = __importDefault(require("loglevel"));
 const utils_1 = require("../utils");
 const webModulePlugin = async (external) => {
-    const path = await fabrication_1.resolveModule('./package.json', {
+    const pkgPath = resolve_1.default.sync('./package.json', {
         basedir: process.cwd(),
     });
-    const packageDependencies = await Promise.resolve().then(() => __importStar(require(path))).then((r) => {
+    const packageDependencies = await Promise.resolve().then(() => __importStar(require(pkgPath))).then((r) => {
         const { dependencies = {} } = r;
         return Object.keys(dependencies);
     })
@@ -40,23 +40,34 @@ const webModulePlugin = async (external) => {
     const onResolveItems = utils_1.isArray(external)
         ? packageDependencies.filter((ele) => !external.includes(ele))
         : packageDependencies;
-    return (dist, service) => {
-        onResolveItems.forEach((ele) => { });
-        console.log(onResolveItems, dist, service);
-        return {
-            name: 'webModulePlugin',
-            setup({ onResolve }) {
-                onResolveItems.forEach((ele) => {
-                    onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
-                        console.log(args.path, args.importer, args.resolveDir);
+    return {
+        name: 'webModulePlugin',
+        setup({ onResolve }) {
+            onResolveItems.forEach((ele) => {
+                onResolve({ filter: new RegExp(`^${ele}$`) }, (args) => {
+                    if (/node_modules/.test(args.importer)) {
                         return {
-                            path: args.path,
-                            external: true,
+                            path: args.modulePath,
                         };
-                    });
+                    }
+                    return {
+                        external: true,
+                        outputOptions: {
+                            sourcePath: args.modulePath,
+                            outputDir: 'module',
+                            fileName: ele,
+                            minify: false,
+                            outputExtension: '.js',
+                        },
+                        buildOptions: {
+                            define: {
+                                'process.env.NODE_ENV': `'"${process.env.NODE_ENV}"'` || '"production"',
+                            },
+                        },
+                    };
                 });
-            },
-        };
+            });
+        },
     };
 };
 exports.default = webModulePlugin;

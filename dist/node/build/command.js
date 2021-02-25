@@ -6,17 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const loglevel_1 = __importDefault(require("loglevel"));
 const path_1 = __importDefault(require("path"));
-const utils_1 = require("../utils");
-const webModulePlugin_1 = __importDefault(require("../transform/webModulePlugin"));
+const resolve_1 = __importDefault(require("resolve"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
 const config_1 = require("../config");
-const fabrication_1 = require("../transform/fabrication");
+const customModulePlugin_1 = __importDefault(require("./customModulePlugin"));
+const webModulePlugin_1 = __importDefault(require("./webModulePlugin"));
+const agency_1 = require("../plugin-system/agency");
+const proxyPlugin_1 = __importDefault(require("../plugin-system/proxyPlugin"));
 async function command(dist) {
     const config = await config_1.generateConfig();
-    const { entry: configEntry, external, plugins: customPlugins } = config;
+    const { entry: configEntry, plugins, outputDir, publicDir } = config;
     const supportedExtensions = ['.tsx', '.ts', '.jsx', '.js'];
     const entries = [];
     for (let [_, val] of Object.entries(configEntry)) {
-        const infile = fabrication_1.resolveModule(path_1.default.resolve('./', val), {
+        const infile = resolve_1.default.sync(path_1.default.resolve('./', val), {
             basedir: process.cwd(),
             extensions: supportedExtensions,
         });
@@ -30,13 +33,23 @@ async function command(dist) {
             }
         }
     }
-    const rawPlugin = await webModulePlugin_1.default(utils_1.isArray(external) ? external : []);
-    const plugins = await fabrication_1.createPlugins([rawPlugin, ...customPlugins]);
-    await fabrication_1.customModuleHandler(entries, {
-        outdir: dist.tempSrc,
-        outbase: 'src',
-        plugins,
-    });
+    const modulePlugin = await agency_1.connectConfigHelper(webModulePlugin_1.default, [
+        'external',
+        'cjsModule',
+    ]);
+    const plugin = await agency_1.constructEsbuildPlugin(proxyPlugin_1.default, [modulePlugin, customModulePlugin_1.default, ...plugins], config);
+    await agency_1.entryHandler(entries, [plugin], publicDir);
+    const absoluteOutputDir = path_1.default.resolve(process.cwd(), outputDir);
+    await cloneDist(dist, absoluteOutputDir);
 }
 exports.command = command;
+async function cloneDist(from, to) {
+    try {
+        await fs_extra_1.default.copy(from, to);
+    }
+    catch (e) {
+        loglevel_1.default.error(`output error: ${e}`);
+        process.exit(1);
+    }
+}
 //# sourceMappingURL=command.js.map
